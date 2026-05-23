@@ -149,9 +149,13 @@ only `SKILL.md`. Keep these paths together:
 - `templates/`
 - `examples/`
 
-After installation, start by brainstorming in Chat. Define the project goal, MVP
-boundary, non-goals, constraints, and success criteria, then ask Chat to generate
-the first Codex prompt for the target repository.
+After installation, start with a short brainstorm. Define the project goal, MVP
+boundary, non-goals, constraints, and success criteria before asking Codex to
+create workflow files.
+
+You can brainstorm in Chat first and ask Chat to generate a first Codex prompt, or
+you can brainstorm directly in Codex. The Chat-to-Codex handoff is recommended,
+not required.
 
 ## Compatibility
 
@@ -165,28 +169,20 @@ The prompts do not need to be long once the workflow files exist. Short commands
 are usually enough because Codex should read the project files and recover the
 current state before editing.
 
-### First Codex Prompt From Chat
+### Startup Guidance
 
-Chat should generate the first Codex prompt after the project brainstorm. A good
-first prompt should summarize the agreed direction and ask Codex to create or
-resume the file-based workflow only after showing the required phase gate.
+Before starting Phase 0, give Codex the project goal, MVP boundary, non-goals,
+constraints, and success criteria. If you already discussed the project in Chat,
+you can ask Chat to generate a first Codex prompt from that summary. This is
+recommended, not required.
 
 ```text
-Use phase-workflow for this repository.
-
-Chat brainstorm summary:
-- Goal: ...
-- MVP boundary: ...
-- Non-goals: ...
-- Constraints: ...
-- Success criteria: ...
-
-Read existing project files first. If the folder is empty, show the Phase 0
-start gate before creating any files. Draft a rough phase plan, explain whether
-Phase 0 should be split, and wait for my confirmation before editing files.
+Use phase-workflow for this repository. I want to brainstorm the project first.
+Help me define the goal, MVP boundary, non-goals, constraints, and success
+criteria before Phase 0.
 ```
 
-### Short Follow-Up Prompts
+### Short Prompts
 
 ```text
 Phase 0 is complete. Start Phase 1.
@@ -209,14 +205,15 @@ starting Phase 1.
 
 ## Chat-to-Codex Startup Flow
 
-Use Chat for product thinking and Codex for file-based execution:
+Use Chat or Codex for product thinking, then use Codex for file-based execution:
 
 1. Create a target project folder.
 2. Install or copy the full `phase-workflow` skill.
-3. In Chat, brainstorm the project goal, MVP boundary, non-goals, constraints, and
-   success criteria.
-4. Have Chat generate a Codex prompt that summarizes the agreed project direction.
-5. In Codex, use that prompt to create a rough phase plan in the target project.
+3. Brainstorm the project goal, MVP boundary, non-goals, constraints, and success
+   criteria in Chat or directly in Codex.
+4. Optionally have Chat generate a Codex prompt that summarizes the agreed project
+   direction.
+5. In Codex, use that direction to create a rough phase plan in the target project.
 6. Before starting each major phase, check whether the scope should stay whole or
    split into `Phase X.1`, `Phase X.2`, a later phase, or backlog.
 7. Start Phase 0, or the next phase, only after user confirmation of the phase
