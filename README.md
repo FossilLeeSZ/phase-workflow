@@ -149,14 +149,9 @@ only `SKILL.md`. Keep these paths together:
 - `templates/`
 - `examples/`
 
-After installation, ask Codex to use `phase-workflow` when starting or continuing
-an early-stage project. A useful opening prompt is:
-
-```text
-Use phase-workflow for this project. Start by reading AGENTS.md, PLAN.md, TODO.md,
-DEV_LOG.md, DECISIONS.md, and the latest phase note or handoff note.
-Summarize the current state before editing files.
-```
+After installation, start by brainstorming in Chat. Define the project goal, MVP
+boundary, non-goals, constraints, and success criteria, then ask Chat to generate
+the first Codex prompt for the target repository.
 
 ## Compatibility
 
@@ -166,46 +161,51 @@ Claude Code support is planned for a future release.
 
 ## Example Prompts
 
-### New Project Prompt
+The prompts do not need to be long once the workflow files exist. Short commands
+are usually enough because Codex should read the project files and recover the
+current state before editing.
+
+### First Codex Prompt From Chat
+
+Chat should generate the first Codex prompt after the project brainstorm. A good
+first prompt should summarize the agreed direction and ask Codex to create or
+resume the file-based workflow only after showing the required phase gate.
 
 ```text
-Use phase-workflow for this new project. Read any existing project files first.
-Start with Phase 0 by creating a small file-based project baseline, including
-README.md, AGENTS.md, PLAN.md, TODO.md, DEV_LOG.md, DECISIONS.md, and minimal
-tests. Summarize the baseline before editing files. Do not build product features
-until Phase 0 is verified and the verification result is recorded.
+Use phase-workflow for this repository.
+
+Chat brainstorm summary:
+- Goal: ...
+- MVP boundary: ...
+- Non-goals: ...
+- Constraints: ...
+- Success criteria: ...
+
+Read existing project files first. If the folder is empty, show the Phase 0
+start gate before creating any files. Draft a rough phase plan, explain whether
+Phase 0 should be split, and wait for my confirmation before editing files.
 ```
 
-### Continue Project Prompt
+### Short Follow-Up Prompts
 
 ```text
-Use phase-workflow for this repository. Read AGENTS.md, PLAN.md, TODO.md,
-DEV_LOG.md, DECISIONS.md, and the latest phase note or handoff note. Summarize
-the current phase, verified state, blockers, and next action before editing
-files. Record verification results after running the relevant command.
+Phase 0 is complete. Start Phase 1.
 ```
-
-### New Window Handoff Prompt
 
 ```text
-Use phase-workflow for this repository. Do not rely on previous chat history.
-Read AGENTS.md, PLAN.md, TODO.md, DEV_LOG.md, DECISIONS.md, and the latest phase
-note or handoff note. Summarize current phase, verified state, blockers, open
-scope questions, and next recommended action before editing files. Treat project
-files as the source of truth.
-
-Desired response language: English for this chat. Keep project files in English unless I say otherwise.
+Start Phase 1.
 ```
-
-### Change Request Prompt
 
 ```text
-Use phase-workflow to classify this request before implementing it. Decide
-whether it belongs in Phase X.1, Phase X.2, a New Major Phase, or Backlog.
-Summarize the impact on scope, files, tests, outputs, acceptance criteria, and
-verification before changing behavior. After implementation, run the verification
-command and record the result.
+Use phase-workflow. Continue from project files and summarize state first.
 ```
+
+```text
+Classify this change request before implementation: ...
+```
+
+If Phase 0 is not complete, Codex should report that blocker instead of silently
+starting Phase 1.
 
 ## Chat-to-Codex Startup Flow
 
