@@ -52,6 +52,7 @@ Do not do:
 
 ```text
 Use phase-workflow for this repository. Do not rely on previous chat history.
-Read AGENTS.md, PLAN.md, TODO.md, DEV_LOG.md, DECISIONS.md, and the latest phase
-note or handoff note. Summarize current state and next action before editing.
+Read AGENTS.md, PLAN.md, TODO.md, DECISIONS.md, and the latest handoff note or phase note.
+Read only the latest 1-3 DEV_LOG.md entries if recent verification or conflicts need context.
+Summarize current state and next action before editing.
 ```

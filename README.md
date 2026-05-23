@@ -76,9 +76,8 @@ recorded; "should work" is not an exit criterion.
 
 ## Tradeoffs
 
-`phase-workflow` may use more tokens than an ad hoc Codex chat because Codex reads
-project files, checks phase boundaries, records verification results, and maintains
-handoff notes.
+`phase-workflow` may use more tokens than an ad hoc Codex chat because Codex checks
+phase boundaries, records verification results, and maintains handoff notes.
 
 The tradeoff is intentional: the workflow spends extra context on recoverability,
 scope control, verification, and new-window handoff.
@@ -86,6 +85,11 @@ scope control, verification, and new-window handoff.
 This has not been benchmarked yet. Actual token usage will depend on project size,
 how many workflow files are read, and how often phases or sub-phases are updated.
 Measured reports or practical suggestions are welcome.
+
+To keep recovery context small, new Codex windows should start from compact current-state
+files and the latest handoff note or phase note. Treat `DEV_LOG.md` as complete audit history:
+read only the latest 1-3 `DEV_LOG.md` entries by default, and search older entries only when
+state files conflict, verification is missing, or the user asks for history.
 
 ## How It Differs From Goal Mode
 
@@ -245,8 +249,9 @@ For example:
 
 ```text
 Use phase-workflow for this repository. Do not rely on previous chat history.
-Read AGENTS.md, PLAN.md, TODO.md, DEV_LOG.md, DECISIONS.md, and the latest phase note or
-handoff note before editing files.
+Read AGENTS.md, PLAN.md, TODO.md, DECISIONS.md, and the latest handoff note or phase note
+before editing files.
+Read only the latest 1-3 DEV_LOG.md entries if recent verification or conflicts need context.
 
 Desired response language: Chinese for this chat.
 Keep project files in English unless I say otherwise.
@@ -262,16 +267,18 @@ flowchart TD
     A["Create target project folder"] --> B["Install or copy phase-workflow skill"]
     B --> C["Chat-to-Codex brainstorm: goal, MVP, non-goals, constraints"]
     C --> D["Generate Codex startup prompt"]
-    D --> E["Codex reads project files"]
+    D --> E["Read compact recovery context"]
+    E --> EH["Check latest handoff or phase note first"]
+    EH --> EL["Read recent DEV_LOG entries only if needed"]
 
-    E --> F{"Empty folder?"}
+    EL --> F{"Empty folder?"}
     F -->|"Yes"| G["Output Phase 0 start gate"]
-    F -->|"No"| H["Summarize current project state"]
+    F -->|"No"| H["Summarize compact current state"]
 
     G --> I["Wait for separate user confirmation"]
     I --> J["Create baseline workflow files"]
     J --> K["Run actual verification command"]
-    K --> L["Update TODO, DEV_LOG, phase note, and handoff"]
+    K --> L["Update TODO, DEV_LOG, and compact handoff"]
     L --> M["Report result and wait for next phase request"]
 
     H --> N["Output phase start gate"]
@@ -292,7 +299,7 @@ flowchart TD
     V --> W["Write failing tests"]
     W --> X["Implement minimal capability"]
     X --> Y["Run actual verification command"]
-    Y --> Z["Update TODO, DEV_LOG, phase note, and handoff"]
+    Y --> Z["Update TODO, DEV_LOG, and compact handoff"]
     Z --> AA["Report result and wait for next phase"]
 
     T --> AA

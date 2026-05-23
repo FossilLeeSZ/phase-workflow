@@ -6,9 +6,10 @@ This example shows how a new Codex window can recover context from files.
 
 ```text
 Use phase-workflow for this repository. Do not rely on previous chat history.
-Read AGENTS.md, PLAN.md, TODO.md, DEV_LOG.md, DECISIONS.md, and the latest phase
-note or handoff note. Summarize current phase, verified state, blockers, and next
-recommended action before editing files.
+Read AGENTS.md, PLAN.md, TODO.md, DECISIONS.md, and the latest handoff note or phase note.
+Read only the latest 1-3 DEV_LOG.md entries if recent verification or conflicts need context.
+Summarize current phase, verified state, blockers, and next recommended action before editing
+files.
 ```
 
 ## Expected Recovery Steps
@@ -16,9 +17,10 @@ recommended action before editing files.
 1. Read `AGENTS.md` for repository rules.
 2. Read `PLAN.md` for phase boundaries.
 3. Read `TODO.md` for active and next tasks.
-4. Read `DEV_LOG.md` for recent work and verification status.
-5. Read `DECISIONS.md` for durable decisions.
-6. Read the latest phase note or handoff note if present.
+4. Read `DECISIONS.md` for durable decisions.
+5. Read the latest handoff note or phase note if present.
+6. Read only the latest 1-3 `DEV_LOG.md` entries if recent verification or conflicts need
+   context.
 
 ## Example Recovered State
 
@@ -65,6 +67,9 @@ instead:
 - Need clarification: `TODO.md` says Phase 2, but `DEV_LOG.md` has no Phase 1
   verification result.
 ```
+
+Do not read the full `DEV_LOG.md` by default. Treat it as audit history and look up older
+entries only when the compact recovery files conflict or omit verification context.
 
 ## Important Rule
 

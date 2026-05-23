@@ -17,6 +17,7 @@ verifiable.
 - Phase 6: README workflow diagram and usage guidance documentation improvement.
 - Phase 6.1: pre-release README and plan consistency polish.
 - Phase 7: iteration from real early-stage project feedback.
+- Phase 8: context-light recovery and bounded DEV_LOG read policy.
 
 Use one decimal level only. If the change no longer fits as a small addition or bug fix,
 make it a New Major Phase or backlog item.
@@ -83,6 +84,12 @@ dependencies.
 
 Iterate from real early-stage project feedback. This phase should tie changes to observed
 usage and record durable methodology changes in `DECISIONS.md`.
+
+### Phase 8
+
+Reduce new-window context cost by treating `DEV_LOG.md` as complete audit history rather than
+default startup context. This phase should keep recovery file-based, make the latest handoff
+note or phase note the compact recovery source, and document the bounded DEV_LOG read policy.
 
 ## One Closed Loop Per Phase
 

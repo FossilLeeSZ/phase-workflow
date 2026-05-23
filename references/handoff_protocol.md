@@ -5,16 +5,21 @@ project files.
 
 ## New Window Reading Order
 
-Read these files first:
+Read compact recovery context first:
 
 1. `AGENTS.md`
 2. `PLAN.md`
 3. `TODO.md`
-4. `DEV_LOG.md`
-5. `DECISIONS.md`
-6. Latest phase note or handoff note
+4. `DECISIONS.md`
+5. Latest handoff note or phase note
+6. Latest 1-3 `DEV_LOG.md` entries only if recent verification or conflict context is needed
 
 If a repository has additional local instructions, follow the highest-priority instructions first.
+
+Use a bounded DEV_LOG read by default. `DEV_LOG.md` is a complete audit history and an
+on-demand history source, not default full-file startup context. Read older entries only when
+compact state files conflict, verification results are missing, a decision source is unclear, or
+the user explicitly asks for historical detail.
 
 ## Summarize Current State
 
@@ -36,9 +41,9 @@ Choose the next step by checking:
 
 - `TODO.md` for active and next tasks.
 - `PLAN.md` for phase boundaries.
-- `DEV_LOG.md` for the latest verified state.
 - `DECISIONS.md` for durable constraints.
-- Latest handoff note for warnings and non-goals.
+- Latest handoff note or phase note for current state, warnings, and non-goals.
+- Latest 1-3 `DEV_LOG.md` entries when recent verification needs confirmation.
 
 If these files conflict, stop and clarify before implementing.
 
@@ -65,7 +70,8 @@ The records should include actual verification commands and results.
 
 ```text
 Use phase-workflow for this repository. Do not rely on previous chat history.
-Read AGENTS.md, PLAN.md, TODO.md, DEV_LOG.md, DECISIONS.md, and the latest phase
-note or handoff note. Summarize the current phase, verified state, blockers, and
-next recommended action before editing files.
+Read AGENTS.md, PLAN.md, TODO.md, DECISIONS.md, and the latest handoff note or phase note.
+Read only the latest 1-3 DEV_LOG.md entries if recent verification or conflicts need context.
+Summarize the current phase, verified state, blockers, and next recommended action before
+editing files.
 ```
