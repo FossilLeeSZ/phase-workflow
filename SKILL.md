@@ -18,14 +18,18 @@ Load only the resource needed for the current decision:
 - Read `references/verification_policy.md` before marking a phase complete or reporting test status.
 - Copy from `templates/` when creating phase notes, handoff notes, TODOs, dev log entries, or
   decision records in a target project.
-- Use `examples/` only when the user needs a concrete pattern for a greenfield start, change
-  request, or new-window handoff.
+- Copy `templates/project_context_template.md` as `PROJECT_CONTEXT.md` when adopting an
+  existing structured project.
+- Use `examples/` only when the user needs a concrete pattern for a greenfield start, existing
+  structured project adoption, change request, or new-window handoff.
 
 ## When To Use This Skill
 
 Use this skill when the user is working on:
 
 - A new project.
+- An existing project with a clear structure that needs lightweight phase planning and handoff
+  files.
 - An MVP project.
 - A Phase 0 initialization.
 - A phase-based development plan.
@@ -41,6 +45,8 @@ Do not use this skill when:
 - The user is only asking a simple question.
 - The user explicitly asks for a direct small bug fix.
 - The project is mature and already has a process the user does not want to change.
+- The project state is unclear, heavily tangled, or lacks an identifiable entrypoint,
+  verification command, or current goal.
 - The current task does not need long-term context management.
 - The repository has higher-priority development instructions.
 
@@ -75,12 +81,30 @@ For each phase:
 - If the user gives an ambiguous response, ask a short explicit confirmation question and do
   not edit files.
 - If the target folder is an empty folder, treat Phase 0 initialization as gated work.
+- Before Phase 0, classify folder state as `empty folder`, `existing structured project
+  candidate`, or `unclear project state`.
+- Folder state classification is only a recommendation. It must be reported with evidence and
+  does not authorize execution.
+- For an existing structured project candidate, use Phase 0.1 for workflow adoption and
+  Phase 0.2 for a planning baseline.
+- During Phase 0.1, create or fill workflow files and `PROJECT_CONTEXT.md`; do not overwrite
+  existing project files, plan a roadmap, modify application code, refactor, or start a cleanup
+  campaign.
+- Rule wording: do not overwrite existing project files.
+- During Phase 0.2, use `PROJECT_CONTEXT.md` and a user-confirmed next project goal to create
+  a rough planning baseline; do not infer the roadmap from code observations alone.
+- Phase 0.1 completion does not authorize Phase 0.2. Phase 0.2 completion does not authorize
+  Phase 1. Every phase and sub-phase requires its own visible start gate and separate user
+  confirmation.
 - Output a visible Phase 0 start gate before creating any project files.
 - Do not create baseline workflow files before user confirmation. Baseline workflow files
   include README.md, AGENTS.md, PLAN.md, TODO.md, DEV_LOG.md, and DECISIONS.md.
-- Split only when there are multiple independent outputs, unrelated user-visible capabilities,
-  or separate verification loops.
-- Do not split just because one coherent phase has multiple tasks.
+- Split when the user requests a split, when there are multiple independent outputs,
+  unrelated user-visible capabilities, separate verification loops, or when reviewability,
+  transparency, phase size, risk, user confidence, or avoiding opaque large phases makes the
+  phase easier to supervise.
+- Do not split only because one coherent phase has several mechanical tasks, but do split when
+  the user wants a large phase broken down for review.
 - Do not automatically start the next phase; wait for explicit user confirmation.
 - Do not create fixtures, tests, or implementation changes before user confirmation of the
   phase boundary.
@@ -92,6 +116,66 @@ For each phase:
 - Update project files so the next Codex session can resume without chat history.
 - Follow repository instructions when they are more specific than this skill.
 
+## Plan-First Execution
+
+Planning records are execution inputs, not after-the-fact summaries.
+Rule wording: planning records are execution inputs.
+
+For scope-changing work, update planning files before technical files. This applies to new
+phases or sub-phases, phase splits, New Major Phase work, Phase 0.1 workflow adoption,
+Phase 0.2 planning baseline, route changes, changes to the current phase goal, non-goals,
+outputs, acceptance criteria, or any request that changes the current `PLAN.md` or `TODO.md`
+task boundary.
+
+Planning files include `PLAN.md`, `TODO.md`, and, when relevant, the active phase note,
+handoff note, `PROJECT_CONTEXT.md`, or `DECISIONS.md`.
+
+Do not start fixtures, tests, implementation, or other technical file changes until the
+relevant plan record exists. Do not use `PLAN.md` or `TODO.md` as after-the-fact summaries for
+scope-changing work. Prohibited order: Implement first, document plan later.
+
+Current-scope implementation details, verification results, actual modified file lists,
+`DEV_LOG.md` entries, handoff summaries, and small non-scope-changing corrections can be
+recorded after the technical work.
+
+## Reviewable Splits And Approach Confirmation
+
+User-requested splits have the highest priority. When the user asks to split a phase, output a
+split interpretation gate first, wait for confirmation, then update `PLAN.md`, `TODO.md`, and
+the active phase note. After those planning files are updated, stop. The split confirmation
+only authorizes planning file updates; it does not authorize Phase X.1, Phase X.2, or any
+implementation work.
+
+When Codex recommends a split, explain the basis before asking for confirmation. Valid reasons
+include reviewability, transparency, phase size, risk, user confidence, avoiding opaque large
+phases, multiple independent outputs, unrelated user-visible capabilities, or separate
+verification loops.
+
+Approval model:
+
+> Split confirmation controls phase boundaries. Phase confirmation controls execution
+> permission. Approach confirmation controls how non-trivial work will be done.
+
+Approach confirmation applies to any phase or sub-phase. If a phase or sub-phase has a
+non-trivial execution approach choice, show the proposed execution approach and wait for user
+confirmation before modifying related files. A phase confirmation does not approve an unstated
+approach.
+
+Non-trivial execution approach choices include algorithms, architecture, libraries or
+dependencies, data structures, Markdown document structure, prompt rewrite strategy, template
+field design, policy semantics, test strategy, migration or compatibility strategy, and
+user-visible output format. Documents, prompts, templates, policies, tests, and code can all
+require approach confirmation when the approach affects outputs, maintainability, validation,
+or long-term behavior.
+
+If the user rejects the proposed approach, stop execution. Update `TODO.md`, `PLAN.md`, or the
+active phase note as needed, show a revised approach confirmation, and wait for user
+confirmation before continuing.
+
+Do not treat split confirmation as execution approval. Do not treat phase or sub-phase
+confirmation as approval for an unstated approach. Do not continue implementation after the
+user rejects the approach.
+
 ## Phase Start Checklist
 
 Before creating fixtures, tests, implementation changes, or any project files for Phase 0,
@@ -101,17 +185,23 @@ Identify:
 
 - Current phase.
 - Whether the previous phase is complete.
-- Whether the target folder is an empty folder.
+- Folder state: `empty folder`, `existing structured project candidate`, or `unclear project
+  state`.
 - Current phase goal.
 - Current phase non-goals.
 - Split decision: keep the current phase, split into Phase X.1 or Phase X.2, move to a New
   Major Phase, or place in Backlog.
 - Whether the phase is still one single verification loop.
+- Proposed execution approach, when the work has a non-trivial approach choice.
 - Inputs.
 - Outputs.
 - Acceptance criteria.
 - Work that is not allowed in this phase.
 - For Phase 0, baseline workflow files to create.
+- For Phase 0.1, detected existing files, files to create or fill, files not to overwrite,
+  verification command, and `PROJECT_CONTEXT.md` fields.
+- For Phase 0.2, `PROJECT_CONTEXT.md`, user-confirmed next project goal, files to update, and
+  candidate Phase 1 goal.
 - Whether user confirmation has been received.
 - Confirmation source: a separate user response after the phase start gate is displayed.
 - If the response is unclear or ambiguous, ask a short explicit confirmation question before

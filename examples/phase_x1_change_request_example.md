@@ -66,6 +66,36 @@ Do not treat "start Phase X" as confirmation for Phase X.1 work. After the Phase
 gate, wait for a separate user response after the phase start gate is displayed before changing
 fixtures, tests, or implementation.
 
+Plan-first execution order: Update planning files before technical files. Update `PLAN.md` and
+`TODO.md` before changing fixtures, tests, or implementation when the request changes scope,
+outputs, or acceptance criteria.
+Rule wording: Update `PLAN.md` and `TODO.md` before changing fixtures, tests, or implementation.
+
+## Approach Rejection And Adjustment
+
+If Phase 1.1 has a non-trivial execution approach choice, Codex should show the approach before
+changing files. For example, Codex might propose adding `source_file` by threading an absolute
+path through every parser function. If the user says that approach is too invasive, treat it as
+approach rejected.
+
+When the goal and output stay the same, stop execution and update the phase note with the
+revised execution approach. For this scenario, the revised approach might keep parser internals
+unchanged and add `source_file` only at the result assembly boundary.
+
+Then show a new approach confirmation:
+
+```text
+Current phase: Phase 1.1.
+Goal: add source_file metadata to parser output.
+Revised execution approach: keep parser internals unchanged and attach source_file at result
+assembly.
+Planning update: update the phase note with the revised execution approach.
+Confirmation needed: wait for user confirmation before changing fixtures, tests, or code.
+```
+
+Documents, prompts, templates, policies, tests, and code can all require approach confirmation
+when the approach is non-trivial.
+
 ## Example TODO Update
 
 ```markdown

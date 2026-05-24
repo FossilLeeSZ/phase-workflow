@@ -8,21 +8,23 @@ Its main purpose is not to make Codex plan. Codex can already plan. Its purpose 
 to make planning, scope control, verification, and handoff repeatable through
 project files instead of chat history.
 
-Casually speaking, it helps everyone borrow useful MBTI J habits: clear plans,
-explicit decisions, and verified next steps. The real value is engineering control:
-new Codex windows can recover the work from files, and long conversations do not
-have to keep compressing context until stale assumptions, lost decisions, mixed
-context, or scope drift creep in.
+Casually speaking, it helps everyone borrow useful MBTI J habits: clear phase boundaries,
+explicit decisions, and verified next steps. The engineering value is that new Codex windows
+can recover the work from files, and long conversations do not have to keep compressing
+context until stale assumptions, lost decisions, mixed context, or scope drift creep in.
 
 The workflow is simple:
 
 1. Lock the current phase boundary.
-2. Prepare fixtures or examples.
-3. Write failing tests.
-4. Implement the smallest useful capability.
-5. Verify with actual commands.
-6. Update phase notes and handoff documents.
-7. Move to the next phase only after verification.
+2. Output a visible start gate and wait for separate confirmation.
+3. Update planning files before technical work starts.
+4. Confirm any non-trivial execution approach before related file changes.
+5. Prepare fixtures or examples.
+6. Write failing tests.
+7. Implement the smallest useful capability.
+8. Verify with actual commands.
+9. Update phase notes and handoff documents.
+10. Move to the next phase only after verification.
 
 The project is not a business application, a RAG system, a web UI, or a code
 generation framework.
@@ -50,10 +52,11 @@ compressed long conversation.
 A project using this workflow usually maintains:
 
 - `AGENTS.md` - repository-level rules for Codex
-- `PLAN.md` - phase roadmap
-- `TODO.md` - active task and backlog
+- `PLAN.md` - phase roadmap and execution input
+- `TODO.md` - active scope and next executable tasks
 - `DEV_LOG.md` - development log
 - `DECISIONS.md` - durable decisions
+- `PROJECT_CONTEXT.md` - compact project context for existing structured project adoption
 - phase notes - per-phase goal, verification, and handoff records
 - handoff notes - current state for new Codex sessions
 
@@ -73,6 +76,22 @@ When used correctly, `phase-workflow` aims to ensure that:
 Fixtures and tests are not ceremony. They define expected behavior before
 implementation begins. A phase is not complete until verification results are
 recorded; "should work" is not an exit criterion.
+
+`phase-workflow` treats planning records as execution inputs, not after-the-fact summaries.
+Scope-changing work is recorded before technical work starts.
+
+Splitting a phase is also a review tool. Phase splitting can reduce opaque large phases and
+make work easier to inspect; it is not limited to separating independent outputs. Confirming a
+split does not authorize implementation, and confirming a phase does not authorize an
+unstated execution approach.
+
+Non-trivial execution approaches require confirmation before related files change. This
+includes code design and also Markdown document structure, prompt rewrite strategy, template
+field design, policy semantics, test strategy, and user-visible output format. Documents,
+prompts, templates, policies, tests, and code can all require approach confirmation.
+
+Approval model: Split confirmation controls phase boundaries. Phase confirmation controls
+execution permission. Approach confirmation controls how non-trivial work will be done.
 
 ## Tradeoffs
 
@@ -108,6 +127,8 @@ from a thread-scoped goal.
 Use this skill for:
 
 - Greenfield software projects.
+- Existing projects with a clear structure that need lightweight phase planning and handoff
+  files.
 - Early MVPs with changing requirements.
 - Projects where Codex needs to resume work in a new window.
 - Work that benefits from fixtures-first and tests-first development.
@@ -120,8 +141,32 @@ Do not use this skill for:
 - Mature projects with established engineering process that should not change.
 - One-off questions or tiny bug fixes that do not need phase tracking.
 - Projects that already have strict project management, release, or compliance workflows.
+- Unclear or heavily tangled legacy projects. In practice, unclear or heavily tangled legacy
+  projects need assessment before workflow adoption.
+- Projects where the main entrypoint, test command, or current goal cannot be identified.
+- Work whose real need is large refactor or governance work.
 - Work that needs a full issue tracker, database, cloud sync, or web UI.
 - Business-specific workflows that should live in a separate project skill.
+
+## Existing Projects With A Clear Structure
+
+Use `phase-workflow` for existing projects with a clear structure when the codebase has a
+recognizable purpose, clear directories, and a basic verification path, but does not yet have
+lightweight phase planning and handoff files.
+
+For these projects, Phase 0 should split into two confirmed sub-phases:
+
+1. Phase 0.1 adopts the workflow around the current project state. It creates or fills standard
+   workflow files and `PROJECT_CONTEXT.md`, but it does not overwrite existing project files,
+   plan future feature work, refactor code, or start a cleanup campaign.
+2. Phase 0.2 creates a planning baseline only after the user provides or confirms the next
+   project goal. It updates `PLAN.md` and `TODO.md` with a rough roadmap and a candidate
+   Phase 1 goal, then stops.
+
+If the project state is unclear, Codex should report the uncertainty and ask for clarification
+or recommend a separate assessment before adopting the workflow.
+
+Do not use this workflow as the first step for unclear or heavily tangled legacy projects.
 
 ## Using It As A Codex Skill
 
@@ -204,29 +249,50 @@ Use phase-workflow. Continue from project files and summarize state first.
 Classify this change request before implementation: ...
 ```
 
+```text
+Adopt phase-workflow into this existing project. First classify the folder state and show the
+Phase 0.1 adoption gate before creating workflow files.
+```
+
+```text
+This phase feels too large. Please propose a reviewable split before execution.
+```
+
+```text
+I do not like the proposed approach. Stop, update the plan or phase note, and show a revised
+approach before editing files.
+```
+
 If Phase 0 is not complete, Codex should report that blocker instead of silently
 starting Phase 1.
 
 ## Chat-to-Codex Startup Flow
 
-Use Chat or Codex for product thinking, then use Codex for file-based execution:
+Use Chat or Codex for product thinking, then use Codex for file-based execution across
+greenfield and existing structured project starts:
 
-1. Create a target project folder.
+1. First, create or open a target project folder.
 2. Install or copy the full `phase-workflow` skill.
 3. Brainstorm the project goal, MVP boundary, non-goals, constraints, and success
    criteria in Chat or directly in Codex.
 4. Optionally have Chat generate a Codex prompt that summarizes the agreed project
    direction.
-5. In Codex, use that direction to create a rough phase plan in the target project.
-6. Before starting each major phase, check whether the scope should stay whole or
+5. In Codex, classify the folder state as empty folder, existing structured project,
+   existing workflow project, or unclear project state.
+6. For an empty folder, create a rough phase plan in Phase 0. For an existing structured
+   project, use Phase 0.1 for adoption and Phase 0.2 for planning baseline.
+7. Before starting each major phase, check whether the scope should stay whole or
    split into `Phase X.1`, `Phase X.2`, a later phase, or backlog.
-7. Start Phase 0, or the next phase, only after user confirmation of the phase
+8. Start Phase 0, Phase 0.1, Phase 0.2, or the next phase only after user confirmation of the phase
    boundary.
-8. After each phase completes, report verification results, scope status, and the
+9. After each phase completes, report verification results, scope status, and the
    next recommended action, then wait for user confirmation before continuing.
 
-Do not split a major phase only because it has several tasks. Split only when the
-work no longer fits one verification loop.
+Do not split a major phase only because it has several mechanical tasks. Split when the work
+no longer fits one verification loop, when the user asks for a more reviewable boundary, or
+when reviewability, transparency, phase size, risk, user confidence, or avoiding opaque large
+phases makes the phase easier to supervise. A confirmed split updates planning files and then
+stops; it does not authorize Phase X.1 implementation.
 
 A request to start a phase, such as "start Phase X", "continue Phase X", or
 "进行 Phase X", asks Codex to analyze the phase and show the phase start gate. It
@@ -264,16 +330,18 @@ language unless you explicitly ask for that.
 
 ```mermaid
 flowchart TD
-    A["Create target project folder"] --> B["Install or copy phase-workflow skill"]
-    B --> C["Chat-to-Codex brainstorm: goal, MVP, non-goals, constraints"]
-    C --> D["Generate Codex startup prompt"]
+    A["Create or open target project folder"] --> B["Install or copy phase-workflow skill"]
+    B --> C["Brainstorm project direction: goal, MVP, non-goals, constraints"]
+    C --> D["Optional startup prompt"]
     D --> E["Read compact recovery context"]
     E --> EH["Check latest handoff or phase note first"]
     EH --> EL["Read recent DEV_LOG entries only if needed"]
 
-    EL --> F{"Empty folder?"}
-    F -->|"Yes"| G["Output Phase 0 start gate"]
-    F -->|"No"| H["Summarize compact current state"]
+    EL --> F{"Folder state?"}
+    F -->|"Empty folder"| G["Output Phase 0 start gate"]
+    F -->|"Existing structured project"| ES["Output Phase 0.1 adoption start gate"]
+    F -->|"Unclear"| EU["Report unclear project state and stop"]
+    F -->|"Existing workflow project"| H["Summarize compact current state"]
 
     G --> I["Wait for separate user confirmation"]
     I --> J["Create baseline workflow files"]
@@ -281,8 +349,19 @@ flowchart TD
     K --> L["Update TODO, DEV_LOG, and compact handoff"]
     L --> M["Report result and wait for next phase request"]
 
+    ES --> EC["Wait for separate user confirmation"]
+    EC --> EJ["Create workflow files and PROJECT_CONTEXT"]
+    EJ --> EK["Run actual verification command"]
+    EK --> EM["Report Phase 0.1 result and wait for Phase 0.2 request"]
+    EM --> E2["Output Phase 0.2 planning start gate"]
+    E2 --> E2C["Wait for separate user confirmation"]
+    E2C --> E2P["Update PLAN, TODO, and planning notes"]
+    E2P --> E2K["Run actual verification command"]
+    E2K --> E2M["Report Phase 0.2 result and wait for Phase 1 request"]
+
     H --> N["Output phase start gate"]
     M --> N
+    E2M --> N
     N --> O{"split decision"}
     O -->|"Keep phase"| P["Keep current phase"]
     O -->|"Phase X.1"| Q["Plan scoped addition"]
@@ -295,7 +374,11 @@ flowchart TD
     R --> U
     S --> U
 
-    U --> V["Prepare fixtures or examples"]
+    U --> UP["Update planning files"]
+    UP --> UA{"Non-trivial execution approach?"}
+    UA -->|"Yes"| UB["Show approach and wait for confirmation"]
+    UA -->|"No"| V["Prepare fixtures or examples"]
+    UB --> V
     V --> W["Write failing tests"]
     W --> X["Implement minimal capability"]
     X --> Y["Run actual verification command"]
@@ -319,13 +402,16 @@ is not required to use this skill.
 For each phase:
 
 1. Define the phase goal, non-goals, inputs, outputs, and acceptance criteria.
-2. Create or update fixtures and examples before implementation.
-3. Write the failing tests that define the desired behavior.
-4. Implement only the minimum capability needed for the phase.
-5. Run the actual verification command, usually `python -m pytest -q`.
-6. Record verification results in `TODO.md`, `DEV_LOG.md`, the phase note, and the
+2. Show the phase start gate and wait for separate user confirmation.
+3. Update planning files before technical work starts when scope changes.
+4. Confirm any non-trivial execution approach before related file changes.
+5. Create or update fixtures and examples before implementation.
+6. Write the failing tests that define the desired behavior.
+7. Implement only the minimum capability needed for the phase.
+8. Run the actual verification command, usually `python -m pytest -q`.
+9. Record verification results in `TODO.md`, `DEV_LOG.md`, the phase note, and the
    handoff note.
-7. Record durable process decisions in `DECISIONS.md`.
+10. Record durable process decisions in `DECISIONS.md`.
 
 Keep the workflow small. If a request expands the MVP, classify it as `Phase X.1`,
 `Phase X.2`, `New Major Phase`, or `Backlog` instead of disrupting the active phase.

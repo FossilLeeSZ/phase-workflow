@@ -49,7 +49,8 @@ Example: Integrate with an issue tracker.
 
 ## Required Impact Analysis
 
-Before implementing a change request, record:
+Before implementing a change request, record the classification and impact analysis in planning
+files. For scope-changing work, update planning files before technical files.
 
 - Reason for the change.
 - Classification: Phase X.1, Phase X.2, New Major Phase, or Backlog.
@@ -70,6 +71,23 @@ Before implementing a change request, record:
   `DECISIONS.md`.
 - Do not implement a New Major Phase until the plan is updated and the user confirms the new
   phase boundary.
+- Do not treat `PLAN.md` or `TODO.md` as after-the-fact summaries for change requests.
+- Prohibited order: Implement first, document plan later.
+
+## Approach Override
+
+If the user rejects the proposed execution approach, stop execution. Do not keep editing
+fixtures, tests, implementation, documents, prompts, templates, or policies under the rejected
+approach.
+
+If the goal and output stay the same, update `TODO.md` or the active phase note with the revised execution approach, then show the revised approach confirmation before continuing.
+
+If acceptance criteria, outputs, risk, or the verification loop changes, handle the request as
+scope-changing work: update `PLAN.md`, `TODO.md`, and any relevant phase note before technical
+file changes.
+
+Approach rejection does not automatically cancel the phase. It pauses execution until the
+revised approach is recorded and confirmed.
 
 ## Completion Rule
 

@@ -103,6 +103,11 @@ Handoff:
 Before creating fixtures, tests, or implementation changes, Codex should output a visible phase
 start gate and wait for user confirmation.
 
+Plan-first execution order: Update planning files before technical files. Update `PLAN.md` and
+`TODO.md` before changing fixtures, tests, or implementation when Phase 1 scope, outputs, or
+acceptance criteria change.
+Rule wording: Update `PLAN.md` and `TODO.md` before changing fixtures, tests, or implementation.
+
 Example phase start gate:
 
 ```text
@@ -117,6 +122,28 @@ implementation changes.
 After this gate: stop after reporting the phase start gate and wait for a separate user
 response after the phase start gate is displayed.
 ```
+
+## Reviewability split example
+
+If the user says Phase 1 feels too large or too opaque, Codex should treat that as a valid
+split reason even if the work still targets one user-visible capability.
+
+Example split interpretation gate:
+
+```text
+Split reason: reviewability, transparency, and avoiding opaque large phases.
+Interpretation: split Phase 1 into Phase 1.1 for fixtures and tests, then Phase 1.2 for the
+minimal parser implementation and verification.
+Files to update after confirmation: PLAN.md, TODO.md, and the active phase note.
+Confirmation needed: confirm the split before updating planning files.
+Execution status: do not execute Phase X.1 immediately.
+```
+
+After the user confirms the split, update the planning files and stop. The next Codex action
+should be a separate Phase 1.1 start gate, not fixtures, tests, or implementation.
+
+Rule wording: documents, prompts, templates, policies, tests, and code can all require approach confirmation
+when the execution approach is non-trivial.
 
 Goal:
 
