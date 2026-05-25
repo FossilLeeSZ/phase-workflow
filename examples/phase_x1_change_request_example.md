@@ -22,6 +22,9 @@ New request:
 
 Ask whether the request changes the phase goal.
 
+Phase X.1 and Phase X.2 are common examples under Phase X.N. Use Phase X.N for any
+one-decimal sub-phase under the active major phase.
+
 - If `source_file` is just metadata for the existing parser output, classify it as Phase 1.1.
 - If it fixes an incorrect existing output, classify it as Phase 1.2.
 - If it introduces a new import system, classify it as a new Phase.
@@ -70,6 +73,41 @@ Plan-first execution order: Update planning files before technical files. Update
 `TODO.md` before changing fixtures, tests, or implementation when the request changes scope,
 outputs, or acceptance criteria.
 Rule wording: Update `PLAN.md` and `TODO.md` before changing fixtures, tests, or implementation.
+
+## Phase X.N Boundary Change Example
+
+If later review shows the same parser needs a narrow unsupported-note fixture after Phase 1.1
+and Phase 1.2 have already been planned or completed, Codex may propose Phase 1.3.
+
+Codex must output a phase boundary change proposal before adding Phase 1.3:
+
+```text
+Proposed boundary change: add Phase 1.3 for one unsupported-note fixture and its focused
+verification.
+Reason: the work is still inside the Phase 1 parser goal, but it needs a separate reviewable
+verification loop.
+Files to update after confirmation: PLAN.md, TODO.md, and the active phase note.
+Confirmation needed: confirm the planning change before updating planning files.
+Execution status: do not show the Phase 1.3 start gate immediately.
+```
+
+After the planning files are updated, stop. The next action is only to show the
+already-recorded Phase 1.3 start gate after the user later asks to start Phase 1.3.
+
+## Post-plan-change start gate example
+
+After Phase 1.3 is recorded, the next user message might ask to start it:
+
+```text
+User request after planning update: start Phase 1.3.
+Start gate action: show the Phase 1.3 start gate and proposed execution approach only.
+Execution status: wait for post-gate execution confirmation before changing fixtures, tests, docs, or code.
+Do not treat the Phase 1.3 start request as execution confirmation.
+```
+
+The Phase 1.3 start gate should list the goal, non-goals, inputs, outputs, acceptance
+criteria, verification loop, proposed execution approach, and confirmation status. Then Codex
+must stop until the user confirms execution after the gate.
 
 ## Approach Rejection And Adjustment
 

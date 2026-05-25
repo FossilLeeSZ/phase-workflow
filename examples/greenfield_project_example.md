@@ -115,7 +115,8 @@ Current phase: Phase 1.
 Goal: implement one fixture-backed action extraction behavior.
 Non-goals: no full CLI framework, no database, no cloud sync, no extra parsing modes.
 Split decision: do not split; Phase 1 is one user-visible behavior and one verification loop.
-Change request classification options remain Phase X.1, Phase X.2, New Major Phase, or Backlog.
+Change request classification options remain Phase X.N, New Major Phase, or Backlog.
+Phase X.1 and Phase X.2 are common examples, not the complete boundary.
 Verification loop: fixture, failing test, minimal parser, python -m pytest -q.
 Confirmation needed: wait for user confirmation before creating fixtures, tests, or
 implementation changes.
@@ -136,7 +137,7 @@ Interpretation: split Phase 1 into Phase 1.1 for fixtures and tests, then Phase 
 minimal parser implementation and verification.
 Files to update after confirmation: PLAN.md, TODO.md, and the active phase note.
 Confirmation needed: confirm the split before updating planning files.
-Execution status: do not execute Phase X.1 immediately.
+Execution status: do not execute Phase X.N immediately; for this example, do not execute Phase X.1 immediately.
 ```
 
 After the user confirms the split, update the planning files and stop. The next Codex action

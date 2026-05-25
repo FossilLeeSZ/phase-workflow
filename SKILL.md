@@ -78,6 +78,13 @@ For each phase:
   message is a clear confirmation after the gate has already been shown.
 - Always stop after reporting the phase start gate. Execution requires a separate user response
   after the phase start gate is displayed.
+- After plan-change update, a later request to start, continue, enter, or execute an
+  already-recorded Phase X.N only authorizes the phase start gate; it does not authorize
+  execution. The start gate must stop before execution.
+- Plan-change confirmation, phase start request, and post-gate execution confirmation cannot
+  substitute for each other. Post-gate execution confirmation is the only approval that allows
+  fixtures, tests, documents, prompts, templates, policies, or code changes.
+- Rule wording: after plan-change update, plan-change confirmation, phase start request, and post-gate execution confirmation cannot substitute for each other.
 - If the user gives an ambiguous response, ask a short explicit confirmation question and do
   not edit files.
 - If the target folder is an empty folder, treat Phase 0 initialization as gated work.
@@ -143,8 +150,21 @@ recorded after the technical work.
 User-requested splits have the highest priority. When the user asks to split a phase, output a
 split interpretation gate first, wait for confirmation, then update `PLAN.md`, `TODO.md`, and
 the active phase note. After those planning files are updated, stop. The split confirmation
-only authorizes planning file updates; it does not authorize Phase X.1, Phase X.2, or any
-implementation work.
+only authorizes planning file updates; it does not authorize Phase X.N or any implementation
+work.
+
+Phase boundary change confirmation applies to splits, any one-decimal Phase X.N sub-phase,
+New Major Phase work, Backlog moves, and phase goal, non-goal, acceptance criteria, or
+verification loop changes. Phase X.1 and Phase X.2 are common examples, not the complete
+boundary. When Codex proposes a new Phase X.N, it must explain why that sub-phase is needed,
+show a phase boundary change proposal, and ask whether to update the plan. After confirmed
+planning-file updates, Codex stops before showing the new phase or sub-phase start gate. Show
+the already-recorded Phase X.N start gate only after the user later asks to start it. Use one
+decimal level only; do not introduce Phase X.N.M.
+
+After plan-change update, that later request still only authorizes the phase start gate. It
+does not authorize execution. The start gate must stop before execution and wait for
+post-gate execution confirmation.
 
 When Codex recommends a split, explain the basis before asking for confirmation. Valid reasons
 include reviewability, transparency, phase size, risk, user confidence, avoiding opaque large
@@ -189,8 +209,8 @@ Identify:
   state`.
 - Current phase goal.
 - Current phase non-goals.
-- Split decision: keep the current phase, split into Phase X.1 or Phase X.2, move to a New
-  Major Phase, or place in Backlog.
+- Split decision: keep the current phase, split into Phase X.N, move to a New Major Phase, or
+  place in Backlog.
 - Whether the phase is still one single verification loop.
 - Proposed execution approach, when the work has a non-trivial approach choice.
 - Inputs.
@@ -228,8 +248,9 @@ Before marking a phase complete, confirm:
 
 Classify mid-phase changes before implementing them:
 
-- Small scoped addition: Phase X.1.
-- Current phase bug fix: Phase X.2.
+- One-decimal current-phase sub-phase: Phase X.N.
+- Common small scoped addition example: Phase X.1.
+- Common current phase bug fix example: Phase X.2.
 - New capability or separate verification loop: New Major Phase.
 - Valuable but not now: Backlog.
 - MVP expansion idea: record only, do not implement directly.

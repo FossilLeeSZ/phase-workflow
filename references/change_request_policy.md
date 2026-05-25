@@ -5,6 +5,9 @@ active phase.
 
 ## Classification
 
+`Phase X.1` and `Phase X.2` are common examples under the broader Phase X.N pattern. Phase
+X.N means any one-decimal sub-phase under the current major phase.
+
 ### Phase X.1: Small Scoped Addition
 
 Use Phase X.1 when the change:
@@ -53,12 +56,38 @@ Before implementing a change request, record the classification and impact analy
 files. For scope-changing work, update planning files before technical files.
 
 - Reason for the change.
-- Classification: Phase X.1, Phase X.2, New Major Phase, or Backlog.
+- Classification: Phase X.N, New Major Phase, or Backlog. Use Phase X.1 and Phase X.2 as
+  common examples when they fit.
 - Files likely affected.
 - Tests to add or update.
 - Outputs that will change.
 - Acceptance criteria.
 - Risks or deferred work.
+
+## Phase Boundary Changes
+
+A change request that creates or changes a sub-phase is a phase boundary change. This includes
+splits, any one-decimal Phase X.N sub-phase, New Major Phase work, Backlog moves, and phase
+goal, non-goal, acceptance criteria, or verification loop changes.
+
+Before adding Phase X.N, Codex must explain why it is needed, show a phase boundary change
+proposal, and ask the user to confirm the planning change before updating planning files. If
+the user confirms, update `PLAN.md`, `TODO.md`, and any relevant phase note, then stop. Do not
+show the already-recorded Phase X.N start gate until the user later asks to start it.
+
+After the planning files are updated, the change request flow is complete. Do not continue
+from a completed planning update into fixtures, tests, documents, prompts, templates,
+policies, or code changes.
+
+After plan-change update, a later request to start, continue, enter, or execute that
+already-recorded Phase X.N only authorizes the phase start gate. It does not authorize
+execution. The start gate must stop before execution and wait for post-gate execution
+confirmation.
+
+Plan-change confirmation, phase start request, and post-gate execution confirmation cannot
+substitute for each other.
+
+Use one decimal level only; do not introduce Phase X.N.M.
 
 ## Handling During An Active Phase
 

@@ -38,8 +38,7 @@ This is a scope-control workflow skill, not just a planning template. It prevent
 phase from silently absorbing future work. New ideas are classified before
 implementation instead of being added directly to the active phase:
 
-- `Phase X.1`
-- `Phase X.2`
+- `Phase X.N` sub-phase, such as `Phase X.1` or `Phase X.2`
 - `New Major Phase`
 - `Backlog`
 
@@ -84,6 +83,17 @@ Splitting a phase is also a review tool. Phase splitting can reduce opaque large
 make work easier to inspect; it is not limited to separating independent outputs. Confirming a
 split does not authorize implementation, and confirming a phase does not authorize an
 unstated execution approach.
+
+Any proposed `Phase X.N` sub-phase is a phase boundary change. Codex should show a phase
+boundary change proposal, confirm the planning change, update planning files, and stop before
+showing the already-recorded Phase X.N start gate. Use one decimal level only; do not
+introduce Phase X.N.M.
+
+After plan-change update, a later request to start, continue, enter, or execute that
+already-recorded Phase X.N only authorizes the phase start gate. It does not authorize
+execution. The start gate must stop before execution and wait for post-gate execution
+confirmation. Plan-change confirmation, phase start request, and post-gate execution
+confirmation cannot substitute for each other.
 
 Non-trivial execution approaches require confirmation before related files change. This
 includes code design and also Markdown document structure, prompt rewrite strategy, template
@@ -282,7 +292,7 @@ greenfield and existing structured project starts:
 6. For an empty folder, create a rough phase plan in Phase 0. For an existing structured
    project, use Phase 0.1 for adoption and Phase 0.2 for planning baseline.
 7. Before starting each major phase, check whether the scope should stay whole or
-   split into `Phase X.1`, `Phase X.2`, a later phase, or backlog.
+   split into `Phase X.N`, move to a later phase, or move to backlog.
 8. Start Phase 0, Phase 0.1, Phase 0.2, or the next phase only after user confirmation of the phase
    boundary.
 9. After each phase completes, report verification results, scope status, and the
@@ -292,7 +302,7 @@ Do not split a major phase only because it has several mechanical tasks. Split w
 no longer fits one verification loop, when the user asks for a more reviewable boundary, or
 when reviewability, transparency, phase size, risk, user confidence, or avoiding opaque large
 phases makes the phase easier to supervise. A confirmed split updates planning files and then
-stops; it does not authorize Phase X.1 implementation.
+stops; it does not authorize Phase X.N implementation.
 
 A request to start a phase, such as "start Phase X", "continue Phase X", or
 "进行 Phase X", asks Codex to analyze the phase and show the phase start gate. It
@@ -364,18 +374,19 @@ flowchart TD
     E2M --> N
     N --> O{"split decision"}
     O -->|"Keep phase"| P["Keep current phase"]
-    O -->|"Phase X.1"| Q["Plan scoped addition"]
-    O -->|"Phase X.2"| R["Plan correction"]
-    O -->|"New Major Phase"| S["Update roadmap"]
+    O -->|"Phase X.N"| Q["Show phase boundary change proposal"]
+    O -->|"New Major Phase"| S["Show phase boundary change proposal"]
     O -->|"Backlog"| T["Record for later"]
 
-    P --> U["Wait for separate user confirmation"]
-    Q --> U
-    R --> U
-    S --> U
+    P --> U["Wait for post-gate execution confirmation"]
+    Q --> BC["Wait for plan-change confirmation"]
+    S --> BC
 
     U --> UP["Update planning files"]
-    UP --> UA{"Non-trivial execution approach?"}
+    BC --> UP
+    UP --> UD{"Boundary changed?"}
+    UD -->|"Yes"| AA
+    UD -->|"No"| UA{"Non-trivial execution approach?"}
     UA -->|"Yes"| UB["Show approach and wait for confirmation"]
     UA -->|"No"| V["Prepare fixtures or examples"]
     UB --> V
@@ -413,8 +424,9 @@ For each phase:
    handoff note.
 10. Record durable process decisions in `DECISIONS.md`.
 
-Keep the workflow small. If a request expands the MVP, classify it as `Phase X.1`,
-`Phase X.2`, `New Major Phase`, or `Backlog` instead of disrupting the active phase.
+Keep the workflow small. If a request expands the MVP, classify it as `Phase X.N`,
+`New Major Phase`, or `Backlog` instead of disrupting the active phase. `Phase X.1` and
+`Phase X.2` are common examples, not the complete boundary.
 
 ## License
 

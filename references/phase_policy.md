@@ -11,6 +11,8 @@ verifiable.
 - Phase 1: first real capability or first pass over the core workflow.
 - Phase 1.1: small scoped addition to Phase 1 that does not change the main goal.
 - Phase 1.2: bug fix or correction within the current phase boundary.
+- Phase X.N: any one-decimal sub-phase under the current major phase. Phase X.1 and Phase X.2
+  are common examples, not the complete boundary.
 - Phase 2: next independent capability after Phase 1 exits cleanly.
 - Phase 5: phase start gate and split confirmation bug fix based on real use.
 - Phase 5.1: visible phase start gate before fixtures, tests, or implementation changes.
@@ -24,8 +26,8 @@ verifiable.
 - Phase 10: plan-first execution order and README flow alignment.
 - Phase 11: reviewable splits and approach confirmation.
 
-Use one decimal level only. If the change no longer fits as a small addition or bug fix,
-make it a New Major Phase or backlog item.
+Use one decimal level only. Do not introduce Phase X.N.M. If the change no longer fits under
+the current major phase, make it a New Major Phase or backlog item.
 
 ## Phase Meanings
 
@@ -133,6 +135,9 @@ Require reviewable split decisions and explicit approach confirmation for non-tr
 This phase makes reviewability, transparency, phase size, risk, user confidence, and avoiding
 opaque large phases valid reasons to split a phase even when the outputs are related.
 
+Phase 11.1 adds phase boundary change confirmation so any Phase X.N sub-phase follows the same
+confirm-plan-update-stop flow as a split.
+
 ## One Closed Loop Per Phase
 
 Each phase should include:
@@ -162,6 +167,32 @@ for scope-changing work. Prohibited order: Implement first, document plan later.
 Verification results, actual modified file lists, `DEV_LOG.md` entries, handoff summaries, and
 small non-scope-changing corrections can be recorded after technical work.
 
+## Phase Boundary Change Confirmation
+
+Phase boundary changes include splits, any one-decimal Phase X.N sub-phase, New Major Phase
+work, Backlog moves, and phase goal, non-goal, acceptance criteria, or verification loop
+changes. Phase X.1 and Phase X.2 are common examples, not the complete boundary.
+
+When Codex proposes a new Phase X.N, it must:
+
+1. Explain why the sub-phase is needed.
+2. Show a phase boundary change proposal.
+3. Ask the user to confirm the planning change before updating planning files.
+4. If confirmed, update `PLAN.md`, `TODO.md`, and any relevant phase note.
+5. Stop.
+6. Show the already-recorded Phase X.N start gate only after the user later asks to start it.
+
+After confirmed planning-file updates, Codex stops before showing the new phase or sub-phase
+start gate. Use one decimal level only; do not introduce Phase X.N.M.
+
+After plan-change update, a later request to start, continue, enter, or execute the
+already-recorded Phase X.N only authorizes the phase start gate. It does not authorize
+execution. The start gate must stop before execution and wait for post-gate execution
+confirmation.
+
+Plan-change confirmation, phase start request, and post-gate execution confirmation cannot
+substitute for each other.
+
 ## Reviewable Split Policy
 
 A split can be justified by reviewability, transparency, phase size, risk, user confidence,
@@ -169,8 +200,8 @@ avoiding opaque large phases, multiple independent outputs, unrelated user-visib
 capabilities, or separate verification loops.
 
 User-requested splits take priority. Codex should interpret the requested split, output the
-proposed Phase X.1 / Phase X.2 boundaries, and wait for user confirmation. Codex-recommended
-splits must explain the rationale before asking for confirmation.
+proposed Phase X.N boundary, and wait for user confirmation. Codex-recommended splits must
+explain the rationale before asking for confirmation.
 
 Split flow:
 
@@ -181,8 +212,7 @@ Split flow:
 5. Show the next phase or sub-phase start gate only after the user asks to continue.
 
 Rule wording: split confirmation only authorizes planning file updates. It does not authorize
-Phase X.1 execution, Phase X.2 execution, fixtures, tests, implementation, or other technical
-file changes.
+Phase X.N execution, fixtures, tests, implementation, or other technical file changes.
 
 ## Approach Confirmation
 
@@ -218,8 +248,8 @@ Do not treat phase or sub-phase confirmation as approval for an unstated approac
 - What is the current phase goal?
 - What are the non-goals?
 - What is the visible phase start gate summary?
-- What is the split decision: keep the phase, use Phase X.1, use Phase X.2, create a New
-  Major Phase, or put it in Backlog?
+- What is the split decision: keep the phase, use Phase X.N, create a New Major Phase, or put
+  it in Backlog?
 - Is the phase still one single verification loop?
 - Is there a non-trivial execution approach choice? If yes, what approach is being proposed?
 - What inputs are available?
@@ -234,6 +264,8 @@ Do not treat phase or sub-phase confirmation as approval for an unstated approac
 - Has the user confirmed the phase boundary?
 - A request to start a phase is not confirmation.
 - Is the confirmation source a separate user response after the phase start gate is displayed?
+- If this start request follows a plan-change update, remember that it only authorizes the
+  phase start gate and does not authorize execution.
 - Remember that `PLAN.md` phase boundaries are not user confirmation.
 - Remember that phase exit confirmation is not next phase start confirmation.
 - Do not treat "start Phase X" as confirmation; it only triggers phase analysis and a phase
