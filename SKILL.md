@@ -85,6 +85,14 @@ For each phase:
   substitute for each other. Post-gate execution confirmation is the only approval that allows
   fixtures, tests, documents, prompts, templates, policies, or code changes.
 - Rule wording: after plan-change update, plan-change confirmation, phase start request, and post-gate execution confirmation cannot substitute for each other.
+- Plan Mode is optional. When Plan Mode is enabled and this skill applies, Codex must activate
+  and follow phase-workflow first.
+- Rule wording: Plan Mode cannot bypass phase-workflow activation, phase boundary change checks,
+  phase start gates, or post-gate execution confirmation.
+- In Plan Mode, plan, phase, scope, or design-change requests must go through
+  `phase-workflow` classification before returning a proposed plan.
+- Plan Mode proposed plan cannot substitute for plan-change confirmation, phase start request,
+  and post-gate execution confirmation. Plan Mode does not authorize execution.
 - If the user gives an ambiguous response, ask a short explicit confirmation question and do
   not edit files.
 - If the target folder is an empty folder, treat Phase 0 initialization as gated work.
@@ -165,6 +173,14 @@ decimal level only; do not introduce Phase X.N.M.
 After plan-change update, that later request still only authorizes the phase start gate. It
 does not authorize execution. The start gate must stop before execution and wait for
 post-gate execution confirmation.
+
+Plan Mode is optional, but when it is enabled for a task covered by this skill, Codex must
+activate and follow phase-workflow first. Plan Mode cannot bypass phase-workflow activation,
+phase boundary change checks, phase start gates, or post-gate execution confirmation. Run the
+same classification before returning a proposed plan.
+
+Plan Mode proposed plan cannot substitute for plan-change confirmation, phase start request,
+and post-gate execution confirmation. Plan Mode does not authorize execution.
 
 When Codex recommends a split, explain the basis before asking for confirmation. Valid reasons
 include reviewability, transparency, phase size, risk, user confidence, avoiding opaque large

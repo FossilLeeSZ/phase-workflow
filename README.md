@@ -95,6 +95,12 @@ execution. The start gate must stop before execution and wait for post-gate exec
 confirmation. Plan-change confirmation, phase start request, and post-gate execution
 confirmation cannot substitute for each other.
 
+Plan Mode is optional. When enabled for a `phase-workflow` project, Plan Mode cannot bypass
+phase-workflow. Codex must activate and follow phase-workflow first, run phase boundary change
+checks, and apply start-gate and confirmation rules before returning a proposed plan. A Plan
+Mode proposed plan cannot substitute for plan-change confirmation, phase start request, and
+post-gate execution confirmation. Plan Mode does not authorize execution.
+
 Non-trivial execution approaches require confirmation before related files change. This
 includes code design and also Markdown document structure, prompt rewrite strategy, template
 field design, policy semantics, test strategy, and user-visible output format. Documents,
@@ -311,7 +317,8 @@ before creating or modifying files.
 
 **Strongly recommended, but optional:** if your Codex client supports Plan Mode, use it to
 review the phase start gate and proposed execution plan before confirming file edits.
-`phase-workflow` does not require Plan Mode.
+`phase-workflow` does not require Plan Mode. If Plan Mode is enabled, Codex must activate and
+follow `phase-workflow` first; the proposed plan is review content, not execution approval.
 
 ## New Window Hygiene
 
@@ -343,7 +350,11 @@ flowchart TD
     A["Create or open target project folder"] --> B["Install or copy phase-workflow skill"]
     B --> C["Brainstorm project direction: goal, MVP, non-goals, constraints"]
     C --> D["Optional startup prompt"]
-    D --> E["Read compact recovery context"]
+    D --> PM{"Plan Mode enabled?"}
+    PM -->|"Yes"| PMW["Activate phase-workflow first"]
+    PM -->|"No"| E
+    PMW --> E
+    E["Read compact recovery context"]
     E --> EH["Check latest handoff or phase note first"]
     EH --> EL["Read recent DEV_LOG entries only if needed"]
 

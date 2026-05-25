@@ -89,6 +89,18 @@ substitute for each other.
 
 Use one decimal level only; do not introduce Phase X.N.M.
 
+## Plan Mode Change Requests
+
+Plan Mode is optional. When Plan Mode is enabled for a task covered by this workflow, Codex
+must activate and follow phase-workflow first.
+
+Plan Mode cannot bypass phase-workflow activation, phase boundary change checks, or the
+confirm-plan-update-stop flow. In Plan Mode, plan, phase, scope, or design-change requests
+still require change request classification before returning a proposed plan.
+
+Plan Mode proposed plan cannot substitute for plan-change confirmation, phase start request,
+and post-gate execution confirmation. Plan Mode does not authorize execution.
+
 ## Handling During An Active Phase
 
 - Do not let a change request silently interrupt the active phase.

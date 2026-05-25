@@ -138,6 +138,9 @@ opaque large phases valid reasons to split a phase even when the outputs are rel
 Phase 11.1 adds phase boundary change confirmation so any Phase X.N sub-phase follows the same
 confirm-plan-update-stop flow as a split.
 
+Phase 11.2 keeps post-plan-change start requests limited to the start gate. Phase 11.3 adds
+the Plan Mode skill invocation guard so Plan Mode cannot skip `phase-workflow` classification.
+
 ## One Closed Loop Per Phase
 
 Each phase should include:
@@ -192,6 +195,18 @@ confirmation.
 
 Plan-change confirmation, phase start request, and post-gate execution confirmation cannot
 substitute for each other.
+
+## Plan Mode Skill Invocation Guard
+
+Plan Mode is optional. When Plan Mode is enabled and the task is covered by this workflow,
+Codex must activate and follow phase-workflow first.
+
+Plan Mode cannot bypass phase-workflow activation, phase boundary change checks, phase start
+gates, or post-gate execution confirmation. In Plan Mode, plan, phase, scope, or design-change
+requests still require `phase-workflow` classification before returning a proposed plan.
+
+Plan Mode proposed plan cannot substitute for plan-change confirmation, phase start request,
+and post-gate execution confirmation. Plan Mode does not authorize execution.
 
 ## Reviewable Split Policy
 

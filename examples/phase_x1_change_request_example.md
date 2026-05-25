@@ -109,6 +109,24 @@ The Phase 1.3 start gate should list the goal, non-goals, inputs, outputs, accep
 criteria, verification loop, proposed execution approach, and confirmation status. Then Codex
 must stop until the user confirms execution after the gate.
 
+## Plan Mode phase boundary change example
+
+Plan Mode is optional, but enabling it does not change the phase boundary rules.
+
+```text
+User request in Plan Mode: add Phase 1.4 for an additional parser edge-case fixture.
+Required first action: must activate and follow phase-workflow first.
+Classification: Phase X.N boundary change.
+Plan Mode status: Plan Mode proposed plan cannot substitute for plan-change confirmation.
+Boundary action: show a phase boundary change proposal and ask whether to update the plan.
+If confirmed: update planning files and stop.
+Gate status: do not show the Phase 1.4 start gate in the same response.
+Execution status: no fixtures, tests, docs, or code changes are authorized.
+```
+
+Only after the user later asks to start the already-recorded Phase 1.4 should Codex show the
+Phase 1.4 start gate. That start request still does not authorize execution.
+
 ## Approach Rejection And Adjustment
 
 If Phase 1.1 has a non-trivial execution approach choice, Codex should show the approach before
