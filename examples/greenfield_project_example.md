@@ -106,7 +106,6 @@ start gate and wait for user confirmation.
 Plan-first execution order: Update planning files before technical files. Update `PLAN.md` and
 `TODO.md` before changing fixtures, tests, or implementation when Phase 1 scope, outputs, or
 acceptance criteria change.
-Rule wording: Update `PLAN.md` and `TODO.md` before changing fixtures, tests, or implementation.
 
 Example phase start gate:
 
@@ -143,8 +142,8 @@ Execution status: do not execute Phase X.N immediately; for this example, do not
 After the user confirms the split, update the planning files and stop. The next Codex action
 should be a separate Phase 1.1 start gate, not fixtures, tests, or implementation.
 
-Rule wording: documents, prompts, templates, policies, tests, and code can all require approach confirmation
-when the execution approach is non-trivial.
+Approach confirmation: documents, prompts, templates, policies, tests, and code can all
+require approach confirmation when the execution approach is non-trivial.
 
 Goal:
 

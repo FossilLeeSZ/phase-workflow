@@ -25,6 +25,8 @@ verifiable.
 - Phase 9: existing structured project adoption.
 - Phase 10: plan-first execution order and README flow alignment.
 - Phase 11: reviewable splits and approach confirmation.
+- Phase 12: phase authority, mutation preflight, and violation recovery.
+- Phase 13: rule consolidation, generality, and documentation cleanup.
 
 Use one decimal level only. Do not introduce Phase X.N.M. If the change no longer fits under
 the current major phase, make it a New Major Phase or backlog item.
@@ -41,7 +43,7 @@ gate. Codex must list the baseline workflow files before creating any project fi
 workflow files include README.md, AGENTS.md, PLAN.md, TODO.md, DEV_LOG.md, and DECISIONS.md.
 
 Before Phase 0, classify folder state as `empty folder`, `existing structured project
-candidate`, or `unclear project state`.
+candidate`, `existing workflow project`, or `unclear project state`.
 
 For an existing structured project candidate, use Phase 0.1 for workflow adoption. Phase 0.1
 creates or fills workflow files and `PROJECT_CONTEXT.md` around the current project state. It
@@ -58,6 +60,9 @@ Phase 1 goal. It must not infer the roadmap from code observations alone.
 If the folder state is `unclear project state`, stop and report why adoption is not recommended
 yet. Ask for clarification or recommend a separate project assessment instead of creating
 workflow files.
+
+For an existing workflow project, recover compact current state from project files before
+proposing the next phase gate.
 
 ### Phase 1
 
@@ -127,7 +132,6 @@ adds the Phase 0.1 workflow adoption path, the Phase 0.2 planning baseline path,
 
 Require plan-first execution order for scope-changing work and align README flow guidance.
 Planning records are execution inputs, not after-the-fact summaries.
-Rule wording: planning records are execution inputs.
 
 ### Phase 11
 
@@ -140,6 +144,196 @@ confirm-plan-update-stop flow as a split.
 
 Phase 11.2 keeps post-plan-change start requests limited to the start gate. Phase 11.3 adds
 the Plan Mode skill invocation guard so Plan Mode cannot skip `phase-workflow` classification.
+
+### Phase 12
+
+Harden `phase-workflow` with three higher-level safety layers based on real project feedback:
+workflow authority, mutation preflight, and phase violation recovery.
+
+Phase 12.1 clarifies that when `phase-workflow` applies, other execution-oriented workflow
+behaviors can only guide work inside the currently authorized phase. They cannot decide phase
+boundaries or execute multiple phases at once.
+
+Phase 12.2 adds a mandatory preflight before repository mutations such as file writes, deletes,
+moves, restores, generated tests, generated docs, scripts, migrations, or implementation
+changes.
+
+Phase 12.3 adds recovery guidance for cases where implementation already happened outside an
+approved phase boundary. The recovery path should stop new implementation, audit the boundary
+violation, ask whether to keep or roll back changes, and repair planning, log, and handoff
+records honestly.
+
+### Phase 13
+
+Consolidate dense workflow rules so `phase-workflow` stays readable, general, and internally
+consistent without weakening the Phase 12 authorization, mutation, or recovery boundaries.
+
+Phase 13.1 should unify confirmation, gate, preflight, and recovery rules into one coherent
+authorization model. A compact Markdown table is acceptable in `SKILL.md` when it improves
+scanability, but it should stay narrow and avoid long prose inside table cells.
+
+Phase 13.2 should reduce duplicated exact-rule scaffolding and merge overlapping conditions
+where the same boundary is enforced in multiple places.
+
+Phase 13.3 should replace overly concrete or project-specific phrasing with category-based
+language and remove non-English or garbled phase-start examples from skill-facing
+documentation and tests.
+
+## Authorization Model
+
+Use this single authorization model before the detailed phase-boundary rules below. When two
+signals conflict, the narrower authorization controls and Codex must stop at the next required
+gate.
+
+| Signal | Authorizes | Does not authorize | Required stop |
+| --- | --- | --- | --- |
+| Plan-change confirmation | planning-file updates only | Technical files, fixtures, tests, implementation, scripts, migrations, or restores | Stop after planning files |
+| Phase start request | phase analysis and visible start gate only | Execution, file edits, or current-phase mutations | Stop after the gate |
+| Post-gate execution confirmation | current-phase technical mutations that pass mutation preflight | Next-phase work, multi-phase execution, planning-file mutations, recovery-record mutations, or unstated approach choices | Stop when the current phase exits |
+| Approach confirmation | approved non-trivial approach inside the current phase | Phase boundary changes or broader scope | Stop if the approach is rejected |
+| Mutation preflight pass | The checked current-phase mutation branch | Failed-gate, unconfirmed, wrong-branch, next-phase, or multi-phase mutations | Stop before files if any check fails |
+| Phase violation detected | read-only recovery audit and chat-visible incident report before user choice; recovery record repairs after user choice | New implementation, next-feature work, continuing the violated flow, or pre-choice record repair | Stop before record repairs until the user chooses keep-and-audit or rollback |
+
+Plan-change confirmation, phase start request, post-gate execution confirmation, approach
+confirmation, mutation preflight, and phase violation recovery are separate controls. They
+cannot substitute for each other and do not authorize multi-phase execution. A successful
+authorization does not authorize next-phase work and does not authorize multi-phase execution.
+Do not use the phase violation row to write recovery record repairs before user choice.
+
+## Workflow Authority
+
+When `phase-workflow` applies, it is the highest phase-boundary and authorization workflow. It
+controls scope, authorization, phase boundaries, and file-modification boundaries.
+
+Plan executors, test workflows, debugging workflows, refactoring workflows, migration
+workflows, code generation helpers, documentation generators, task checklists, and
+tool-specific workflows can only guide work inside the currently authorized phase. They cannot
+decide phase boundaries, advance to the next phase, or execute multiple phases in one run.
+
+Requests such as "implement this plan" do not collapse multiple phases into one authorized
+execution. If the requested plan contains multiple phases, multiple verification loops, or
+multiple independent outputs, only the currently confirmed phase may execute. Unconfirmed
+phases must stop at a phase gate.
+
+Todo lists, checklists, progress trackers, and `update_plan` cannot substitute for phase start
+gates, split confirmation, approach confirmation, or post-gate execution confirmation.
+
+Do not record batch phase completions such as `Phase 1-5 complete`, `Phase 2/3/4`, or
+`multi-phase migration complete`; each phase must have separate status, verification, and
+handoff records.
+
+## Mutation Preflight
+
+Before repository mutations, run a mutation preflight. Repository mutations include file
+writes, deletes, moves, restores, generated tests, generated docs, scripts, migrations, and
+implementation changes. Any work that changes repository files must pass mutation preflight
+before modifying files.
+
+Mutation Authorization Branches:
+
+- A planning-file mutation requires plan-change confirmation and planning-file scope only; it
+  does not require post-gate execution confirmation.
+- A recovery audit before user choice is read-only and may produce only a chat-visible
+  incident report.
+- A recovery-record mutation requires Phase Violation Recovery and the user's keep-or-rollback
+  choice. After the user chooses, recovery-record mutations may repair `PLAN.md`, `TODO.md`,
+  `DEV_LOG.md`, and handoff records.
+- A status/handoff-record mutation requires current phase execution or phase exit context. It
+  can update `TODO.md`, `DEV_LOG.md`, phase notes, handoff notes, and `DECISIONS.md` when
+  recording a durable decision already made inside the authorized phase or phase exit context.
+  It must record actual verification results when claiming completion or test status. If
+  verification has not run, record that status honestly and do not claim completion or passing
+  tests. It can update blocker, unfinished status, handoff, or current-state records without a
+  fresh verification command when no completion or test status is claimed. It does not
+  authorize plan changes, new strategy decisions, technical implementation, or recovery
+  repair.
+- A technical mutation requires visible phase start gate, post-gate execution confirmation,
+  and mutation preflight.
+- If the mutation type is unclear, stop before mutating files.
+
+Post-gate execution confirmation authorizes technical mutations only. It does not authorize
+planning-file mutations or recovery-record mutations. Planning-file mutations use plan-change
+confirmation. Recovery-record mutations use Phase Violation Recovery.
+
+Classify mutation branches by change intent and content, not by file name alone. `TODO.md`,
+phase notes, and handoff notes can contain planning-file mutations or status/handoff-record
+mutations. Scope, phase boundary, active task, acceptance criteria, or roadmap changes are
+planning-file mutations. Verification results, current status, and handoff summaries are
+status/handoff-record mutations.
+
+Do not apply technical mutation gate checks to planning-file mutations or recovery-record
+mutations; visible phase start gate and post-gate execution confirmation are technical
+mutation checks.
+
+Planning-file mutation checks:
+
+- What planning change has the user confirmed?
+- Is every changed file a planning file or planning note?
+- Will the work stop after planning-file updates?
+- Would this mutation complete multiple phases at once?
+
+Recovery-record mutation checks:
+
+- Is Phase Violation Recovery open?
+- Has the user chosen keep implementation and backfill audit, or roll back selected changes?
+- Is the mutation limited to repairing planning, log, and handoff records?
+- Does the mutation avoid new implementation?
+
+Status/handoff-record mutation checks:
+
+- Is the update reporting current phase execution, verification, blocker, unfinished status,
+  handoff, or current-state status?
+- Is it limited to `TODO.md`, `DEV_LOG.md`, phase notes, handoff notes, or a narrow
+  `DECISIONS.md` update?
+- Is any `DECISIONS.md` update limited to recording a durable decision already made inside the
+  authorized phase or phase exit context?
+- Are actual verification results recorded when completion or test status is claimed?
+- If verification has not run, does the record say so without claiming completion or passing
+  tests?
+- Does it avoid plan changes, technical implementation, and recovery repair?
+
+Technical mutation checks:
+
+- What is the current phase?
+- Has the visible phase start gate been shown?
+- Is there a separate post-gate execution confirmation?
+- Does this mutation belong only to the current phase?
+- Would this mutation complete multiple phases at once?
+
+If any answer fails, stop before mutating files. Do not use one mutation to complete multiple
+phases; split the work or return to the appropriate phase gate.
+
+Phase 0.2 is a planning baseline only. Phase 0.2 allows planning records only: `PLAN.md`,
+`TODO.md`, phase notes, handoff notes, planning baselines, roadmaps, and candidate Phase 1
+goals. During Phase 0.2 there are no
+tests, code skeletons, migrations, file restores, technical implementation, scripts, or
+non-planning technical documentation. Non-planning technical documentation includes API docs,
+architecture docs, migration guides, usage docs, module docs, or generated technical docs. Do
+not treat planning records as technical deliverables. In short: no tests, code skeletons,
+migrations, file restores, or technical implementation. After Phase 0.2, stop before Phase 1.
+
+Plan-change confirmation only authorizes planning-file updates, then stop. It does not
+authorize tests, code, scripts, migrations, restores, or other technical files.
+
+## Phase Violation Recovery
+
+Use Phase Violation Recovery when an approved phase boundary has already been crossed. This is
+a mandatory recovery flow, not permission to continue implementation.
+
+When a violation is discovered, stop new implementation immediately, do not continue to the
+next feature, and do not keep implementing while recovery is open. Before the user chooses
+keep-and-audit or rollback, recovery audit is read-only. Audit files and records changed
+outside the approved phase boundary as a read-only step. Use a chat-visible incident report
+to mark `implementation happened outside approved phase boundary`. The chat-visible incident
+report should record which files, tests, migrations, restores, docs, and status records were
+affected.
+
+Ask the user to choose between keeping implementation and backfilling the audit, or rolling
+back selected changes. Do not write recovery record repairs before the user chooses. After the
+user chooses, recovery-record mutations may repair `PLAN.md`, `TODO.md`, `DEV_LOG.md`, and
+handoff records.
+The goal is to make the state honest and recoverable so a new Codex session can resume without
+chat history.
 
 ## One Closed Loop Per Phase
 
@@ -161,7 +355,6 @@ gate and separate user confirmation, the first file changes for new phases, sub-
 splits, New Major Phase work, route changes, or acceptance criteria changes should update
 `PLAN.md`, `TODO.md`, and any relevant phase note, handoff note, `PROJECT_CONTEXT.md`, or
 `DECISIONS.md`.
-Rule wording: scope-changing work must update planning files before technical files.
 
 Do not start fixtures, tests, implementation, or other technical file changes before the
 relevant plan record exists. Do not treat `PLAN.md` or `TODO.md` as after-the-fact summaries
@@ -226,19 +419,19 @@ Split flow:
 4. Stop.
 5. Show the next phase or sub-phase start gate only after the user asks to continue.
 
-Rule wording: split confirmation only authorizes planning file updates. It does not authorize
-Phase X.N execution, fixtures, tests, implementation, or other technical file changes.
+Split confirmation only authorizes planning file updates. It does not authorize Phase X.N
+execution, fixtures, tests, implementation, or other technical file changes.
 
 ## Approach Confirmation
 
-Rule wording: approach confirmation applies to any phase or sub-phase.
+Approach confirmation applies to any phase or sub-phase.
 
 If there is a non-trivial execution approach choice, the phase start gate or execution plan
 must show the proposed execution approach before related file changes begin. Wait for user
 confirmation of that approach before modifying documents, prompts, templates, policies, tests,
 or code.
-Rule wording: documents, prompts, templates, policies, tests, and code can all require
-approach confirmation.
+Documents, prompts, templates, policies, tests, and code can all require approach
+confirmation.
 
 Non-trivial approach choices include algorithms, architecture, libraries or dependencies, data
 structures, Markdown document structure, prompt rewrite strategy, template field design,
@@ -247,10 +440,7 @@ format.
 
 Approval model:
 
-> Split confirmation controls phase boundaries. Phase confirmation controls execution
-> permission. Approach confirmation controls how non-trivial work will be done.
-
-Rule wording: Split confirmation controls phase boundaries. Phase confirmation controls execution permission. Approach confirmation controls how non-trivial work will be done.
+> Split confirmation controls phase boundaries. Phase confirmation controls execution permission. Approach confirmation controls how non-trivial work will be done.
 
 Do not treat phase or sub-phase confirmation as approval for an unstated approach.
 
@@ -258,8 +448,8 @@ Do not treat phase or sub-phase confirmation as approval for an unstated approac
 
 - What is the current phase?
 - Is the previous phase complete and verified?
-- What is the folder state: `empty folder`, `existing structured project candidate`, or
-  `unclear project state`?
+- What is the folder state: `empty folder`, `existing structured project candidate`,
+  `existing workflow project`, or `unclear project state`?
 - What is the current phase goal?
 - What are the non-goals?
 - What is the visible phase start gate summary?

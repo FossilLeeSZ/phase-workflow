@@ -72,7 +72,6 @@ fixtures, tests, or implementation.
 Plan-first execution order: Update planning files before technical files. Update `PLAN.md` and
 `TODO.md` before changing fixtures, tests, or implementation when the request changes scope,
 outputs, or acceptance criteria.
-Rule wording: Update `PLAN.md` and `TODO.md` before changing fixtures, tests, or implementation.
 
 ## Phase X.N Boundary Change Example
 
@@ -126,6 +125,35 @@ Execution status: no fixtures, tests, docs, or code changes are authorized.
 
 Only after the user later asks to start the already-recorded Phase 1.4 should Codex show the
 Phase 1.4 start gate. That start request still does not authorize execution.
+
+## Multi-phase implementation anti-example
+
+```text
+User request: implement this Phase 0.2-5 plan.
+Incorrect behavior: audit, create tests, migrate files, restore files, and verify all phases in one run.
+Correct behavior: execute only the currently confirmed phase; unconfirmed phases stop at their own phase gates.
+```
+
+Even when a plan executor, test workflow, debugging workflow, refactoring workflow, migration
+workflow, code generation helper, documentation generator, task checklist, or tool-specific
+workflow is useful, it must stay inside the authorized phase. A checklist or progress tracker
+does not replace the phase start gate or post-gate execution confirmation.
+
+Mutation preflight result: blocked because the edit would complete multiple phases.
+Correct next action: split the work or return to the appropriate phase gate.
+
+## Phase violation recovery example
+
+```text
+Violation: implementation happened outside approved phase boundary.
+Stop new implementation immediately.
+Audit: list files, tests, migrations, restores, docs, and status records changed outside the
+approved phase boundary.
+User choice needed: keep implementation and backfill audit, or roll back selected changes.
+Repair PLAN.md, TODO.md, DEV_LOG.md, and handoff records.
+```
+
+Do not continue to the next feature while recovery is open.
 
 ## Approach Rejection And Adjustment
 

@@ -75,6 +75,9 @@ proposal, and ask the user to confirm the planning change before updating planni
 the user confirms, update `PLAN.md`, `TODO.md`, and any relevant phase note, then stop. Do not
 show the already-recorded Phase X.N start gate until the user later asks to start it.
 
+Plan-change confirmation only authorizes planning-file updates, then stop. It does not
+authorize tests, code, scripts, migrations, restores, or other technical files.
+
 After the planning files are updated, the change request flow is complete. Do not continue
 from a completed planning update into fixtures, tests, documents, prompts, templates,
 policies, or code changes.

@@ -57,7 +57,32 @@ Before ending a development round, update:
 - Handoff note, if present
 - `DECISIONS.md`, when a durable decision changed
 
-The records should include actual verification commands and results.
+Records that claim completion or test status must include actual verification commands and
+results. Records that do not claim completion or test status may record blocker, unfinished,
+handoff, or current-state status without a fresh verification command. If verification has not
+run, record that status honestly.
+
+A status/handoff-record mutation requires current phase execution or phase exit context. It
+can update `TODO.md`, `DEV_LOG.md`, phase notes, handoff notes, and `DECISIONS.md` when
+recording a durable decision already made inside the authorized phase or phase exit context.
+It must record actual verification results when claiming completion or test status. If
+verification has not run, record that status honestly and do not claim completion or passing
+tests. It can update blocker, unfinished status, handoff, or current-state records without a
+fresh verification command when no completion or test status is claimed. It does not authorize
+plan changes, new strategy decisions, technical implementation, or recovery repair.
+
+Status/handoff-record mutation checks:
+
+- Is the update reporting current phase execution, verification, blocker, unfinished status,
+  handoff, or current-state status?
+- Is it limited to `TODO.md`, `DEV_LOG.md`, phase notes, handoff notes, or a narrow
+  `DECISIONS.md` update?
+- Is any `DECISIONS.md` update limited to recording a durable decision already made inside the
+  authorized phase or phase exit context?
+- Are actual verification results recorded when completion or test status is claimed?
+- If verification has not run, does the record say so without claiming completion or passing
+  tests?
+- Does it avoid plan changes, technical implementation, and recovery repair?
 
 ## Avoiding Chat-History Dependency
 

@@ -67,47 +67,34 @@ new Codex window can read before editing files.
 When used correctly, `phase-workflow` aims to ensure that:
 
 - every phase has a narrow goal and explicit non-goals;
-- examples or fixtures exist before implementation;
-- tests define behavior before code is expanded;
+- phase start gates stop for separate confirmation before edits;
+- phase boundaries stay explicit and do not advance automatically;
+- examples or fixtures define behavior before implementation;
+- tests or verification criteria guide the smallest useful change;
 - verification commands are actually run and recorded;
-- the next Codex session can resume from project files.
+- mutation branches separate planning, technical work, status/handoff records, and recovery;
+- the next Codex session can resume from a recoverable handoff in project files.
 
 Fixtures and tests are not ceremony. They define expected behavior before
 implementation begins. A phase is not complete until verification results are
 recorded; "should work" is not an exit criterion.
 
-`phase-workflow` treats planning records as execution inputs, not after-the-fact summaries.
+When a request includes multiple phases, multiple verification loops, or multiple independent
+outputs, only the currently confirmed phase may execute.
 Scope-changing work is recorded before technical work starts.
+Plan-change confirmation stops after planning-file updates.
 
-Splitting a phase is also a review tool. Phase splitting can reduce opaque large phases and
-make work easier to inspect; it is not limited to separating independent outputs. Confirming a
-split does not authorize implementation, and confirming a phase does not authorize an
-unstated execution approach.
+Classify mutation branches by change intent and content, not by file name alone. `TODO.md`,
+phase notes, and handoff notes can contain planning-file mutations or status/handoff-record
+mutations. Scope, phase boundary, active task, acceptance criteria, or roadmap changes are
+planning-file mutations. Verification results, current status, and handoff summaries are
+status/handoff-record mutations.
 
-Any proposed `Phase X.N` sub-phase is a phase boundary change. Codex should show a phase
-boundary change proposal, confirm the planning change, update planning files, and stop before
-showing the already-recorded Phase X.N start gate. Use one decimal level only; do not
-introduce Phase X.N.M.
+If an approved boundary has already been crossed, new implementation stops. Recovery uses a
+read-only audit and chat-visible incident report before user choice, then repairs records only
+after the user chooses keep-and-audit or rollback.
 
-After plan-change update, a later request to start, continue, enter, or execute that
-already-recorded Phase X.N only authorizes the phase start gate. It does not authorize
-execution. The start gate must stop before execution and wait for post-gate execution
-confirmation. Plan-change confirmation, phase start request, and post-gate execution
-confirmation cannot substitute for each other.
-
-Plan Mode is optional. When enabled for a `phase-workflow` project, Plan Mode cannot bypass
-phase-workflow. Codex must activate and follow phase-workflow first, run phase boundary change
-checks, and apply start-gate and confirmation rules before returning a proposed plan. A Plan
-Mode proposed plan cannot substitute for plan-change confirmation, phase start request, and
-post-gate execution confirmation. Plan Mode does not authorize execution.
-
-Non-trivial execution approaches require confirmation before related files change. This
-includes code design and also Markdown document structure, prompt rewrite strategy, template
-field design, policy semantics, test strategy, and user-visible output format. Documents,
-prompts, templates, policies, tests, and code can all require approach confirmation.
-
-Approval model: Split confirmation controls phase boundaries. Phase confirmation controls
-execution permission. Approach confirmation controls how non-trivial work will be done.
+For detailed rules, read `SKILL.md` and the files in `references/`.
 
 ## Tradeoffs
 
@@ -156,6 +143,8 @@ Do not use this skill for:
 
 - Mature projects with established engineering process that should not change.
 - One-off questions or tiny bug fixes that do not need phase tracking.
+- Direct small bug fixes in projects that have not adopted `phase-workflow`, or requests where
+  the user explicitly opts out of `phase-workflow` for that request.
 - Projects that already have strict project management, release, or compliance workflows.
 - Unclear or heavily tangled legacy projects. In practice, unclear or heavily tangled legacy
   projects need assessment before workflow adoption.
@@ -163,6 +152,10 @@ Do not use this skill for:
 - Work whose real need is large refactor or governance work.
 - Work that needs a full issue tracker, database, cloud sync, or web UI.
 - Business-specific workflows that should live in a separate project skill.
+
+In a project that has adopted `phase-workflow`, a direct small bug fix is still governed by
+phase-workflow. Classify it as Phase X.2 unless the user explicitly opts out of phase-workflow
+for that request. An opt-out does not rewrite project workflow records.
 
 ## Existing Projects With A Clear Structure
 
@@ -310,8 +303,8 @@ when reviewability, transparency, phase size, risk, user confidence, or avoiding
 phases makes the phase easier to supervise. A confirmed split updates planning files and then
 stops; it does not authorize Phase X.N implementation.
 
-A request to start a phase, such as "start Phase X", "continue Phase X", or
-"进行 Phase X", asks Codex to analyze the phase and show the phase start gate. It
+A request to start a phase, such as "start Phase X", "begin Phase X", "continue Phase X", or
+"enter Phase X", asks Codex to analyze the phase and show the phase start gate. It
 does not authorize file edits. Codex should wait for separate user confirmation after the gate
 before creating or modifying files.
 
@@ -394,10 +387,10 @@ flowchart TD
     S --> BC
 
     U --> UP["Update planning files"]
-    BC --> UP
-    UP --> UD{"Boundary changed?"}
-    UD -->|"Yes"| AA
-    UD -->|"No"| UA{"Non-trivial execution approach?"}
+    BC --> BUP["Update planning files for boundary change"]
+    BUP --> BSTOP["Stop after planning-file update"]
+    BSTOP --> NR
+    UP --> UA{"Non-trivial execution approach?"}
     UA -->|"Yes"| UB["Show approach and wait for confirmation"]
     UA -->|"No"| V["Prepare fixtures or examples"]
     UB --> V
@@ -406,9 +399,10 @@ flowchart TD
     X --> Y["Run actual verification command"]
     Y --> Z["Update TODO, DEV_LOG, and compact handoff"]
     Z --> AA["Report result and wait for next phase"]
+    AA --> NR["Wait for later user request"]
 
     T --> AA
-    AA --> N
+    NR --> N["Output phase start gate"]
 ```
 
 ## Optional Companion Tools

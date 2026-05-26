@@ -100,7 +100,6 @@ confirms the Phase 0.2 gate.
 Plan-first execution order: Update planning files before technical files. Update `PLAN.md` and
 `TODO.md` before changing fixtures, tests, or implementation when the planning baseline changes
 phase scope.
-Rule wording: Update `PLAN.md` and `TODO.md` before changing fixtures, tests, or implementation.
 
 ```text
 Current phase: Phase 0.2.
