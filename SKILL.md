@@ -322,20 +322,26 @@ recorded after the technical work.
 
 ## Reviewable Splits And Approach Confirmation
 
-User-requested splits have the highest priority. When the user asks to split a phase, output a
-split interpretation gate first, wait for confirmation, then update `PLAN.md`, `TODO.md`, and
-the active phase note. After those planning files are updated, stop. The split confirmation
-only authorizes planning file updates; it does not authorize Phase X.N or any implementation
-work.
+Any phase split is a phase boundary change, regardless of whether the split is requested by
+the user or recommended by Codex. Use one split flow for both sources. When a split is needed,
+output a split interpretation or phase boundary change proposal first, ask the user to confirm
+the planning change before updating planning files, then update `PLAN.md`, `TODO.md`, and the
+active phase note. After those planning files are updated, stop. Split confirmation only
+authorizes planning-file updates, then stop; it does not authorize Phase X.N or any
+implementation work.
 
 Phase boundary change confirmation applies to splits, any one-decimal Phase X.N sub-phase,
 New Major Phase work, Backlog moves, and phase goal, non-goal, acceptance criteria, or
 verification loop changes. Phase X.1 and Phase X.2 are common examples, not the complete
-boundary. When Codex proposes a new Phase X.N, it must explain why that sub-phase is needed,
-show a phase boundary change proposal, and ask whether to update the plan. After confirmed
-planning-file updates, Codex stops before showing the new phase or sub-phase start gate. Show
-the already-recorded Phase X.N start gate only after the user later asks to start it. Use one
-decimal level only; do not introduce Phase X.N.M.
+boundary. When Codex recommends a split, it must propose the complete currently visible
+sub-phase structure before asking for confirmation. The proposal must assign Phase X.1, Phase
+X.2, and later one-decimal numbers to known follow-up sub-phases, and mark uncertain or
+out-of-scope work as later phase work or Backlog. Do not create only the immediate next Phase
+X.1 and route the user directly to the Phase X.1 start gate. When Codex proposes a new Phase
+X.N, it must explain why that sub-phase is needed, show a phase boundary change proposal, and
+ask whether to update the plan. After confirmed planning-file updates, Codex stops before
+showing the new phase or sub-phase start gate. Show the already-recorded Phase X.N start gate
+only after a later user request. Use one decimal level only; do not introduce Phase X.N.M.
 
 After plan-change update, that later request still only authorizes the phase start gate. It
 does not authorize execution. The start gate must stop before execution and wait for
@@ -349,10 +355,9 @@ same classification before returning a proposed plan.
 Plan Mode proposed plan cannot substitute for plan-change confirmation, phase start request,
 and post-gate execution confirmation. Plan Mode does not authorize execution.
 
-When Codex recommends a split, explain the basis before asking for confirmation. Valid reasons
-include reviewability, transparency, phase size, risk, user confidence, avoiding opaque large
-phases, multiple independent outputs, unrelated user-visible capabilities, or separate
-verification loops.
+Valid split reasons include reviewability, transparency, phase size, risk, user confidence,
+avoiding opaque large phases, multiple independent outputs, unrelated user-visible
+capabilities, or separate verification loops.
 
 Approval model:
 

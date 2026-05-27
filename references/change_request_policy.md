@@ -70,10 +70,18 @@ A change request that creates or changes a sub-phase is a phase boundary change.
 splits, any one-decimal Phase X.N sub-phase, New Major Phase work, Backlog moves, and phase
 goal, non-goal, acceptance criteria, or verification loop changes.
 
+Any phase split is a phase boundary change, regardless of whether the split is requested by
+the user or recommended by Codex. Use one split flow for both sources. When Codex recommends a
+split, it must propose the complete currently visible sub-phase structure before asking for
+confirmation. The proposal must assign Phase X.1, Phase X.2, and later one-decimal numbers to
+known follow-up sub-phases, and mark uncertain or out-of-scope work as later phase work or
+Backlog. Do not create only the immediate next Phase X.1 and route the user directly to the
+Phase X.1 start gate.
+
 Before adding Phase X.N, Codex must explain why it is needed, show a phase boundary change
 proposal, and ask the user to confirm the planning change before updating planning files. If
 the user confirms, update `PLAN.md`, `TODO.md`, and any relevant phase note, then stop. Do not
-show the already-recorded Phase X.N start gate until the user later asks to start it.
+show the already-recorded Phase X.N start gate until a later user request.
 
 Plan-change confirmation only authorizes planning-file updates, then stop. It does not
 authorize tests, code, scripts, migrations, restores, or other technical files.

@@ -365,18 +365,26 @@ small non-scope-changing corrections can be recorded after technical work.
 
 ## Phase Boundary Change Confirmation
 
-Phase boundary changes include splits, any one-decimal Phase X.N sub-phase, New Major Phase
-work, Backlog moves, and phase goal, non-goal, acceptance criteria, or verification loop
-changes. Phase X.1 and Phase X.2 are common examples, not the complete boundary.
+Any phase split is a phase boundary change, regardless of whether the split is requested by
+the user or recommended by Codex. Use one split flow for both sources. Phase boundary changes
+include splits, any one-decimal Phase X.N sub-phase, New Major Phase work, Backlog moves, and
+phase goal, non-goal, acceptance criteria, or verification loop changes. Phase X.1 and Phase
+X.2 are common examples, not the complete boundary.
+
+When Codex recommends a split, it must propose the complete currently visible sub-phase
+structure before asking for confirmation. The proposal must assign Phase X.1, Phase X.2, and
+later one-decimal numbers to known follow-up sub-phases, and mark uncertain or out-of-scope
+work as later phase work or Backlog. Do not create only the immediate next Phase X.1 and route
+the user directly to the Phase X.1 start gate.
 
 When Codex proposes a new Phase X.N, it must:
 
 1. Explain why the sub-phase is needed.
-2. Show a phase boundary change proposal.
+2. Show a split interpretation or phase boundary change proposal.
 3. Ask the user to confirm the planning change before updating planning files.
 4. If confirmed, update `PLAN.md`, `TODO.md`, and any relevant phase note.
 5. Stop.
-6. Show the already-recorded Phase X.N start gate only after the user later asks to start it.
+6. Show the already-recorded Phase X.N start gate only after a later user request.
 
 After confirmed planning-file updates, Codex stops before showing the new phase or sub-phase
 start gate. Use one decimal level only; do not introduce Phase X.N.M.
@@ -407,20 +415,29 @@ A split can be justified by reviewability, transparency, phase size, risk, user 
 avoiding opaque large phases, multiple independent outputs, unrelated user-visible
 capabilities, or separate verification loops.
 
-User-requested splits take priority. Codex should interpret the requested split, output the
-proposed Phase X.N boundary, and wait for user confirmation. Codex-recommended splits must
-explain the rationale before asking for confirmation.
+Any phase split is a phase boundary change, regardless of whether the split is requested by
+the user or recommended by Codex. Use one split flow for both sources. Codex should interpret
+the requested or recommended split, output the proposed Phase X.N boundary, and wait for user
+confirmation.
+
+When Codex recommends a split, it must propose the complete currently visible sub-phase
+structure before asking for confirmation. The proposal must assign Phase X.1, Phase X.2, and
+later one-decimal numbers to known follow-up sub-phases, and mark uncertain or out-of-scope
+work as later phase work or Backlog. Do not create only the immediate next Phase X.1 and route
+the user directly to the Phase X.1 start gate.
 
 Split flow:
 
 1. Recommend or interpret the split.
-2. Wait for user confirmation of the split boundary.
-3. Update planning files such as `PLAN.md`, `TODO.md`, and the active phase note.
-4. Stop.
-5. Show the next phase or sub-phase start gate only after the user asks to continue.
+2. Show a split interpretation or phase boundary change proposal.
+3. Ask the user to confirm the planning change before updating planning files.
+4. Wait for user confirmation of the split boundary.
+5. Update planning files such as `PLAN.md`, `TODO.md`, and the active phase note.
+6. Stop.
+7. Show the next phase or sub-phase start gate only after the user asks to continue.
 
-Split confirmation only authorizes planning file updates. It does not authorize Phase X.N
-execution, fixtures, tests, implementation, or other technical file changes.
+Split confirmation only authorizes planning-file updates, then stop. It does not authorize
+Phase X.N execution, fixtures, tests, implementation, or other technical file changes.
 
 ## Approach Confirmation
 

@@ -126,6 +126,42 @@ Execution status: no fixtures, tests, docs, or code changes are authorized.
 Only after the user later asks to start the already-recorded Phase 1.4 should Codex show the
 Phase 1.4 start gate. That start request still does not authorize execution.
 
+## Codex-recommended full split proposal example
+
+Codex may recommend a split when a phase has multiple verification loops, different risk
+surfaces, or work that would be hard to review as one opaque phase. Codex-recommended splits
+use the same phase boundary change flow as user-requested splits.
+
+```text
+Scenario: Phase 8 has not started. Codex sees long SOP context strategy, hybrid chunking,
+OCR, scanned PDF handling, bbox extraction, image flowcharts, and complex layout strategy in
+one broad phase.
+
+Incorrect behavior: recommend only Phase 8.1 and route the user to the Phase 8.1 start gate before planning update.
+
+Correct behavior: show a split interpretation or phase boundary change proposal and ask
+whether to update planning files.
+
+Proposed split:
+- Phase 8.1: Long SOP context management strategy.
+  Goal: section indexing, context budget strategy, and process candidate section selection.
+  Non-goals: hybrid chunking implementation, OCR, scanned PDF handling, bbox extraction,
+  image flowcharts, and complex layout strategy.
+- Phase 8.2: Hybrid chunking implementation.
+  Goal: implement and verify the selected chunking path after the context strategy is tested.
+  Non-goals: OCR, bbox extraction, scanned PDFs, image flowcharts, and complex layouts.
+- Phase 8.3: OCR and scanned PDF handling.
+  Goal: define and test text extraction for scanned or OCR-dependent inputs.
+  Non-goals: bbox-driven layout semantics and image flowchart interpretation.
+- Phase 8.4: Layout, bbox, and image flowchart strategy.
+  Goal: define the later strategy for visual layout, bbox use, and image-based process flows.
+  Non-goals: earlier text-first SOP context selection and hybrid chunking work.
+
+If confirmed: update planning files and stop.
+Gate status: do not show the Phase 8.1 start gate in the same response.
+Execution status: no fixtures, tests, docs, or code changes are authorized.
+```
+
 ## Multi-phase implementation anti-example
 
 ```text

@@ -303,6 +303,13 @@ when reviewability, transparency, phase size, risk, user confidence, or avoiding
 phases makes the phase easier to supervise. A confirmed split updates planning files and then
 stops; it does not authorize Phase X.N implementation.
 
+Any phase split is a phase boundary change, regardless of whether the split is requested by
+the user or recommended by Codex. Use one split flow for both sources. Codex should show a
+split interpretation or phase boundary change proposal and ask the user to confirm the
+planning change before updating planning files. When Codex recommends a split, it should
+propose the complete currently visible sub-phase structure instead of only the immediate next
+Phase X.1.
+
 A request to start a phase, such as "start Phase X", "begin Phase X", "continue Phase X", or
 "enter Phase X", asks Codex to analyze the phase and show the phase start gate. It
 does not authorize file edits. Codex should wait for separate user confirmation after the gate
