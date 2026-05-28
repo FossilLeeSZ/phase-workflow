@@ -215,7 +215,9 @@ only `SKILL.md`. Keep these paths together:
 Optional project-level hook support can add a small reminder on each user prompt.
 This hook injects reminder context; it is not a skill invoker. It does not scan the
 project, does not recover project state, and does not read workflow files. Codex
-still decides whether `phase-workflow` applies.
+still decides whether `phase-workflow` applies. The hook cannot guarantee 100%
+skill activation. The hook does not replace `AGENTS.md`, and the hook does not
+modify files.
 
 Example `.codex/hooks.json`:
 
@@ -237,12 +239,7 @@ Example `.codex/hooks.json`:
 }
 ```
 
-The Python hook emits `additionalContext` only. Git can distribute hook files and
-example hook configuration, but cannot automatically trust hooks. In other words,
-Git can distribute the hook files, but cannot automatically trust them. After
-copying or modifying project hooks, review and trust them with `/hooks` or Codex
-Hooks settings. Projects that do not want this workflow can omit
-`.codex/skills/phase-workflow/` and `.codex/hooks.json`.
+The Python hook emits `additionalContext` only. Git can distribute hook files and example hook configuration, but cannot automatically trust hooks. After copying or modifying project hooks, review and trust them with `/hooks` or Codex Hooks settings. Projects that do not want this workflow can omit `.codex/skills/phase-workflow/` and `.codex/hooks.json`.
 
 ### Adoption Outputs
 
@@ -324,6 +321,11 @@ Phase 0.1 adoption gate before creating workflow files.
 ```
 
 ```text
+Refresh phase-workflow adoption outputs for the updated skill. Update the AGENTS.md workflow
+section and optional .codex/hooks.json hook entry, but ask before replacing conflicts.
+```
+
+```text
 This phase feels too large. Please propose a reviewable split before execution.
 ```
 
@@ -350,6 +352,8 @@ greenfield and existing structured project starts:
    existing workflow project, or unclear project state.
 6. For an empty folder, create a rough phase plan in Phase 0. For an existing structured
    project, use Phase 0.1 for adoption and Phase 0.2 for planning baseline.
+   If optional hook support is selected or requested, create or fill `.codex/hooks.json`
+   during adoption only; do not create or refresh it on every prompt.
 7. Before starting each major phase, check whether the scope should stay whole or
    split into `Phase X.N`, move to a later phase, or move to backlog.
 8. Start Phase 0, Phase 0.1, Phase 0.2, or the next phase only after user confirmation of the phase
