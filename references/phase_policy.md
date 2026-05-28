@@ -27,6 +27,8 @@ verifiable.
 - Phase 11: reviewable splits and approach confirmation.
 - Phase 12: phase authority, mutation preflight, and violation recovery.
 - Phase 13: rule consolidation, generality, and documentation cleanup.
+- Phase 14: project-level hook support.
+- Phase 14.1: adoption-time hook config and AGENTS.md merge rules.
 
 Use one decimal level only. Do not introduce Phase X.N.M. If the change no longer fits under
 the current major phase, make it a New Major Phase or backlog item.
@@ -178,6 +180,41 @@ where the same boundary is enforced in multiple places.
 Phase 13.3 should replace overly concrete or project-specific phrasing with category-based
 language and remove non-English or garbled phase-start examples from skill-facing
 documentation and tests.
+
+### Phase 14
+
+Add optional project-level Codex hook support while keeping `phase-workflow` installed and
+scoped at `.codex/skills/phase-workflow/`.
+
+Phase 14 should document a lightweight `UserPromptSubmit` hook that injects reminder context
+only. The hook should not scan the project, recover project state, read workflow files, create
+or update `AGENTS.md`, or directly invoke the skill. Codex still decides whether
+`phase-workflow` applies.
+
+Phase 14 should also clarify that `AGENTS.md` is created or filled by Phase 0 or Phase 0.1
+adoption, not by the hook. Existing `AGENTS.md` files are appended to, not overwritten, and an
+existing `phase-workflow` section is not added again. User-requested refreshes after a skill
+update are intentional maintenance actions.
+
+### Phase 14.1
+
+Group adoption guidance for `AGENTS.md` and `.codex/hooks.json` together while keeping their
+responsibilities separate. `AGENTS.md` and `.codex/hooks.json` are Phase 0 or Phase 0.1
+adoption outputs. `AGENTS.md` records repository workflow guidance. `.codex/hooks.json`
+records optional project hook configuration.
+
+Only create or fill `.codex/hooks.json` when optional project-level hook support is selected
+or explicitly requested. Do not create, inspect, or update `.codex/hooks.json` on every
+prompt. Do not overwrite an existing `.codex/hooks.json`; merge only the `phase-workflow`
+`UserPromptSubmit` entry. If a `phase-workflow` hook entry already exists, do not add it
+again. A conflicting hook command or hook location requires user confirmation before
+replacement.
+
+Users may explicitly request refreshing the `AGENTS.md` workflow section or the
+`.codex/hooks.json` hook entry after updating this skill. Treat those as intentional
+maintenance actions, not per-prompt actions. The hook remains reminder-only: it does not
+generate `AGENTS.md`, update `.codex/hooks.json`, scan project files, restore state, or invoke
+the skill directly.
 
 ## Authorization Model
 

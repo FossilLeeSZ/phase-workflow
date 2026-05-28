@@ -190,13 +190,17 @@ Recommended project-level installation layout:
 
 ```text
 your-project/
+  AGENTS.md
   .codex/
+    hooks.json
     skills/
       phase-workflow/
         SKILL.md
         references/
         templates/
         examples/
+        hooks/
+          phase_workflow_prompt.py
 ```
 
 Copy the whole `phase-workflow` folder into `.codex/skills/phase-workflow/`, not
@@ -206,6 +210,62 @@ only `SKILL.md`. Keep these paths together:
 - `references/`
 - `templates/`
 - `examples/`
+- `hooks/`
+
+Optional project-level hook support can add a small reminder on each user prompt.
+This hook injects reminder context; it is not a skill invoker. It does not scan the
+project, does not recover project state, and does not read workflow files. Codex
+still decides whether `phase-workflow` applies.
+
+Example `.codex/hooks.json`:
+
+```json
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python .codex/skills/phase-workflow/hooks/phase_workflow_prompt.py",
+            "statusMessage": "Checking phase-workflow"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+The Python hook emits `additionalContext` only. Git can distribute hook files and
+example hook configuration, but cannot automatically trust hooks. In other words,
+Git can distribute the hook files, but cannot automatically trust them. After
+copying or modifying project hooks, review and trust them with `/hooks` or Codex
+Hooks settings. Projects that do not want this workflow can omit
+`.codex/skills/phase-workflow/` and `.codex/hooks.json`.
+
+### Adoption Outputs
+
+`AGENTS.md` and `.codex/hooks.json` are Phase 0 or Phase 0.1 adoption outputs, but
+they have different jobs. `AGENTS.md` records repository workflow guidance.
+`.codex/hooks.json` records optional project hook configuration.
+
+`AGENTS.md` is created or filled by `phase-workflow` during Phase 0 or Phase 0.1
+adoption. Do not overwrite an existing `AGENTS.md`; append a small
+`phase-workflow` section instead. If the section already exists, do not add it
+again. This is an adoption-time action, not a per-prompt action. Users may
+explicitly request adding or refreshing the `phase-workflow` section after updating
+the skill version; treat that as an intentional maintenance action.
+
+Only create or fill `.codex/hooks.json` when optional project-level hook support is
+selected or explicitly requested. Do not create, inspect, or update `.codex/hooks.json`
+on every prompt. Do not overwrite an existing `.codex/hooks.json`; merge only the
+`phase-workflow` `UserPromptSubmit` entry. If the `phase-workflow` hook entry
+already exists, do not add it again. If an existing hook command or hook location
+conflicts, report the conflict and ask for user confirmation before replacing it.
+Users may explicitly request adding or refreshing either the `AGENTS.md` section or
+the `.codex/hooks.json` hook entry after updating the skill version; treat that as an
+intentional maintenance action.
 
 After installation, start with a short brainstorm. Define the project goal, MVP
 boundary, non-goals, constraints, and success criteria before asking Codex to

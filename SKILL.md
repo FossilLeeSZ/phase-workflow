@@ -274,6 +274,19 @@ When a phase violation is discovered:
 - During Phase 0.1, create or fill workflow files and `PROJECT_CONTEXT.md`; do not overwrite
   existing project files, plan a roadmap, modify application code, refactor, or start a cleanup
   campaign.
+- `AGENTS.md` is a Phase 0 or Phase 0.1 adoption output. Do not overwrite an existing
+  `AGENTS.md`; append a small `phase-workflow` section. If a `phase-workflow` section already
+  exists, do not add it again. Users may explicitly request refreshing the `phase-workflow`
+  section after updating this skill; treat that as a maintenance action, not a per-prompt
+  action.
+- `.codex/hooks.json` is a Phase 0 or Phase 0.1 adoption output only when optional
+  project-level hook support is selected or explicitly requested. Do not overwrite an existing
+  `.codex/hooks.json`; merge only the `phase-workflow` `UserPromptSubmit` entry. If a
+  `phase-workflow` hook entry already exists, do not add it again. A conflicting hook command
+  or hook location requires user confirmation before replacement. Users may explicitly request
+  refreshing the `.codex/hooks.json` hook entry after updating this skill; treat that as a
+  maintenance action, not a per-prompt action. The hook does not generate `AGENTS.md`, update
+  `.codex/hooks.json`, scan project files, restore state, or invoke the skill directly.
 - During Phase 0.2, use `PROJECT_CONTEXT.md` and a user-confirmed next project goal to create
   a rough planning baseline; do not infer the roadmap from code observations alone.
 - Phase 0.1 completion does not authorize Phase 0.2. Phase 0.2 completion does not authorize
