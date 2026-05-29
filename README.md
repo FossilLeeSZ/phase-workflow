@@ -13,6 +13,10 @@ explicit decisions, and verified next steps. The engineering value is that new C
 can recover the work from files, and long conversations do not have to keep compressing
 context until stale assumptions, lost decisions, mixed context, or scope drift creep in.
 
+2026-05-28 update: optional project-level Codex hook support was added. For hook setup,
+restart, and trust details, see
+[Hook Operations And Updates](#hook-operations-and-updates).
+
 The workflow is simple:
 
 1. Lock the current phase boundary.
@@ -219,6 +223,23 @@ still decides whether `phase-workflow` applies. The hook cannot guarantee 100%
 skill activation. The hook does not replace `AGENTS.md`, and the hook does not
 modify files.
 
+### Hook Operations And Updates
+
+Use the `.codex/hooks.json` example below only when optional project-level hook support is
+selected or explicitly requested. The Python hook emits `additionalContext` only. Git can distribute hook files and example hook configuration, but cannot automatically trust hooks.
+After copying or modifying project hooks, review and trust them with `/hooks` or Codex Hooks
+settings.
+
+After a Codex-driven skill update that adds or changes hook-related files or
+`.codex/hooks.json`, restart Codex so the client reloads hook configuration. Codex should
+show the hook trust prompt after restart. Approve it only after reviewing the hook command
+and file contents.
+
+2026-05-28 update: Added optional project-level `UserPromptSubmit` hook support through
+`hooks/phase_workflow_prompt.py` and the `.codex/hooks.json` example below. The hook only
+injects reminder context; after hook-related updates made through Codex, restart Codex and
+review the hook trust prompt before relying on the updated hook.
+
 Example `.codex/hooks.json`:
 
 ```json
@@ -239,7 +260,8 @@ Example `.codex/hooks.json`:
 }
 ```
 
-The Python hook emits `additionalContext` only. Git can distribute hook files and example hook configuration, but cannot automatically trust hooks. After copying or modifying project hooks, review and trust them with `/hooks` or Codex Hooks settings. Projects that do not want this workflow can omit `.codex/skills/phase-workflow/` and `.codex/hooks.json`.
+Projects that do not want this workflow can omit `.codex/skills/phase-workflow/` and
+`.codex/hooks.json`.
 
 ### Adoption Outputs
 
@@ -322,7 +344,8 @@ Phase 0.1 adoption gate before creating workflow files.
 
 ```text
 Refresh phase-workflow adoption outputs for the updated skill. Update the AGENTS.md workflow
-section and optional .codex/hooks.json hook entry, but ask before replacing conflicts.
+section and optional .codex/hooks.json hook entry. If hook files or hooks.json change, remind
+me to restart Codex and review the hook trust prompt, but ask before replacing conflicts.
 ```
 
 ```text
