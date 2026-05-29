@@ -230,10 +230,15 @@ selected or explicitly requested. The Python hook emits `additionalContext` only
 After copying or modifying project hooks, review and trust them with `/hooks` or Codex Hooks
 settings.
 
+Use an absolute path in the hook command. Do not rely on the hook runner's current working
+directory. When Codex creates or refreshes this hook entry, it should resolve the target
+project's actual absolute path.
+
 After a Codex-driven skill update that adds or changes hook-related files or
 `.codex/hooks.json`, restart Codex so the client reloads hook configuration. Codex should
 show the hook trust prompt after restart. Approve it only after reviewing the hook command
-and file contents.
+and file contents. After changing the absolute hook command, restart Codex and
+re-review/trust the hook.
 
 2026-05-28 update: Added optional project-level `UserPromptSubmit` hook support through
 `hooks/phase_workflow_prompt.py` and the `.codex/hooks.json` example below. The hook only
@@ -250,7 +255,7 @@ Example `.codex/hooks.json`:
         "hooks": [
           {
             "type": "command",
-            "command": "python .codex/skills/phase-workflow/hooks/phase_workflow_prompt.py",
+            "command": "python C:\\absolute\\path\\to\\your-project\\.codex\\skills\\phase-workflow\\hooks\\phase_workflow_prompt.py",
             "statusMessage": "Checking phase-workflow"
           }
         ]
@@ -344,8 +349,9 @@ Phase 0.1 adoption gate before creating workflow files.
 
 ```text
 Refresh phase-workflow adoption outputs for the updated skill. Update the AGENTS.md workflow
-section and optional .codex/hooks.json hook entry. If hook files or hooks.json change, remind
-me to restart Codex and review the hook trust prompt, but ask before replacing conflicts.
+section and optional .codex/hooks.json hook entry. If hook files or hooks.json change, write
+the hook command with the target project absolute path, remind me to restart Codex and review
+the hook trust prompt, but ask before replacing conflicts.
 ```
 
 ```text

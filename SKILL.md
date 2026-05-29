@@ -285,8 +285,12 @@ When a phase violation is discovered:
   `phase-workflow` hook entry already exists, do not add it again. A conflicting hook command
   or hook location requires user confirmation before replacement. Users may explicitly request
   refreshing the `.codex/hooks.json` hook entry after updating this skill; treat that as a
-  maintenance action, not a per-prompt action. The hook does not generate `AGENTS.md`, update
-  `.codex/hooks.json`, scan project files, restore state, or invoke the skill directly.
+  maintenance action, not a per-prompt action. When creating or refreshing the optional hook
+  entry, use the target project's absolute path to `hooks/phase_workflow_prompt.py` in the
+  hook command. Do not rely on the hook runner's current working directory. Restart Codex and
+  re-review/trust the hook after changing the absolute hook command. The hook does not
+  generate `AGENTS.md`, update `.codex/hooks.json`, scan project files, restore state, or
+  invoke the skill directly.
 - During Phase 0.2, use `PROJECT_CONTEXT.md` and a user-confirmed next project goal to create
   a rough planning baseline; do not infer the roadmap from code observations alone.
 - Phase 0.1 completion does not authorize Phase 0.2. Phase 0.2 completion does not authorize

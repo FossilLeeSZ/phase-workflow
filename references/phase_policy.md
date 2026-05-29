@@ -216,6 +216,13 @@ maintenance actions, not per-prompt actions. The hook remains reminder-only: it 
 generate `AGENTS.md`, update `.codex/hooks.json`, scan project files, restore state, or invoke
 the skill directly.
 
+### Phase 14.4
+
+When creating or refreshing the optional hook entry, use the target project's absolute path to
+`hooks/phase_workflow_prompt.py` in the hook command. Do not rely on the hook runner's current
+working directory. Restart Codex and re-review/trust the hook after changing the absolute hook
+command.
+
 ## Authorization Model
 
 Use this single authorization model before the detailed phase-boundary rules below. When two
