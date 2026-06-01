@@ -14,8 +14,9 @@ can recover the work from files, and long conversations do not have to keep comp
 context until stale assumptions, lost decisions, mixed context, or scope drift creep in.
 
 2026-06-01 update: context-light recovery now starts from compact handoff/current-state
-context and scoped TODO sections, with PLAN.md, DECISIONS.md, DEV_LOG.md, and long handoff
-files read only through targeted lookups. See [Tradeoffs](#tradeoffs).
+context and scoped TODO sections, with PLAN.md, DECISIONS.md, PROJECT_CONTEXT.md, DEV_LOG.md,
+and long handoff files read only through targeted lookups. Phase-exit record updates use the
+same bounded-read rule. See [Tradeoffs](#tradeoffs).
 
 2026-05-28 update: optional project-level Codex hook support was added. For hook setup,
 restart, and trust details, see
@@ -118,11 +119,17 @@ Measured reports or practical suggestions are welcome.
 
 To keep recovery context small, new Codex windows should start from `AGENTS.md`, the first
 80-120 lines of the latest compact handoff or current-state file, and the current `TODO.md`
-phase/task/blocker sections. Do not read full `PLAN.md`, `DECISIONS.md`, `DEV_LOG.md`, full
-`TODO.md`, or full handoff files by default. Treat `PLAN.md`, `DECISIONS.md`, full `TODO.md`,
-full handoff files, phase notes, and `DEV_LOG.md` as targeted or on-demand recovery sources.
-Use `rg` or scoped section reads when scope changes, conflicts, missing verification, unclear
-decision sources, or explicit history requests require more history.
+phase/task/blocker sections. Do not read full `PLAN.md`, `DECISIONS.md`,
+`PROJECT_CONTEXT.md`, `DEV_LOG.md`, full `TODO.md`, or full handoff files by default. Treat
+`PLAN.md`, `DECISIONS.md`, `PROJECT_CONTEXT.md`, full `TODO.md`, full handoff files, phase
+notes, and `DEV_LOG.md` as targeted or on-demand recovery sources. Use `rg` or scoped section
+reads when scope changes, conflicts, missing verification, unclear decision sources, or
+explicit history requests require more history.
+
+The same bounded-read rule applies when updating phase-exit or end-of-round records. Do not
+read large workflow files in full just to update status records; update the relevant TODO
+sections, append or prepend the new DEV_LOG entry, and use heading-scoped reads for phase
+notes, handoff notes, `PLAN.md`, `DECISIONS.md`, and `PROJECT_CONTEXT.md`.
 
 ## How It Differs From Goal Mode
 

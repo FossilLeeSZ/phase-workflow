@@ -230,10 +230,22 @@ default. Recovery starts with `AGENTS.md`, the first 80-120 lines of the latest 
 handoff or current-state file, and the current phase, active task, blocked, and next task
 sections of `TODO.md`.
 
-Do not read full `PLAN.md`, `DECISIONS.md`, `DEV_LOG.md`, full `TODO.md`, or full handoff
-files by default. Treat `PLAN.md`, `DECISIONS.md`, full `TODO.md`, full handoff files, phase
-notes, and `DEV_LOG.md` as targeted or on-demand recovery sources. Use `rg` or scoped section
-reads when compact state is missing, conflicting, or explicitly requested.
+Do not read full `PLAN.md`, `DECISIONS.md`, `PROJECT_CONTEXT.md`, `DEV_LOG.md`, full
+`TODO.md`, or full handoff files by default. Treat `PLAN.md`, `DECISIONS.md`,
+`PROJECT_CONTEXT.md`, full `TODO.md`, full handoff files, phase notes, and `DEV_LOG.md` as
+targeted or on-demand recovery sources. Use `rg` or scoped section reads when compact state is
+missing, conflicting, or explicitly requested.
+
+Phase-exit and end-of-round record updates use the same bounded context rule. Do not read full
+`PLAN.md`, `TODO.md`, `DEV_LOG.md`, `DECISIONS.md`, `PROJECT_CONTEXT.md`, full handoff files,
+or full phase notes just to update status records. For `TODO.md`, read and update only the
+current phase, active task, blocked, and next task sections. For `DEV_LOG.md`, prepend or
+append the new entry without reading the full audit history; read only the latest 1-3 entries
+when needed for continuity. For `PLAN.md`, use `rg` or heading-scoped reads to locate the
+relevant phase only when phase boundaries, scope, or roadmap entries change. For
+`PROJECT_CONTEXT.md`, use scoped reads around the summary, constraints, or current-state
+heading being updated. For handoff and phase notes, read only the relevant heading or the
+first 80-120 lines unless a conflict requires more context.
 
 ## Authorization Model
 
@@ -573,6 +585,7 @@ confirmation.
 - The phase note records scope, files, tests, risks, and next steps.
 - The handoff note lets a new Codex session continue without chat history.
 - Scope expansion is either absent or documented as a change request.
+- Record updates should use scoped reads, not default full-file reads.
 
 ## Avoiding Scope Creep
 
