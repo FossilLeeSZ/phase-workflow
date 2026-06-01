@@ -469,18 +469,18 @@ Do not rely on chat history. Recover context from project files.
 
 At the start of a new window, read compact recovery context in this order:
 
-1. `AGENTS.md`
-2. `PLAN.md`
-3. `TODO.md`
-4. `DECISIONS.md`
-5. The latest handoff note or phase note
-6. The latest 1-3 `DEV_LOG.md` entries only when recent verification or conflict context is
-   needed
+1. Read `AGENTS.md` first.
+2. Read only the first 80-120 lines of the latest compact handoff or current-state file.
+3. Read only the current phase, active task, blocked, and next task sections of `TODO.md`.
 
-Treat `DEV_LOG.md` as a bounded DEV_LOG read and on-demand history source. It is complete
-audit history, not default full-file startup context. Read older log entries only when compact
-state files conflict, verification results are missing, a decision source is unclear, or the
-user explicitly asks for history.
+Do not read full `PLAN.md`, `DECISIONS.md`, `DEV_LOG.md`, full `TODO.md`, or full handoff
+files by default. Treat `PLAN.md`, `DECISIONS.md`, full `TODO.md`, full handoff files, phase
+notes, and `DEV_LOG.md` as targeted or on-demand recovery sources.
+
+Use `rg` to inspect `PLAN.md`, `DECISIONS.md`, `DEV_LOG.md`, or phase notes only when compact
+state is missing, conflicting, or explicitly requested. Read older entries only when scope
+changes, conflicts, missing verification, unclear decision sources, or explicit history
+requests require them.
 
 At the end of each development round, leave a recoverable state by updating the active TODOs,
 development log, phase note, and handoff note.

@@ -121,8 +121,8 @@ usage and record durable methodology changes in `DECISIONS.md`.
 ### Phase 8
 
 Reduce new-window context cost by treating `DEV_LOG.md` as complete audit history rather than
-default startup context. This phase should keep recovery file-based, make the latest handoff
-note or phase note the compact recovery source, and document the bounded DEV_LOG read policy.
+default startup context. This phase keeps recovery file-based and documents that `DEV_LOG.md`
+is an on-demand history source instead of default full-file startup context.
 
 ### Phase 9
 
@@ -222,6 +222,18 @@ When creating or refreshing the optional hook entry, use the target project's ab
 `hooks/phase_workflow_prompt.py` in the hook command. Do not rely on the hook runner's current
 working directory. Restart Codex and re-review/trust the hook after changing the absolute hook
 command.
+
+### Phase 14.5
+
+Context-light recovery tightening updates new-window recovery so compact context is the
+default. Recovery starts with `AGENTS.md`, the first 80-120 lines of the latest compact
+handoff or current-state file, and the current phase, active task, blocked, and next task
+sections of `TODO.md`.
+
+Do not read full `PLAN.md`, `DECISIONS.md`, `DEV_LOG.md`, full `TODO.md`, or full handoff
+files by default. Treat `PLAN.md`, `DECISIONS.md`, full `TODO.md`, full handoff files, phase
+notes, and `DEV_LOG.md` as targeted or on-demand recovery sources. Use `rg` or scoped section
+reads when compact state is missing, conflicting, or explicitly requested.
 
 ## Authorization Model
 
