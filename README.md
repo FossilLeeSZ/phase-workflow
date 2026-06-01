@@ -13,6 +13,10 @@ explicit decisions, and verified next steps. The engineering value is that new C
 can recover the work from files, and long conversations do not have to keep compressing
 context until stale assumptions, lost decisions, mixed context, or scope drift creep in.
 
+2026-06-01 update: context-light recovery now starts from compact handoff/current-state
+context and scoped TODO sections, with PLAN.md, DECISIONS.md, DEV_LOG.md, and long handoff
+files read only through targeted lookups. See [Tradeoffs](#tradeoffs).
+
 2026-05-28 update: optional project-level Codex hook support was added. For hook setup,
 restart, and trust details, see
 [Hook Operations And Updates](#hook-operations-and-updates).
