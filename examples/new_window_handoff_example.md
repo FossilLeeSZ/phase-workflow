@@ -6,8 +6,11 @@ This example shows how a new Codex window can recover context from files.
 
 ```text
 Use phase-workflow for this repository. Do not rely on previous chat history.
-Read AGENTS.md, PLAN.md, TODO.md, DECISIONS.md, and the latest handoff note or phase note.
-Read only the latest 1-3 DEV_LOG.md entries if recent verification or conflicts need context.
+Read `AGENTS.md` first.
+Read only the first 80-120 lines of the latest compact handoff or current-state file.
+Read only the current phase, active task, blocked, and next task sections of `TODO.md`.
+Use `rg` to inspect `PLAN.md`, `DECISIONS.md`, `DEV_LOG.md`, or phase notes only when compact
+state is missing, conflicting, or explicitly requested.
 Summarize current phase, verified state, blockers, and next recommended action before editing
 files.
 ```
@@ -15,12 +18,11 @@ files.
 ## Expected Recovery Steps
 
 1. Read `AGENTS.md` for repository rules.
-2. Read `PLAN.md` for phase boundaries.
-3. Read `TODO.md` for active and next tasks.
-4. Read `DECISIONS.md` for durable decisions.
-5. Read the latest handoff note or phase note if present.
-6. Read only the latest 1-3 `DEV_LOG.md` entries if recent verification or conflicts need
-   context.
+2. Read the first 80-120 lines of the latest compact handoff or current-state file.
+3. Read only the current phase, active task, blocked, and next task sections of `TODO.md`.
+4. Use `rg` or scoped section reads for `PLAN.md`, `DECISIONS.md`, phase notes, and
+   `DEV_LOG.md` only when scope changes, conflicts, missing verification, unclear decision
+   sources, or explicit history requests require them.
 
 ## Example Recovered State
 
@@ -68,8 +70,9 @@ instead:
   verification result.
 ```
 
-Do not read the full `DEV_LOG.md` by default. Treat it as audit history and look up older
-entries only when the compact recovery files conflict or omit verification context.
+Do not read full `PLAN.md`, `DECISIONS.md`, `DEV_LOG.md`, full `TODO.md`, or full handoff
+files by default. Treat them as audit and policy history, then look up exact sections only
+when the compact recovery files conflict or omit verification context.
 
 ## Important Rule
 

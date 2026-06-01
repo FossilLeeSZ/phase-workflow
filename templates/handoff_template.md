@@ -52,7 +52,10 @@ Do not do:
 
 ```text
 Use phase-workflow for this repository. Do not rely on previous chat history.
-Read AGENTS.md, PLAN.md, TODO.md, DECISIONS.md, and the latest handoff note or phase note.
-Read only the latest 1-3 DEV_LOG.md entries if recent verification or conflicts need context.
+Read `AGENTS.md` first.
+Read only the first 80-120 lines of the latest compact handoff or current-state file.
+Read only the current phase, active task, blocked, and next task sections of `TODO.md`.
+Use `rg` to inspect `PLAN.md`, `DECISIONS.md`, `DEV_LOG.md`, or phase notes only when compact
+state is missing, conflicting, or explicitly requested.
 Summarize current state and next action before editing.
 ```

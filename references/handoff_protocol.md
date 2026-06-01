@@ -7,19 +7,23 @@ project files.
 
 Read compact recovery context first:
 
-1. `AGENTS.md`
-2. `PLAN.md`
-3. `TODO.md`
-4. `DECISIONS.md`
-5. Latest handoff note or phase note
-6. Latest 1-3 `DEV_LOG.md` entries only if recent verification or conflict context is needed
+1. Read `AGENTS.md` first.
+2. Read only the first 80-120 lines of the latest compact handoff or current-state file.
+3. Read only the current phase, active task, blocked, and next task sections of `TODO.md`.
 
 If a repository has additional local instructions, follow the highest-priority instructions first.
 
-Use a bounded DEV_LOG read by default. `DEV_LOG.md` is a complete audit history and an
-on-demand history source, not default full-file startup context. Read older entries only when
-compact state files conflict, verification results are missing, a decision source is unclear, or
-the user explicitly asks for historical detail.
+Do not read full `PLAN.md`, `DECISIONS.md`, `DEV_LOG.md`, full `TODO.md`, or full handoff
+files by default. Treat `PLAN.md`, `DECISIONS.md`, full `TODO.md`, full handoff files, phase
+notes, and `DEV_LOG.md` as targeted or on-demand recovery sources.
+
+Use `rg` or scoped section reads for the heavier files. Use `rg` to inspect `PLAN.md`,
+`DECISIONS.md`, `DEV_LOG.md`, or phase notes only when compact state is missing, conflicting,
+or explicitly requested. Read older entries only when scope changes, conflicts, missing
+verification, unclear decision sources, or explicit history requests require them.
+
+Use a bounded DEV_LOG read when needed. `DEV_LOG.md` is a complete audit history and an
+on-demand history source, not default full-file startup context.
 
 ## Summarize Current State
 
@@ -39,11 +43,11 @@ Do not assume prior chat context. If the files do not explain something, treat i
 
 Choose the next step by checking:
 
-- `TODO.md` for active and next tasks.
-- `PLAN.md` for phase boundaries.
-- `DECISIONS.md` for durable constraints.
-- Latest handoff note or phase note for current state, warnings, and non-goals.
-- Latest 1-3 `DEV_LOG.md` entries when recent verification needs confirmation.
+- The compact handoff or current-state file for current state, warnings, and non-goals.
+- Current `TODO.md` sections for active and next tasks.
+- Targeted `PLAN.md` phase matches when phase boundaries or scope changes are unclear.
+- Targeted `DECISIONS.md` matches when durable constraints conflict or their source is unclear.
+- Targeted phase note or `DEV_LOG.md` entries when recent verification needs confirmation.
 
 If these files conflict, stop and clarify before implementing.
 
@@ -95,8 +99,11 @@ Status/handoff-record mutation checks:
 
 ```text
 Use phase-workflow for this repository. Do not rely on previous chat history.
-Read AGENTS.md, PLAN.md, TODO.md, DECISIONS.md, and the latest handoff note or phase note.
-Read only the latest 1-3 DEV_LOG.md entries if recent verification or conflicts need context.
+Read `AGENTS.md` first.
+Read only the first 80-120 lines of the latest compact handoff or current-state file.
+Read only the current phase, active task, blocked, and next task sections of `TODO.md`.
+Use `rg` to inspect `PLAN.md`, `DECISIONS.md`, `DEV_LOG.md`, or phase notes only when compact
+state is missing, conflicting, or explicitly requested.
 Summarize the current phase, verified state, blockers, and next recommended action before
 editing files.
 ```

@@ -112,10 +112,13 @@ This has not been benchmarked yet. Actual token usage will depend on project siz
 how many workflow files are read, and how often phases or sub-phases are updated.
 Measured reports or practical suggestions are welcome.
 
-To keep recovery context small, new Codex windows should start from compact current-state
-files and the latest handoff note or phase note. Treat `DEV_LOG.md` as complete audit history:
-read only the latest 1-3 `DEV_LOG.md` entries by default, and search older entries only when
-state files conflict, verification is missing, or the user asks for history.
+To keep recovery context small, new Codex windows should start from `AGENTS.md`, the first
+80-120 lines of the latest compact handoff or current-state file, and the current `TODO.md`
+phase/task/blocker sections. Do not read full `PLAN.md`, `DECISIONS.md`, `DEV_LOG.md`, full
+`TODO.md`, or full handoff files by default. Treat `PLAN.md`, `DECISIONS.md`, full `TODO.md`,
+full handoff files, phase notes, and `DEV_LOG.md` as targeted or on-demand recovery sources.
+Use `rg` or scoped section reads when scope changes, conflicts, missing verification, unclear
+decision sources, or explicit history requests require more history.
 
 ## How It Differs From Goal Mode
 
@@ -425,9 +428,11 @@ For example:
 
 ```text
 Use phase-workflow for this repository. Do not rely on previous chat history.
-Read AGENTS.md, PLAN.md, TODO.md, DECISIONS.md, and the latest handoff note or phase note
-before editing files.
-Read only the latest 1-3 DEV_LOG.md entries if recent verification or conflicts need context.
+Read `AGENTS.md` first.
+Read only the first 80-120 lines of the latest compact handoff or current-state file.
+Read only the current phase, active task, blocked, and next task sections of `TODO.md`.
+Use `rg` to inspect `PLAN.md`, `DECISIONS.md`, `DEV_LOG.md`, or phase notes only when compact
+state is missing, conflicting, or explicitly requested.
 
 Desired response language: Chinese for this chat.
 Keep project files in English unless I say otherwise.
@@ -448,8 +453,9 @@ flowchart TD
     PM -->|"No"| E
     PMW --> E
     E["Read compact recovery context"]
-    E --> EH["Check latest handoff or phase note first"]
-    EH --> EL["Read recent DEV_LOG entries only if needed"]
+    E --> EH["Read first 80-120 handoff/current-state lines"]
+    EH --> ET["Read current TODO sections only"]
+    ET --> EL["Use rg-targeted history only if needed"]
 
     EL --> F{"Folder state?"}
     F -->|"Empty folder"| G["Output Phase 0 start gate"]
