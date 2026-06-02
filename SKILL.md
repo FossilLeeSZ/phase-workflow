@@ -8,6 +8,19 @@ description: Use this skill for early-stage software projects that need phase-ba
 Use this skill to keep early-stage project work phase-based, testable, and recoverable across
 Codex sessions.
 
+## Mandatory Invocation
+
+If `phase-workflow` applies, first open this `SKILL.md` in the current turn.
+Then read only the needed reference file for the current decision.
+
+Hook-injected reminders do not count as skill invocation. Project `AGENTS.md` rules do not
+replace opening this skill when the skill applies. Do not rely on compressed chat history or
+remembered `phase-workflow` rules.
+
+Before mutating files, state the active authorization branch: plan-change, phase start gate,
+post-gate execution, approach confirmation, status/handoff update, or recovery-record
+mutation.
+
 ## Resource Navigation
 
 Load only the resource needed for the current decision:

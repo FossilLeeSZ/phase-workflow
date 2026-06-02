@@ -247,6 +247,19 @@ relevant phase only when phase boundaries, scope, or roadmap entries change. For
 heading being updated. For handoff and phase notes, read only the relevant heading or the
 first 80-120 lines unless a conflict requires more context.
 
+### Phase 14.6
+
+Mandatory skill invocation and hook boundary clarify that reminder context is not the same as
+loading the workflow skill. If `phase-workflow` applies, Codex opens the current `SKILL.md` in
+the current turn, then reads only the needed reference for the current decision.
+
+Hook-injected reminders do not count as skill invocation. Project `AGENTS.md` rules do not
+replace opening the skill. Compressed chat history or remembered rules are not enough.
+
+Before mutating files, Codex states the active authorization branch: plan-change, phase start
+gate, post-gate execution, approach confirmation, status/handoff update, or recovery-record
+mutation.
+
 ## Authorization Model
 
 Use this single authorization model before the detailed phase-boundary rules below. When two

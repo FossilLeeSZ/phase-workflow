@@ -18,6 +18,10 @@ context and scoped TODO sections, with PLAN.md, DECISIONS.md, PROJECT_CONTEXT.md
 and long handoff files read only through targeted lookups. Phase-exit record updates use the
 same bounded-read rule. See [Tradeoffs](#tradeoffs).
 
+2026-06-02 update: mandatory skill invocation guidance now clarifies that hook reminders,
+project `AGENTS.md`, compressed chat history, and remembered rules do not replace opening the
+installed `phase-workflow` skill when it applies.
+
 2026-05-28 update: optional project-level Codex hook support was added. For hook setup,
 restart, and trust details, see
 [Hook Operations And Updates](#hook-operations-and-updates).
@@ -236,6 +240,11 @@ project, does not recover project state, and does not read workflow files. Codex
 still decides whether `phase-workflow` applies. The hook cannot guarantee 100%
 skill activation. The hook does not replace `AGENTS.md`, and the hook does not
 modify files.
+
+Hook-injected reminders do not count as skill invocation. Project `AGENTS.md` rules do not
+replace opening `.codex/skills/phase-workflow/SKILL.md` when the skill applies. If
+`phase-workflow` applies, Codex should open the skill file in the current turn, then read only
+the needed reference file for the current decision.
 
 ### Hook Operations And Updates
 
