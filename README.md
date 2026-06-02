@@ -13,10 +13,10 @@ explicit decisions, and verified next steps. The engineering value is that new C
 can recover the work from files, and long conversations do not have to keep compressing
 context until stale assumptions, lost decisions, mixed context, or scope drift creep in.
 
-2026-06-01 update: context-light recovery now starts from compact handoff/current-state
-context and scoped TODO sections, with PLAN.md, DECISIONS.md, PROJECT_CONTEXT.md, DEV_LOG.md,
-and long handoff files read only through targeted lookups. Phase-exit record updates use the
-same bounded-read rule. See [Tradeoffs](#tradeoffs).
+2026-06-02 update: recovery record simplification removes `DEV_LOG.md` from required workflow
+responsibilities. New windows recover from compact handoff/current-state context and current
+TODO sections; phase notes keep history, `PROJECT_CONTEXT.md` is a background baseline, and
+`DECISIONS.md` is for durable decisions only. See [Tradeoffs](#tradeoffs).
 
 2026-06-02 update: mandatory skill invocation guidance now clarifies that hook reminders,
 project `AGENTS.md`, compressed chat history, and remembered rules do not replace opening the
@@ -36,7 +36,7 @@ The workflow is simple:
 6. Write failing tests.
 7. Implement the smallest useful capability.
 8. Verify with actual commands.
-9. Update phase notes and handoff documents.
+9. Update TODO, phase notes, and handoff documents.
 10. Move to the next phase only after verification.
 
 The project is not a business application, a RAG system, a web UI, or a code
@@ -65,12 +65,14 @@ A project using this workflow usually maintains:
 
 - `AGENTS.md` - repository-level rules for Codex
 - `PLAN.md` - phase roadmap and execution input
-- `TODO.md` - active scope and next executable tasks
-- `DEV_LOG.md` - development log
-- `DECISIONS.md` - durable decisions
-- `PROJECT_CONTEXT.md` - compact project context for existing structured project adoption
-- phase notes - per-phase goal, verification, and handoff records
-- handoff notes - current state for new Codex sessions
+- `TODO.md` - current phase, active task, next tasks, blockers, and do-not-do-yet
+- `DECISIONS.md` - durable decisions only
+- `PROJECT_CONTEXT.md` - adoption/background baseline for existing structured project adoption
+- phase notes - historical phase scope, modified files, verification, risks, and next steps
+- handoff notes - compact current state for new Codex sessions
+
+`DEV_LOG.md` is not a baseline workflow file. Legacy `DEV_LOG.md` files may remain in adopted
+projects, but the workflow no longer requires creating, reading, or updating them.
 
 The output is not a complex tool. The output is recoverable project state that a
 new Codex window can read before editing files.
@@ -124,16 +126,24 @@ Measured reports or practical suggestions are welcome.
 To keep recovery context small, new Codex windows should start from `AGENTS.md`, the first
 80-120 lines of the latest compact handoff or current-state file, and the current `TODO.md`
 phase/task/blocker sections. Do not read full `PLAN.md`, `DECISIONS.md`,
-`PROJECT_CONTEXT.md`, `DEV_LOG.md`, full `TODO.md`, or full handoff files by default. Treat
-`PLAN.md`, `DECISIONS.md`, `PROJECT_CONTEXT.md`, full `TODO.md`, full handoff files, phase
-notes, and `DEV_LOG.md` as targeted or on-demand recovery sources. Use `rg` or scoped section
-reads when scope changes, conflicts, missing verification, unclear decision sources, or
-explicit history requests require more history.
+`PROJECT_CONTEXT.md`, full `TODO.md`, full handoff files, or full phase notes by default.
+Treat `PLAN.md`, `DECISIONS.md`, `PROJECT_CONTEXT.md`, full `TODO.md`, full handoff files,
+and phase notes as targeted or on-demand recovery sources. Use `rg` or scoped section reads
+when scope changes, conflicts, missing verification, unclear decision sources, or explicit
+history requests require more history.
+
+The compact handoff/current-state file is not a complete history, audit log, phase table, or
+`PLAN.md` summary. It should contain the current recoverable state: project summary, current
+phase, recently completed work, last verification, blockers, next action, and do-not-do
+items. Historical completed task lists belong in phase notes. `TODO.md` should keep only
+current phase, active task, next tasks, blockers, and do-not-do-yet in the default recovery
+area.
 
 The same bounded-read rule applies when updating phase-exit or end-of-round records. Do not
 read large workflow files in full just to update status records; update the relevant TODO
-sections, append or prepend the new DEV_LOG entry, and use heading-scoped reads for phase
-notes, handoff notes, `PLAN.md`, `DECISIONS.md`, and `PROJECT_CONTEXT.md`.
+sections, phase note, and compact handoff. Update DECISIONS only for durable decisions. Use
+heading-scoped reads for phase notes, handoff notes, `PLAN.md`, `DECISIONS.md`, and
+`PROJECT_CONTEXT.md`.
 
 ## How It Differs From Goal Mode
 
@@ -141,7 +151,7 @@ Codex Goal mode is useful when a single Codex thread needs to keep working towar
 a persistent objective. `phase-workflow` is a file-based project workflow.
 
 It stores continuity in repository files such as `PLAN.md`, `TODO.md`,
-`DEV_LOG.md`, `DECISIONS.md`, phase notes, and handoff notes. It is not a
+`DECISIONS.md`, phase notes, and handoff notes. It is not a
 replacement for Goal mode, and it does not require Goal mode.
 
 Use `phase-workflow` when project continuity should come from files rather than
@@ -451,8 +461,8 @@ Use phase-workflow for this repository. Do not rely on previous chat history.
 Read `AGENTS.md` first.
 Read only the first 80-120 lines of the latest compact handoff or current-state file.
 Read only the current phase, active task, blocked, and next task sections of `TODO.md`.
-Use `rg` to inspect `PLAN.md`, `DECISIONS.md`, `DEV_LOG.md`, or phase notes only when compact
-state is missing, conflicting, or explicitly requested.
+Use `rg` to inspect `PLAN.md`, `DECISIONS.md`, `PROJECT_CONTEXT.md`, or phase notes only when
+compact state is missing, conflicting, or explicitly requested.
 
 Desired response language: Chinese for this chat.
 Keep project files in English unless I say otherwise.
@@ -486,7 +496,7 @@ flowchart TD
     G --> I["Wait for separate user confirmation"]
     I --> J["Create baseline workflow files"]
     J --> K["Run actual verification command"]
-    K --> L["Update TODO, DEV_LOG, and compact handoff"]
+    K --> L["Update TODO, phase note, and compact handoff"]
     L --> M["Report result and wait for next phase request"]
 
     ES --> EC["Wait for separate user confirmation"]
@@ -523,7 +533,7 @@ flowchart TD
     V --> W["Write failing tests"]
     W --> X["Implement minimal capability"]
     X --> Y["Run actual verification command"]
-    Y --> Z["Update TODO, DEV_LOG, and compact handoff"]
+    Y --> Z["Update TODO, phase note, and compact handoff"]
     Z --> AA["Report result and wait for next phase"]
     AA --> NR["Wait for later user request"]
 
@@ -551,9 +561,10 @@ For each phase:
 6. Write the failing tests that define the desired behavior.
 7. Implement only the minimum capability needed for the phase.
 8. Run the actual verification command, usually `python -m pytest -q`.
-9. Record verification results in `TODO.md`, `DEV_LOG.md`, the phase note, and the
-   handoff note.
-10. Record durable process decisions in `DECISIONS.md`.
+9. Record current status in `TODO.md`; record verification results in the phase note and
+   compact handoff note.
+10. Record durable process decisions in `DECISIONS.md`; do not record ordinary phase
+    completion, verification logs, or execution history there.
 
 Keep the workflow small. If a request expands the MVP, classify it as `Phase X.N`,
 `New Major Phase`, or `Backlog` instead of disrupting the active phase. `Phase X.1` and

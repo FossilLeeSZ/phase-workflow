@@ -12,7 +12,7 @@ The target project already has:
 - `src/`
 - `tests/`
 
-It does not yet have `AGENTS.md`, `PLAN.md`, `TODO.md`, `DEV_LOG.md`, `DECISIONS.md`, or
+It does not yet have `AGENTS.md`, `PLAN.md`, `TODO.md`, `DECISIONS.md`, or
 `PROJECT_CONTEXT.md`.
 
 ## Folder State Classification
@@ -38,8 +38,8 @@ Folder state: existing structured project candidate.
 Goal: adopt phase-workflow around the current project state.
 Detected existing files: README.md, pyproject.toml, src/, tests/.
 Detected test/build/smoke command: python -m pytest -q.
-Files to create or fill: AGENTS.md, PLAN.md, TODO.md, DEV_LOG.md, DECISIONS.md,
-PROJECT_CONTEXT.md, and a handoff note.
+Files to create or fill: AGENTS.md, PLAN.md, TODO.md, DECISIONS.md, PROJECT_CONTEXT.md, and a
+handoff note.
 Files not to overwrite: README.md, pyproject.toml, source files, test files, and existing
 project documentation.
 Non-goals: no feature work, no refactor, no cleanup campaign, no roadmap.

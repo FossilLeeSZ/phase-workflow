@@ -1,5 +1,7 @@
 # TODO Template
 
+Keep this file current-only. historical completed task lists belong in phase notes.
+
 ## Current Phase
 
 Current Phase:
@@ -15,10 +17,6 @@ Next Tasks:
 ## Blocked
 
 Blocked:
-
-## Backlog
-
-Backlog:
 
 ## Do Not Do Yet
 

@@ -1,5 +1,8 @@
 # Decision Record Template
 
+Use decision records for durable decisions only. Do not record ordinary phase completion.
+Do not record verification logs. Do not record execution history.
+
 ## Decision ID
 
 Decision ID:

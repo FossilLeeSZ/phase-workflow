@@ -1,5 +1,9 @@
 # PROJECT_CONTEXT Template
 
+Use this file as an adoption/background baseline. Normal development rounds should not update
+this file. Update only when stable project identity, directory responsibilities, verification
+commands, or durable boundaries change.
+
 ## What This Project Is
 
 What this project is:

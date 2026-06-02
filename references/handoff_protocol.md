@@ -13,19 +13,32 @@ Read compact recovery context first:
 
 If a repository has additional local instructions, follow the highest-priority instructions first.
 
-Do not read full `PLAN.md`, `DECISIONS.md`, `PROJECT_CONTEXT.md`, `DEV_LOG.md`, full
-`TODO.md`, or full handoff files by default. Treat `PLAN.md`, `DECISIONS.md`,
-`PROJECT_CONTEXT.md`, full `TODO.md`, full handoff files, phase notes, and `DEV_LOG.md` as
-targeted or on-demand recovery sources.
+Do not read full `PLAN.md`, `DECISIONS.md`, `PROJECT_CONTEXT.md`, full `TODO.md`, full
+handoff files, or full phase notes by default. Treat `PLAN.md`, `DECISIONS.md`,
+`PROJECT_CONTEXT.md`, full `TODO.md`, full handoff files, and phase notes as targeted or
+on-demand recovery sources.
 
 Use `rg` or scoped section reads for the heavier files. Use `rg` to inspect `PLAN.md`,
-`DECISIONS.md`, `PROJECT_CONTEXT.md`, `DEV_LOG.md`, or phase notes only when compact state is
-missing, conflicting, or explicitly requested. Read older entries only when scope changes,
-conflicts, missing verification, unclear decision sources, or explicit history requests
-require them.
+`DECISIONS.md`, `PROJECT_CONTEXT.md`, or phase notes only when compact state is missing,
+conflicting, or explicitly requested. Read older entries only when scope changes, conflicts,
+missing verification, unclear decision sources, or explicit history requests require them.
 
-Use a bounded DEV_LOG read when needed. `DEV_LOG.md` is a complete audit history and an
-on-demand history source, not default full-file startup context.
+The compact handoff/current-state file is not a complete history, audit log, phase table, or
+`PLAN.md` summary. Its first 80-120 lines should contain a project summary, current phase,
+recently completed work, last verification, blockers, next action, and do-not-do items.
+Historical completed task lists belong in phase notes, not in the default `TODO.md` recovery
+area.
+
+`PROJECT_CONTEXT.md` is an adoption/background baseline, not a routine status file. Update it
+only when stable project identity, directory responsibilities, verification commands, or
+durable boundaries change.
+
+`DECISIONS.md` is for durable decisions only. Do not record ordinary phase completion,
+verification logs, or execution history there.
+
+`DEV_LOG.md` is not a baseline workflow file, default recovery source, end-of-round record, or
+recovery repair target. Legacy `DEV_LOG.md` files may remain in adopted projects, but the
+workflow no longer requires creating, reading, or updating them.
 
 ## Summarize Current State
 
@@ -49,7 +62,7 @@ Choose the next step by checking:
 - Current `TODO.md` sections for active and next tasks.
 - Targeted `PLAN.md` phase matches when phase boundaries or scope changes are unclear.
 - Targeted `DECISIONS.md` matches when durable constraints conflict or their source is unclear.
-- Targeted phase note or `DEV_LOG.md` entries when recent verification needs confirmation.
+- Targeted phase note entries when recent verification needs confirmation.
 
 If these files conflict, stop and clarify before implementing.
 
@@ -58,21 +71,18 @@ If these files conflict, stop and clarify before implementing.
 Before ending a development round, update:
 
 - `TODO.md`
-- `DEV_LOG.md`
 - Active phase note, if present
 - Handoff note, if present
 - `DECISIONS.md`, when a durable decision changed
 
 Phase-exit and end-of-round record updates use the same bounded context rule. Do not read full
-`PLAN.md`, `TODO.md`, `DEV_LOG.md`, `DECISIONS.md`, `PROJECT_CONTEXT.md`, full handoff files,
-or full phase notes just to update status records. For `TODO.md`, read and update only the
-current phase, active task, blocked, and next task sections. For `DEV_LOG.md`, prepend or
-append the new entry without reading the full audit history; read only the latest 1-3 entries
-when needed for continuity. For `PLAN.md`, use `rg` or heading-scoped reads to locate the
-relevant phase only when phase boundaries, scope, or roadmap entries change. For
-`PROJECT_CONTEXT.md`, use scoped reads around the summary, constraints, or current-state
-heading being updated. For handoff and phase notes, read only the relevant heading or the
-first 80-120 lines unless a conflict requires more context.
+`PLAN.md`, `TODO.md`, `DECISIONS.md`, `PROJECT_CONTEXT.md`, full handoff files, or full phase
+notes just to update status records. For `TODO.md`, read and update only the current phase,
+active task, blocked, next task, and do-not-do sections. For `PLAN.md`, use `rg` or
+heading-scoped reads to locate the relevant phase only when phase boundaries, scope, or
+roadmap entries change. For `PROJECT_CONTEXT.md`, use scoped reads only for adoption or stable
+baseline changes. For handoff and phase notes, read only the relevant heading or the first
+80-120 lines unless a conflict requires more context.
 
 Records that claim completion or test status must include actual verification commands and
 results. Records that do not claim completion or test status may record blocker, unfinished,
@@ -80,8 +90,8 @@ handoff, or current-state status without a fresh verification command. If verifi
 run, record that status honestly.
 
 A status/handoff-record mutation requires current phase execution or phase exit context. It
-can update `TODO.md`, `DEV_LOG.md`, phase notes, handoff notes, and `DECISIONS.md` when
-recording a durable decision already made inside the authorized phase or phase exit context.
+can update `TODO.md`, phase notes, handoff notes, and `DECISIONS.md` when recording a durable
+decision already made inside the authorized phase or phase exit context.
 It must record actual verification results when claiming completion or test status. If
 verification has not run, record that status honestly and do not claim completion or passing
 tests. It can update blocker, unfinished status, handoff, or current-state records without a
@@ -92,8 +102,7 @@ Status/handoff-record mutation checks:
 
 - Is the update reporting current phase execution, verification, blocker, unfinished status,
   handoff, or current-state status?
-- Is it limited to `TODO.md`, `DEV_LOG.md`, phase notes, handoff notes, or a narrow
-  `DECISIONS.md` update?
+- Is it limited to `TODO.md`, phase notes, handoff notes, or a narrow `DECISIONS.md` update?
 - Is any `DECISIONS.md` update limited to recording a durable decision already made inside the
   authorized phase or phase exit context?
 - Are actual verification results recorded when completion or test status is claimed?
@@ -115,8 +124,8 @@ Use phase-workflow for this repository. Do not rely on previous chat history.
 Read `AGENTS.md` first.
 Read only the first 80-120 lines of the latest compact handoff or current-state file.
 Read only the current phase, active task, blocked, and next task sections of `TODO.md`.
-Use `rg` to inspect `PLAN.md`, `DECISIONS.md`, `PROJECT_CONTEXT.md`, `DEV_LOG.md`, or phase
-notes only when compact state is missing, conflicting, or explicitly requested.
+Use `rg` to inspect `PLAN.md`, `DECISIONS.md`, `PROJECT_CONTEXT.md`, or phase notes only when
+compact state is missing, conflicting, or explicitly requested.
 Summarize the current phase, verified state, blockers, and next recommended action before
 editing files.
 ```

@@ -50,7 +50,7 @@ Example Phase 0 start gate:
 Current phase: Phase 0.
 Folder state: empty folder.
 Goal: create recoverable baseline workflow files and minimal verification.
-Baseline workflow files: README.md, AGENTS.md, PLAN.md, TODO.md, DEV_LOG.md, and DECISIONS.md.
+Baseline workflow files: README.md, AGENTS.md, PLAN.md, TODO.md, and DECISIONS.md.
 Split decision: do not split; Phase 0 is one initialization and verification loop.
 Verification command: python -m pytest -q.
 Confirmation needed: wait for user confirmation before creating any project files.
@@ -63,7 +63,7 @@ response after the phase start gate is displayed.
 Goal:
 
 - Create a small repository skeleton.
-- Add `README.md`, `AGENTS.md`, `PLAN.md`, `TODO.md`, `DEV_LOG.md`, and `DECISIONS.md`.
+- Add `README.md`, `AGENTS.md`, `PLAN.md`, `TODO.md`, and `DECISIONS.md`.
 - Add initial tests that check the expected project structure.
 - Record the first planned capability in `PLAN.md` without implementing it.
 
@@ -80,7 +80,6 @@ README.md
 AGENTS.md
 PLAN.md
 TODO.md
-DEV_LOG.md
 DECISIONS.md
 tests/test_project_docs.py
 ```
@@ -161,7 +160,7 @@ Example flow:
 4. Run `python -m pytest -q` and confirm the test fails for the expected reason.
 5. Implement the smallest parser function that passes the fixture test.
 6. Run `python -m pytest -q` again.
-7. Update `TODO.md`, `DEV_LOG.md`, and the handoff note.
+7. Update `TODO.md`, the phase note, and the handoff note.
 
 Acceptance criteria:
 
@@ -194,7 +193,7 @@ Phase 1: First minimal action extraction.
 - None.
 ```
 
-## Example DEV_LOG Entry
+## Example Phase Note Entry
 
 ```markdown
 ## 2026-05-23 - Phase 1 Minimal Action Extraction

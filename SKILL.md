@@ -29,8 +29,8 @@ Load only the resource needed for the current decision:
 - Read `references/change_request_policy.md` when a new request appears during an active phase.
 - Read `references/handoff_protocol.md` when resuming work in a new window or ending a work round.
 - Read `references/verification_policy.md` before marking a phase complete or reporting test status.
-- Copy from `templates/` when creating phase notes, handoff notes, TODOs, dev log entries, or
-  decision records in a target project.
+- Copy from `templates/` when creating phase notes, handoff notes, TODOs, or decision records
+  in a target project.
 - Copy `templates/project_context_template.md` as `PROJECT_CONTEXT.md` when adopting an
   existing structured project.
 - Use `examples/` only when the user needs a concrete pattern for a greenfield start, existing
@@ -49,7 +49,7 @@ Use this skill when the user is working on:
 - Scope control for a small or changing project.
 - New-window handoff after prior Codex work.
 - Mid-phase change request handling.
-- Updates to `TODO.md`, `DEV_LOG.md`, `DECISIONS.md`, phase notes, or handoff documents.
+- Updates to `TODO.md`, `DECISIONS.md`, phase notes, or handoff documents.
 
 ## When Not To Use This Skill
 
@@ -78,7 +78,7 @@ For each phase:
 3. Write failing tests.
 4. Implement the minimal capability.
 5. Verify with actual commands.
-6. Update phase notes and handoff.
+6. Update `TODO.md`, phase notes, and handoff/current-state.
 7. Move to the next phase only after verification.
 
 ## Authorization Model
@@ -143,10 +143,10 @@ Mutation Authorization Branches:
   incident report.
 - A recovery-record mutation requires Phase Violation Recovery and the user's keep-or-rollback
   choice. After the user chooses, recovery-record mutations may repair `PLAN.md`, `TODO.md`,
-  `DEV_LOG.md`, and handoff records.
+  phase notes, and handoff records.
 - A status/handoff-record mutation requires current phase execution or phase exit context. It
-  can update `TODO.md`, `DEV_LOG.md`, phase notes, handoff notes, and `DECISIONS.md` when
-  recording a durable decision already made inside the authorized phase or phase exit context.
+  can update `TODO.md`, phase notes, handoff notes, and `DECISIONS.md` when recording a
+  durable decision already made inside the authorized phase or phase exit context.
   It must record actual verification results when claiming completion or test status. If
   verification has not run, record that status honestly and do not claim completion or passing
   tests. It can update blocker, unfinished status, handoff, or current-state records without a
@@ -182,15 +182,14 @@ Recovery-record mutation checks:
 
 - Is Phase Violation Recovery open?
 - Has the user chosen keep implementation and backfill audit, or roll back selected changes?
-- Is the mutation limited to repairing planning, log, and handoff records?
+- Is the mutation limited to repairing planning, phase, and handoff records?
 - Does the mutation avoid new implementation?
 
 Status/handoff-record mutation checks:
 
 - Is the update reporting current phase execution, verification, blocker, unfinished status,
   handoff, or current-state status?
-- Is it limited to `TODO.md`, `DEV_LOG.md`, phase notes, handoff notes, or a narrow
-  `DECISIONS.md` update?
+- Is it limited to `TODO.md`, phase notes, handoff notes, or a narrow `DECISIONS.md` update?
 - Is any `DECISIONS.md` update limited to recording a durable decision already made inside the
   authorized phase or phase exit context?
 - Are actual verification results recorded when completion or test status is claimed?
@@ -240,7 +239,7 @@ When a phase violation is discovered:
 8. Ask the user to choose: keep implementation and backfill audit, or roll back selected
    changes.
 9. Do not write recovery record repairs before the user chooses.
-10. After the user chooses, repair `PLAN.md`, `TODO.md`, `DEV_LOG.md`, and handoff records.
+10. After the user chooses, repair `PLAN.md`, `TODO.md`, phase notes, and handoff records.
 11. Make the state honest and recoverable so a new Codex session can resume without chat
    history.
 
@@ -311,7 +310,7 @@ When a phase violation is discovered:
   confirmation.
 - Output a visible Phase 0 start gate before creating any project files.
 - Do not create baseline workflow files before user confirmation. Baseline workflow files
-  include README.md, AGENTS.md, PLAN.md, TODO.md, DEV_LOG.md, and DECISIONS.md.
+  include README.md, AGENTS.md, PLAN.md, TODO.md, and DECISIONS.md.
 - Split when the user requests a split, when there are multiple independent outputs,
   unrelated user-visible capabilities, separate verification loops, or when reviewability,
   transparency, phase size, risk, user confidence, or avoiding opaque large phases makes the
@@ -347,7 +346,7 @@ relevant plan record exists. Do not use `PLAN.md` or `TODO.md` as after-the-fact
 scope-changing work. Prohibited order: Implement first, document plan later.
 
 Current-scope implementation details, verification results, actual modified file lists,
-`DEV_LOG.md` entries, handoff summaries, and small non-scope-changing corrections can be
+phase note updates, handoff summaries, and small non-scope-changing corrections can be
 recorded after the technical work.
 
 ## Reviewable Splits And Approach Confirmation
@@ -453,10 +452,10 @@ Before marking a phase complete, confirm:
 - Tests pass.
 - Smoke test passes, when applicable.
 - Outputs match the current phase agreement.
-- `TODO.md` is updated.
-- `DEV_LOG.md` is updated.
-- Phase note is updated.
-- Handoff note is updated.
+- `TODO.md` is updated with current-only tasks.
+- Phase note records historical completion details.
+- Compact handoff/current-state note is updated.
+- `DECISIONS.md` records durable decisions only.
 - No unexplained scope expansion occurred.
 - Verification results and the recommended next action have been reported.
 - User confirmation is received before starting the next phase.
@@ -486,29 +485,45 @@ At the start of a new window, read compact recovery context in this order:
 2. Read only the first 80-120 lines of the latest compact handoff or current-state file.
 3. Read only the current phase, active task, blocked, and next task sections of `TODO.md`.
 
-Do not read full `PLAN.md`, `DECISIONS.md`, `PROJECT_CONTEXT.md`, `DEV_LOG.md`, full
-`TODO.md`, or full handoff files by default. Treat `PLAN.md`, `DECISIONS.md`,
-`PROJECT_CONTEXT.md`, full `TODO.md`, full handoff files, phase notes, and `DEV_LOG.md` as
-targeted or on-demand recovery sources.
+Do not read full `PLAN.md`, `DECISIONS.md`, `PROJECT_CONTEXT.md`, full `TODO.md`, full
+handoff files, or full phase notes by default. Treat `PLAN.md`, `DECISIONS.md`,
+`PROJECT_CONTEXT.md`, full `TODO.md`, full handoff files, and phase notes as targeted or
+on-demand recovery sources.
 
-Use `rg` to inspect `PLAN.md`, `DECISIONS.md`, `PROJECT_CONTEXT.md`, `DEV_LOG.md`, or phase
-notes only when compact state is missing, conflicting, or explicitly requested. Read older
-entries only when scope changes, conflicts, missing verification, unclear decision sources, or
-explicit history requests require them.
+Use `rg` to inspect `PLAN.md`, `DECISIONS.md`, `PROJECT_CONTEXT.md`, or phase notes only when
+compact state is missing, conflicting, or explicitly requested. Read older entries only when
+scope changes, conflicts, missing verification, unclear decision sources, or explicit history
+requests require them.
+
+The compact handoff/current-state file is not a complete history, audit log, phase table, or
+`PLAN.md` summary. Its first 80-120 lines should contain a project summary, current phase,
+recently completed work, last verification, blockers, next action, and do-not-do items.
+Historical completed task lists belong in phase notes, not in the default `TODO.md` recovery
+area.
+
+`PROJECT_CONTEXT.md` is an adoption/background baseline, not a routine status file. Update it
+only when stable project identity, directory responsibilities, verification commands, or
+durable boundaries change.
+
+`DECISIONS.md` is for durable decisions only. Do not record ordinary phase completion,
+verification logs, or execution history there.
+
+`DEV_LOG.md` is not a baseline workflow file, default recovery source, end-of-round record, or
+recovery repair target. Legacy `DEV_LOG.md` files may remain in adopted projects, but the
+workflow no longer requires creating, reading, or updating them.
 
 Phase-exit and end-of-round record updates use the same bounded context rule. Do not read full
-`PLAN.md`, `TODO.md`, `DEV_LOG.md`, `DECISIONS.md`, `PROJECT_CONTEXT.md`, full handoff files,
-or full phase notes just to update status records. For `TODO.md`, read and update only the
-current phase, active task, blocked, and next task sections. For `DEV_LOG.md`, prepend or
-append the new entry without reading the full audit history; read only the latest 1-3 entries
-when needed for continuity. For `PLAN.md`, use `rg` or heading-scoped reads to locate the
-relevant phase only when phase boundaries, scope, or roadmap entries change. For
-`PROJECT_CONTEXT.md`, use scoped reads around the summary, constraints, or current-state
-heading being updated. For handoff and phase notes, read only the relevant heading or the
-first 80-120 lines unless a conflict requires more context.
+`PLAN.md`, `TODO.md`, `DECISIONS.md`, `PROJECT_CONTEXT.md`, full handoff files, or full phase
+notes just to update status records. For `TODO.md`, read and update only the current phase,
+active task, blocked, next task, and do-not-do sections. For `PLAN.md`, use `rg` or
+heading-scoped reads to locate the relevant phase only when phase boundaries, scope, or
+roadmap entries change. For `PROJECT_CONTEXT.md`, use scoped reads only for adoption or stable
+baseline changes. For handoff and phase notes, read only the relevant heading or the first
+80-120 lines unless a conflict requires more context.
 
 At the end of each development round, leave a recoverable state by updating the active TODOs,
-development log, phase note, and handoff note.
+phase note, and compact handoff/current-state note. Update DECISIONS only for durable
+decisions.
 
 ## Verification Policy
 
@@ -524,5 +539,5 @@ Rules:
 
 - Do not use "should run" as a completion standard.
 - Do not mark a phase complete when verification fails.
-- Record the actual command and result in the phase note or development log.
+- Record the actual command and result in the phase note or handoff note.
 - If a CLI exists, include a smoke test for the CLI.

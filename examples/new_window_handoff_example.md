@@ -9,8 +9,8 @@ Use phase-workflow for this repository. Do not rely on previous chat history.
 Read `AGENTS.md` first.
 Read only the first 80-120 lines of the latest compact handoff or current-state file.
 Read only the current phase, active task, blocked, and next task sections of `TODO.md`.
-Use `rg` to inspect `PLAN.md`, `DECISIONS.md`, `DEV_LOG.md`, or phase notes only when compact
-state is missing, conflicting, or explicitly requested.
+Use `rg` to inspect `PLAN.md`, `DECISIONS.md`, `PROJECT_CONTEXT.md`, or phase notes only when
+compact state is missing, conflicting, or explicitly requested.
 Summarize current phase, verified state, blockers, and next recommended action before editing
 files.
 ```
@@ -20,8 +20,8 @@ files.
 1. Read `AGENTS.md` for repository rules.
 2. Read the first 80-120 lines of the latest compact handoff or current-state file.
 3. Read only the current phase, active task, blocked, and next task sections of `TODO.md`.
-4. Use `rg` or scoped section reads for `PLAN.md`, `DECISIONS.md`, phase notes, and
-   `DEV_LOG.md` only when scope changes, conflicts, missing verification, unclear decision
+4. Use `rg` or scoped section reads for `PLAN.md`, `DECISIONS.md`, `PROJECT_CONTEXT.md`, and
+   phase notes only when scope changes, conflicts, missing verification, unclear decision
    sources, or explicit history requests require them.
 
 ## Example Recovered State
@@ -66,13 +66,14 @@ instead:
 ```markdown
 ## Blocked
 
-- Need clarification: `TODO.md` says Phase 2, but `DEV_LOG.md` has no Phase 1
+- Need clarification: `TODO.md` says Phase 2, but the Phase 1 phase note has no
   verification result.
 ```
 
-Do not read full `PLAN.md`, `DECISIONS.md`, `DEV_LOG.md`, full `TODO.md`, or full handoff
-files by default. Treat them as audit and policy history, then look up exact sections only
-when the compact recovery files conflict or omit verification context.
+Do not read full `PLAN.md`, `DECISIONS.md`, `PROJECT_CONTEXT.md`, full `TODO.md`, full
+handoff files, or full phase notes by default. Treat them as audit and policy history, then
+look up exact sections only when the compact recovery files conflict or omit verification
+context.
 
 ## Important Rule
 

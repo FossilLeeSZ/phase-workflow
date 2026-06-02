@@ -186,7 +186,7 @@ Stop new implementation immediately.
 Audit: list files, tests, migrations, restores, docs, and status records changed outside the
 approved phase boundary.
 User choice needed: keep implementation and backfill audit, or roll back selected changes.
-Repair PLAN.md, TODO.md, DEV_LOG.md, and handoff records.
+Repair PLAN.md, TODO.md, phase notes, and handoff records.
 ```
 
 Do not continue to the next feature while recovery is open.
@@ -240,7 +240,7 @@ Phase 1.1: Add source_file metadata to parser output.
 - None.
 ```
 
-## Example DEV_LOG Entry
+## Example Phase Note Entry
 
 ```markdown
 ## 2026-05-23 - Phase 1.1 Parser Source Metadata
@@ -272,7 +272,7 @@ Run:
 python -m pytest -q
 ```
 
-Record the command and result in `DEV_LOG.md` and the active phase note.
+Record the command and result in the active phase note and handoff note.
 
 Do not mark Phase 1.1 complete if verification fails. Keep the request open in
 `TODO.md` with the failure summary and next fix.

@@ -144,4 +144,4 @@ revised approach is recorded and confirmed.
 ## Completion Rule
 
 A change request is not complete until its verification command has run and the result is
-recorded in the phase note or `DEV_LOG.md`.
+recorded in the phase note or handoff note.

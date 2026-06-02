@@ -15,7 +15,7 @@ python -m pytest -q
 
 - Run the verification command before marking a phase complete.
 - Do not use "should run" or "looks correct" as completion standards.
-- Record the actual command and result in `DEV_LOG.md`, a phase note, or a handoff note.
+- Record the actual command and result in a phase note or handoff note.
 - If verification fails, do not mark the phase complete.
 - If a CLI exists, run a smoke test that exercises the CLI entry point.
 - If a web app exists, run the relevant build or browser smoke test.
@@ -48,4 +48,4 @@ When verification fails:
 2. Record the failing command and main failure.
 3. Fix the issue using a test-first approach when behavior changes.
 4. Run verification again.
-5. Update the development log with the final result.
+5. Update the phase note and compact handoff with the final result.
