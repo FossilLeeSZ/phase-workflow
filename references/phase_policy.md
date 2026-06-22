@@ -119,10 +119,10 @@ Codex-only remains the default compatible path. Codex reads bounded recovery con
 project files, shows gates, validates authorization, executes commands, and edits files after
 confirmation.
 
-ChatGPT/MCP planning with Codex execution is optional. ChatGPT may use a local read-only MCP
-companion to read bounded project context and generate a short handoff prompt for Codex. Codex
-still validates local files, phase gates, authorization branch, and stop conditions before
-execution.
+ChatGPT/MCP planning with Codex execution is optional. ChatGPT may use the read-only MCP
+companion through an available connector path to read bounded project context and generate a
+short handoff prompt for Codex. Codex still validates local files, phase gates, authorization
+branch, and stop conditions before execution.
 
 Codex-direct MCP planning is not a supported mode. The local MCP companion does not call Codex,
 run `codex exec`, start Codex, or use Codex as a compression backend.
@@ -177,8 +177,11 @@ documented local registry path.
 
 Lifecycle controls remain start, status, and stop only. Bind to loopback by default. Track the
 running process with a PID or lock file. Report port conflicts explicitly. Fail closed when
-`project_id` is missing, unknown, or ambiguous. ChatGPT must not start Codex, start the local
-companion, or execute project commands.
+`project_id` is missing, unknown, or ambiguous. ChatGPT-side planning uses an already running
+companion only through an available connector path. For remote ChatGPT, prefer OpenAI Secure
+MCP Tunnel when available; keep loopback endpoint details for same-machine development and
+smoke tests. ChatGPT must not start Codex, start the local companion, or execute project
+commands.
 
 ### Built-In Read-Only MCP Companion
 
@@ -189,13 +192,38 @@ Use `scripts/phase_mcp_lifecycle.py` for configure/start/status/stop only after 
 request and confirmation. Use `scripts/phase_mcp_setup_output.py` after the selected workspace
 reports `running` to prepare ChatGPT setup guidance and a starter ChatGPT planning prompt.
 
-Do not hard-code unstable ChatGPT product UI steps; provide endpoint, project identity,
-workspace identity, allowed files summary, and starter prompt. The final Codex handoff is
-ChatGPT output after MCP-assisted planning, not Codex configuration output.
+Do not hard-code unstable ChatGPT product UI steps; provide connection guidance, project
+identity, workspace identity, allowed files summary, and starter prompt. The final Codex
+handoff is ChatGPT output after MCP-assisted planning, not Codex configuration output.
 
 Do not make Codex read, plan, validate, execute, or mutate files through MCP. Direct Codex
 conversation remains Codex-only unless a valid ChatGPT/MCP handoff header is pasted back and
 passes local validation.
+
+### OpenAI Secure MCP Tunnel
+
+Use OpenAI Secure MCP Tunnel as the preferred remote ChatGPT connection path when available.
+Local loopback remains the local development path for same-machine development and smoke
+tests. Secure Tunnel keeps the MCP server private and uses outbound tunnel-client
+connectivity instead of public inbound project ports.
+
+Secure Tunnel setup output is ChatGPT connector guidance, not Codex execution authorization.
+It may include `tunnel_id`, profile name, selected `project_id`, selected `workspace_id`,
+target type, stdio or HTTP target guidance, `tunnel-client` command guidance, lifecycle
+guidance, and diagnostics guidance. The final Codex handoff remains ChatGPT output after
+MCP-assisted planning.
+
+Availability depends on account, Platform tunnel, organization/workspace, ChatGPT connector
+UI, workspace association, and permissions. If the tunnel is not visible or connector calls
+fail, check workspace association, Tunnels Read and Tunnels Use, rerun
+`tunnel-client doctor --profile <name> --explain`, and confirm
+`tunnel-client run --profile <name>` is still healthy.
+
+Port conflicts remain local companion issues. Secure Tunnel is not public exposure and does
+not require exposing arbitrary project ports publicly. Do not promote `ngrok` or public URL
+tunneling as the primary supported MCP connection path. Do not imply that Secure Tunnel is
+universally available. Do not store OpenAI API keys, tunnel runtime keys, or other tunnel
+secrets in project config, local registry, handoff prompts, README examples, or tests.
 
 ## Compact Recovery And Handoff
 

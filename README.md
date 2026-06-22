@@ -13,30 +13,6 @@ explicit decisions, and verified next steps. The engineering value is that new C
 can recover the work from files, and long conversations do not have to keep compressing
 context until stale assumptions, lost decisions, mixed context, or scope drift creep in.
 
-2026-06-22 update: runtime policy references were generalized for arbitrary target
-projects. `references/phase_policy.md` now keeps reusable phase gates, authorization
-boundaries, recovery, handoff, verification, and optional ChatGPT/MCP planning rules without
-this skill project's development history. README example prompts now use project-generic
-wording.
-
-2026-06-22 update: Phase 17 built-in read-only MCP companion support adds local optional
-ChatGPT/MCP planning support for adopted projects. Codex can configure and manage the local
-read-only companion after explicit user confirmation, then give the user ChatGPT-side setup
-guidance and a starter planning prompt. Direct Codex chat remains Codex-only.
-
-2026-06-02 update: recovery record simplification removes `DEV_LOG.md` from required workflow
-responsibilities. New windows recover from compact handoff/current-state context and current
-TODO sections; phase notes keep history, `PROJECT_CONTEXT.md` is a background baseline, and
-`DECISIONS.md` is for durable decisions only. See [Tradeoffs](#tradeoffs).
-
-2026-06-02 update: mandatory skill invocation guidance now clarifies that hook reminders,
-project `AGENTS.md`, compressed chat history, and remembered rules do not replace opening the
-installed `phase-workflow` skill when it applies.
-
-2026-05-28 update: optional project-level Codex hook support was added. For hook setup,
-restart, and trust details, see
-[Hook Operations And Updates](#hook-operations-and-updates).
-
 The workflow is simple:
 
 1. Lock the current phase boundary.
@@ -159,11 +135,11 @@ heading-scoped reads for phase notes, handoff notes, `PLAN.md`, `DECISIONS.md`, 
 Phase 15 planning guidance supports two paths. Codex-only: the default path. In this path,
 Codex reads bounded recovery context, shows gates, validates authorization, executes
 commands, and edits files after confirmation. ChatGPT/MCP planning with Codex execution: an
-optional path. In this path, ChatGPT may use a local read-only MCP companion to read bounded
-project context and produce a short handoff prompt for Codex. The MCP path is optional and
-selected by the user. Codex-direct MCP planning is not a Phase 15 supported mode. The local
-MCP companion must not call Codex, run `codex exec`, start Codex, or use Codex as a
-compression backend.
+optional path. In this path, ChatGPT may use the read-only MCP companion through an available
+connector path to read bounded project context and produce a short handoff prompt for Codex.
+The MCP path is optional and selected by the user. Codex-direct MCP planning is not a Phase
+15 supported mode. The local MCP companion must not call Codex, run `codex exec`, start
+Codex, or use Codex as a compression backend.
 
 Default recovery snapshot contract: ChatGPT/MCP default snapshot must match the bounded
 recovery context Codex would read. Default snapshot includes `AGENTS.md`, the needed skill
@@ -236,16 +212,40 @@ The local companion must remain read-only and must not call Codex, run `codex ex
 Codex, or execute project commands. Lifecycle guidance must not become a Web UI, database,
 cloud sync, issue tracker integration, or complex CLI.
 
-Phase 17 built-in read-only MCP companion support: In any project that has adopted
+Built-in read-only MCP companion support: In any project that has adopted
 `phase-workflow`, the user may ask Codex to enable optional ChatGPT/MCP planning for that
 project. Codex may run `scripts/phase_mcp_lifecycle.py configure`, `start`, `status`, or
 `stop` only after explicit user confirmation. After the companion is running, Codex should
 provide the ChatGPT setup card and starter ChatGPT planning prompt. The setup card includes
-the local endpoint, `project_id`, `workspace_id`, display name, and allowed-file summary. In
-ChatGPT, connect or select the local MCP connector for the endpoint according to the current
-ChatGPT connector UI. ChatGPT reads through MCP and returns the final Codex handoff; Codex
-configuration does not generate the final handoff. Direct Codex chat remains Codex-only; only
-the ChatGPT-side planning conversation uses MCP.
+connection guidance, `project_id`, `workspace_id`, display name, and allowed-file summary.
+For remote ChatGPT, use OpenAI Secure MCP Tunnel when available; local loopback endpoint
+details are for same-machine development and smoke tests only. In ChatGPT, select the
+configured MCP connector or tunnel for this setup card, paste the starter prompt, let ChatGPT
+read through MCP, and copy the resulting short handoff back into Codex. ChatGPT reads through
+MCP and returns the final Codex handoff; Codex configuration does not generate the final
+handoff. Direct Codex chat remains Codex-only; only the ChatGPT-side planning conversation
+uses MCP.
+
+OpenAI Secure MCP Tunnel support: Use OpenAI Secure MCP Tunnel as the preferred remote
+ChatGPT connection path when available. Local loopback remains the local development path for
+same-machine development and smoke tests. Secure Tunnel keeps the MCP server private and uses
+outbound tunnel-client connectivity instead of public inbound project ports. The setup output
+may include `tunnel_id`, profile name, target type, stdio or HTTP target guidance,
+`tunnel-client` command guidance, lifecycle guidance, and diagnostics guidance.
+
+Secure Tunnel availability depends on account, Platform tunnel, organization/workspace,
+ChatGPT connector UI, workspace association, and permissions. Check Tunnels Read and Tunnels
+Use when the tunnel is not visible or connector calls fail. Use
+`tunnel-client doctor --profile <name> --explain` and
+`tunnel-client run --profile <name>` to diagnose the user-managed tunnel-client. Stopped or
+disconnected tunnel-client processes make tunnel requests fail until they reconnect.
+
+Port conflicts remain local companion issues. Secure Tunnel is not public exposure and does
+not require exposing arbitrary project ports publicly. Do not promote `ngrok` or public URL
+tunneling as the primary supported MCP connection path. Do not imply that Secure Tunnel is
+universally available. Do not store OpenAI API keys, tunnel runtime keys, or other tunnel
+secrets in project config, local registry, handoff prompts, README examples, or tests. The
+setup output is ChatGPT connector guidance, not Codex execution authorization.
 
 ## How It Differs From Goal Mode
 
@@ -345,6 +345,7 @@ only `SKILL.md`. Keep these paths together:
 - `templates/`
 - `examples/`
 - `hooks/`
+- `hooks/phase_workflow_prompt.py`
 
 See `examples/chatgpt_mcp_planning_example.md` for a ChatGPT/MCP planning example that keeps
 planning optional while Codex remains responsible for local validation and execution.
@@ -374,13 +375,13 @@ Install `phase-workflow` as a project-level Codex skill in this project. Only pe
 Chinese:
 
 ```text
-这个项目已经安装或准备安装 `phase-workflow`。现在请为本项目准备可选 ChatGPT/MCP 规划能力。仅执行安装检查和配置流程说明：确认本项目存在内置 MCP companion 脚本，说明 `configure`、`start`、`status`、`stop` 的作用，给出 ChatGPT 端配置流程、需要复制到 ChatGPT 的 starter prompt，以及后续需要我单独确认的 Codex 命令。不要把 MCP 设为强制，不要让 Codex 通过 MCP 规划或读取项目文件。不要现在创建或更新 MCP 配置、写入本地 registry、绑定端口或启动服务，除非我随后单独确认。直接 Codex 对话保持 Codex-only，MCP 只用于 ChatGPT 端只读规划。
+这个项目已经安装或准备安装 `phase-workflow`。现在请为本项目准备可选 ChatGPT/MCP 规划能力。仅执行安装检查和配置流程说明：确认本项目存在内置 MCP companion 脚本，说明 `configure`、`start`、`status`、`stop` 的作用，给出 ChatGPT 端 Secure Tunnel 配置流程（如果当前账号和工作区可用）、说明本地 loopback 仅用于同机开发或烟测、给出需要复制到 ChatGPT 的 starter prompt，以及后续需要我单独确认的 Codex 命令。不要把 MCP 设为强制，不要让 Codex 通过 MCP 规划或读取项目文件。不要现在创建或更新 MCP 配置、写入本地 registry、绑定端口或启动服务，除非我随后单独确认。直接 Codex 对话保持 Codex-only，MCP 只用于 ChatGPT 端只读规划。
 ```
 
 English:
 
 ```text
-This project has installed or is ready to install `phase-workflow`. Now prepare the optional ChatGPT/MCP planning capability for this project. Only perform installation checks and configuration-flow guidance: confirm that the built-in MCP companion scripts are present, explain what `configure`, `start`, `status`, and `stop` do, give me the ChatGPT-side configuration flow, the starter prompt to copy into ChatGPT, and the later Codex commands that require my separate confirmation. Do not make MCP mandatory, and do not make Codex plan or read project files through MCP. Do not create or update MCP config, write the local registry, bind a port, or start services now unless I separately confirm. Direct Codex conversation stays Codex-only; MCP is only for ChatGPT-side read-only planning.
+This project has installed or is ready to install `phase-workflow`. Now prepare the optional ChatGPT/MCP planning capability for this project. Only perform installation checks and configuration-flow guidance: confirm that the built-in MCP companion scripts are present, explain what `configure`, `start`, `status`, and `stop` do, give me the ChatGPT-side Secure Tunnel configuration flow when available, explain that local loopback is only for same-machine development or smoke tests, provide the starter prompt to copy into ChatGPT, and list the later Codex commands that require my separate confirmation. Do not make MCP mandatory, and do not make Codex plan or read project files through MCP. Do not create or update MCP config, write the local registry, bind a port, or start services now unless I separately confirm. Direct Codex conversation stays Codex-only; MCP is only for ChatGPT-side read-only planning.
 ```
 
 Optional project-level hook support can add a small reminder on each user prompt.
@@ -411,11 +412,6 @@ After a Codex-driven skill update that adds or changes hook-related files or
 show the hook trust prompt after restart. Approve it only after reviewing the hook command
 and file contents. After changing the absolute hook command, restart Codex and
 re-review/trust the hook.
-
-2026-05-28 update: Added optional project-level `UserPromptSubmit` hook support through
-`hooks/phase_workflow_prompt.py` and the `.codex/hooks.json` example below. The hook only
-injects reminder context; after hook-related updates made through Codex, restart Codex and
-review the hook trust prompt before relying on the updated hook.
 
 Example `.codex/hooks.json`:
 

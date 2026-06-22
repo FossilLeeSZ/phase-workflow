@@ -18,9 +18,9 @@ No MCP setup is required for the Codex-only path.
 
 ## ChatGPT/MCP Planning Path
 
-The optional path is ChatGPT/MCP planning with Codex execution. ChatGPT may use a local
-read-only MCP companion to inspect bounded project context and produce a short handoff prompt
-for Codex.
+The optional path is ChatGPT/MCP planning with Codex execution. ChatGPT may use the
+read-only MCP companion through an available connector path to inspect bounded project
+context and produce a short handoff prompt for Codex.
 
 The local read-only MCP companion must not write files.
 The local companion must not call Codex, run `codex exec`, start Codex, or execute project
@@ -44,10 +44,84 @@ to prepare the ChatGPT setup card and starter ChatGPT planning prompt. The setup
 not the final Codex handoff. ChatGPT, not Codex configuration, generates the final Codex
 handoff after MCP-assisted planning.
 
-In ChatGPT, connect or select the local MCP connector for the endpoint according to the
-current ChatGPT connector UI, paste the starter prompt, let ChatGPT read through MCP, and
-copy the resulting short handoff back into Codex. Direct Codex chat still follows the
-Codex-only path unless a valid handoff header is pasted back.
+In ChatGPT, select the configured MCP connector or tunnel for this setup card. For remote
+ChatGPT, use OpenAI Secure MCP Tunnel when available; local loopback endpoint details are for
+same-machine development and smoke tests only. Paste the starter prompt, let ChatGPT read
+through MCP, and copy the resulting short handoff back into Codex. Direct Codex chat still
+follows the Codex-only path unless a valid handoff header is pasted back.
+
+## OpenAI Secure MCP Tunnel
+
+Use OpenAI Secure MCP Tunnel as the preferred remote ChatGPT connection path when available.
+Local loopback remains useful for same-machine development and smoke tests. Secure Tunnel
+keeps the MCP server private and uses outbound tunnel-client connectivity instead of public
+inbound project ports.
+
+The setup card can include a `secure_tunnel_profile` for ChatGPT connector setup:
+
+Important setup fields include `tunnel_id`, `profile_name`, `target_type`, `stdio_target`,
+`http_target`, `tunnel_client_commands`, `lifecycle_guidance`, and `diagnostics_guidance`.
+
+```yaml
+secure_tunnel_profile:
+  connection_type: OpenAI Secure MCP Tunnel
+  tunnel_id: <tunnel_id from OpenAI Platform tunnel settings>
+  profile_name: phase-workflow-phase-demo-workspace-demo
+  target_type: stdio
+  stdio_target:
+    server: built-in read-only phase-workflow MCP server
+    mcp_command_argv:
+      - python
+      - .codex/skills/phase-workflow/scripts/phase_mcp_stdio_server.py
+      - --project-root
+      - .
+      - --project-id
+      - phase-demo
+      - --workspace-id
+      - workspace-demo
+  http_target: null
+  tunnel_client_commands:
+    init_argv:
+      - tunnel-client
+      - init
+      - --sample
+      - sample_mcp_stdio_local
+      - --profile
+      - phase-workflow-phase-demo-workspace-demo
+      - --tunnel-id
+      - <tunnel_id>
+      - --mcp-command
+      - <mcp command from setup output>
+    doctor_argv:
+      - tunnel-client
+      - doctor
+      - --profile
+      - phase-workflow-phase-demo-workspace-demo
+      - --explain
+    run_argv:
+      - tunnel-client
+      - run
+      - --profile
+      - phase-workflow-phase-demo-workspace-demo
+lifecycle_guidance:
+  local_companion: Codex can configure/start/status/stop after explicit user confirmation.
+  secure_tunnel: User/operator runs tunnel-client outside Codex.
+diagnostics_guidance:
+  tunnel_not_visible: Check workspace association and Tunnels Read and Tunnels Use.
+  connector_failure: Run tunnel-client doctor --profile <name> --explain.
+  client_stopped: Restart tunnel-client run --profile <name>.
+```
+
+If tunnel-client is stopped or disconnected, requests through the tunnel fail until it
+reconnects. Port conflicts are local companion issues. Do not expose arbitrary project ports
+publicly to make Secure Tunnel work.
+
+For diagnostics, use `tunnel-client doctor --profile <name> --explain` and confirm
+`tunnel-client run --profile <name>` is still active.
+
+Do not store OpenAI API keys, tunnel runtime keys, or other tunnel secrets in project config,
+local registry, handoff prompts, README examples, or tests. The setup output is ChatGPT
+connector guidance, not Codex execution authorization.
 
 ## Bounded Default Snapshot
 
