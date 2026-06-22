@@ -120,7 +120,7 @@ Status/handoff-record mutation checks:
 ## Recommended New Window Prompt
 
 ```text
-Use phase-workflow for this repository. Do not rely on previous chat history.
+Use phase-workflow for this project. Do not rely on previous chat history.
 Read `AGENTS.md` first.
 Read only the first 80-120 lines of the latest compact handoff or current-state file.
 Read only the current phase, active task, blocked, and next task sections of `TODO.md`.

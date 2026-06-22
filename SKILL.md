@@ -34,7 +34,9 @@ Load only the resource needed for the current decision:
 - Copy `templates/project_context_template.md` as `PROJECT_CONTEXT.md` when adopting an
   existing structured project.
 - Use `examples/` only when the user needs a concrete pattern for a greenfield start, existing
-  structured project adoption, change request, or new-window handoff.
+  structured project adoption, change request, new-window handoff, or optional ChatGPT/MCP
+  planning. Use `examples/chatgpt_mcp_planning_example.md` for a ChatGPT/MCP planning
+  example.
 
 ## When To Use This Skill
 
@@ -80,6 +82,133 @@ For each phase:
 5. Verify with actual commands.
 6. Update `TODO.md`, phase notes, and handoff/current-state.
 7. Move to the next phase only after verification.
+
+## Optional ChatGPT/MCP Planning
+
+Phase 15 introduces optional ChatGPT/MCP planning guidance without changing the default
+Codex-only workflow.
+
+Codex-only remains the default compatible path. In that path, Codex reads bounded recovery
+context from project files, shows gates, validates authorization, executes commands, and edits
+files after confirmation.
+
+ChatGPT/MCP planning with Codex execution is optional. In that path, ChatGPT may use a local
+read-only MCP companion to read bounded project context and generate a short handoff prompt
+for Codex. Codex still validates local files, phase gates, authorization branch, and stop
+conditions before execution.
+
+Do not treat MCP planning as required. Codex-direct MCP planning is not supported by Phase 15.
+The local MCP companion must not call Codex, run `codex exec`, start Codex, or use Codex as a
+compression backend.
+
+### Default Recovery Snapshot
+
+For ChatGPT/MCP planning, the local MCP companion reads the same bounded recovery context
+Codex would read by default. Read `AGENTS.md`. Read the needed skill entry or reference
+guidance. Read the first 80-120 lines of the compact handoff or current-state file, when
+present. Read only current `TODO.md` sections: current phase, active task, blockers, next
+tasks, and do-not-do-yet.
+
+Do not read full `PLAN.md`, full `TODO.md`, `DECISIONS.md`, full handoff files, or phase notes
+by default. Treat those as targeted or on-demand reads. Do not route MCP snapshot reads
+through Codex.
+
+### On-Demand Planning Reads
+
+For ChatGPT/MCP planning, keep the Phase 15.2 default snapshot as the default. Use on-demand
+reads only when planning needs more context: scope conflict, missing verification, unclear
+phase boundary, explicit history request, or a specific `PLAN.md` section, phase note, or
+`DECISIONS.md` entry.
+
+Name a concrete file, heading, or section for each on-demand read. Do not read the whole
+project history. Record source refs for every on-demand read. On-demand reads remain
+read-only: do not write files, execute commands, or route reads through Codex.
+
+### ChatGPT-to-Codex Handoff
+
+For ChatGPT/MCP planning, produce a short copyable handoff for Codex. Required handoff fields:
+`project_id`, optional `workspace_id`, `mode`, `source_refs`, `snapshot_id`,
+`requested_action`, and `stop_condition`. `mode` must be `ChatGPT/MCP planning with Codex
+execution`.
+
+Do not include full project history or full file contents. Include a stop condition such as
+show the next phase gate only or execute only the current confirmed phase and stop. Do not
+treat the handoff as a source of truth or execution authorization. Codex must revalidate local
+files, phase gates, authorization branch, and stop condition before execution.
+
+Handoff recognition is header-based. Do not infer ChatGPT/MCP handoff mode from natural
+language alone. Missing header means ordinary Codex-only conversation. A valid header includes
+`phase_workflow_handoff: 1`, `mode: ChatGPT/MCP planning with Codex execution`, `project_id`,
+`source_refs`, `snapshot_id`, `requested_action`, and `stop_condition`. `workspace_id` is
+required when multiple local checkouts or ambiguity exist. Missing required fields, mismatched
+project identity, missing source refs, unclear stop condition, or wrong `mode` fails closed
+before execution. A valid handoff remains planning input only, not a source of truth or
+execution authorization. Codex must revalidate local files, phase gates, authorization branch,
+and stop condition before execution.
+
+Direct conversation with Codex remains Codex-only. Codex must not route its own planning,
+recovery reads, local validation, command execution, or file mutations through MCP. MCP is
+only for ChatGPT-side planning reads. Codex may configure, start, check status, and stop the
+local MCP companion after user confirmation, but service management does not make Codex
+planning use MCP.
+
+### Project Identity And Setup Card
+
+For ChatGPT/MCP planning, define a project identity and setup card before asking ChatGPT to
+plan against a local project. Required setup card fields: `project_id`, optional
+`workspace_id`, `display_name`, `workspace_root`, and `allowed_files`.
+
+`project_id` is the stable identity for the project. `workspace_id` distinguishes multiple
+local checkouts of the same project. `display_name` is human-facing only. `workspace_root`
+stays in the local MCP registry. `allowed_files` is the explicit read allowlist for MCP
+planning.
+
+Do not use `display_name` as an identity anchor. Do not include `workspace_root` in the copied
+Codex handoff unless local validation needs it. Treat the setup card as connector
+configuration guidance, not execution authorization.
+
+### Project Configuration And Local Registry
+
+For ChatGPT/MCP planning, create project MCP configuration only after an explicit user request.
+Explicit user request is required before creating or updating project MCP configuration or the
+local registry. Project-local MCP config lives under `.phase-workflow/mcp/project.json`. The
+project config stores `schema_version`, `project_id`, `display_name`, and `allowed_files`.
+The project config must not store the local absolute `workspace_root`.
+
+The local MCP registry lives at `~/.phase-workflow/mcp/registry.json`. The local registry
+stores `project_id`, `workspace_id`, `workspace_root`, port, endpoint, and PID or lock
+metadata. `project_id` is generated once for the project and stored in project config.
+`workspace_id` is generated per local checkout and stored in the local registry. Missing or
+ambiguous `project_id` or `workspace_id` fails closed. Configuration writes stay inside the
+selected project and the documented local registry path.
+
+### Local Read-Only MCP Lifecycle
+
+For ChatGPT/MCP planning, keep the local companion lifecycle lightweight. Support only start,
+status, and stop guidance. Bind to loopback by default. Track the running process with a PID
+or lock file. Report port conflicts explicitly. Fail closed when `project_id` is missing,
+unknown, or ambiguous.
+
+ChatGPT connects to an already running local companion. Do not let ChatGPT start Codex, start
+the local companion, or execute project commands. Do not add a Web UI, database, cloud sync,
+issue tracker integration, or complex CLI.
+
+### Built-In Read-Only MCP Companion
+
+For projects that have adopted `phase-workflow`, use the built-in read-only MCP companion only
+when the user explicitly asks to enable optional ChatGPT/MCP planning for that project.
+
+Use `scripts/phase_mcp_lifecycle.py` for configure/start/status/stop only after explicit user
+request and confirmation. Use `scripts/phase_mcp_setup_output.py` after the selected workspace
+reports `running` to prepare ChatGPT setup guidance and a starter ChatGPT planning prompt.
+
+Do not hard-code unstable ChatGPT product UI steps; provide endpoint, project identity,
+workspace identity, allowed files summary, and starter prompt. The final Codex handoff is
+ChatGPT output after MCP-assisted planning, not Codex configuration output.
+
+Do not make Codex read, plan, validate, execute, or mutate files through MCP. Direct Codex
+conversation remains Codex-only unless a valid ChatGPT/MCP handoff header is pasted back and
+passes local validation.
 
 ## Authorization Model
 
