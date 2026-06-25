@@ -127,6 +127,13 @@ read-only: do not write files, execute commands, or route reads through Codex.
 
 ### ChatGPT-to-Codex Handoff
 
+For ChatGPT/MCP planning, ChatGPT may first produce a planning-only draft start gate preview
+labeled `draft_start_gate_preview: 1`. The preview can include current phase, goal, non-goals,
+split decision, verification loop, and confirmation status when present in MCP planning
+context. It is non-authoritative and not Codex execution authorization. Codex must still show
+the authoritative start gate after local revalidation and wait for separate Codex-side
+execution confirmation before any mutation.
+
 For ChatGPT/MCP planning, produce a short copyable handoff for Codex. Required handoff fields:
 `project_id`, optional `workspace_id`, `mode`, `source_refs`, `snapshot_id`,
 `requested_action`, and `stop_condition`. `mode` must be `ChatGPT/MCP planning with Codex

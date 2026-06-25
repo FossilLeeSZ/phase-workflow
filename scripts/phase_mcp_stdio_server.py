@@ -10,6 +10,7 @@ from typing import Any, TextIO
 if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from scripts.phase_mcp_guidance import default_guidance_paths
 from scripts.phase_mcp_server import PhaseWorkflowMCPServer, serve_stdio
 
 
@@ -37,7 +38,7 @@ def build_stdio_server(
         project_config["allowed_files"],
         project_id=project_id,
         workspace_id=workspace_id,
-        guidance_paths=_default_guidance_paths(root, project_config["allowed_files"]),
+        guidance_paths=default_guidance_paths(root, project_config["allowed_files"]),
     )
 
 
@@ -98,12 +99,6 @@ def _load_project_config(project_root: Path) -> dict[str, Any]:
         raise StdioServerError("project MCP config allowed_files is missing")
 
     return config
-
-
-def _default_guidance_paths(root: Path, allowed_files: list[str]) -> list[str]:
-    allowed = set(allowed_files)
-    candidates = ("SKILL.md", "references/phase_policy.md")
-    return [path for path in candidates if path in allowed and (root / path).is_file()]
 
 
 if __name__ == "__main__":

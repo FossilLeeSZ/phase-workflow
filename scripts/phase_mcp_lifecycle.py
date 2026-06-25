@@ -17,6 +17,7 @@ from typing import Any
 if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from scripts.phase_mcp_guidance import default_guidance_paths
 from scripts.phase_mcp_read_core import list_allowed_files
 from scripts.phase_mcp_server import PhaseWorkflowMCPServer
 
@@ -31,6 +32,8 @@ PROJECT_SCHEMA_VERSION = 1
 DEFAULT_ALLOWED_CANDIDATES = (
     "AGENTS.md",
     "TODO.md",
+    ".codex/skills/phase-workflow/SKILL.md",
+    ".codex/skills/phase-workflow/references/phase_policy.md",
     "SKILL.md",
     "PLAN.md",
     "DECISIONS.md",
@@ -252,7 +255,7 @@ def serve_project(
         project_config["allowed_files"],
         project_id=project_id,
         workspace_id=workspace_id,
-        guidance_paths=_default_guidance_paths(root, project_config["allowed_files"]),
+        guidance_paths=default_guidance_paths(root, project_config["allowed_files"]),
     )
     httpd = _build_http_server(server, host, port)
     actual_port = httpd.server_address[1]
@@ -651,12 +654,6 @@ def _wait_for_ready_file(ready_path: Path, process: subprocess.Popen, timeout_se
     except OSError:
         pass
     raise LifecycleError("MCP companion did not become ready before timeout")
-
-
-def _default_guidance_paths(root: Path, allowed_files: list[str]) -> list[str]:
-    allowed = set(allowed_files)
-    candidates = ("SKILL.md", "references/phase_policy.md")
-    return [path for path in candidates if path in allowed and (root / path).is_file()]
 
 
 def _public_workspace_status(workspace: dict[str, Any]) -> dict[str, Any]:

@@ -162,14 +162,22 @@ the whole project history. Record source refs for every on-demand read so the
 ChatGPT-to-Codex handoff can cite them. On-demand MCP reads remain read-only: no file writes,
 no command execution, and no Codex-routed reads.
 
-ChatGPT-to-Codex handoff contract: The handoff must be short and copyable. Required handoff
-fields: `project_id`, optional `workspace_id`, `mode`, `source_refs`, `snapshot_id`,
-`requested_action`, and `stop_condition`. `mode` must be `ChatGPT/MCP planning with Codex
-execution`. The handoff must include source refs and must not include full project history or
-full file contents. The handoff must include a stop condition such as show the next phase gate
-only or execute only the current confirmed phase and stop. Codex treats the handoff as
-planning input, not as a source of truth or execution authorization. Codex still revalidates
-local files, phase gates, authorization branch, and stop condition before execution.
+ChatGPT-to-Codex handoff contract: ChatGPT may first return a planning-only draft start gate
+preview labeled `draft_start_gate_preview: 1`. The preview can include current phase, goal,
+non-goals, split decision, verification loop, and confirmation status when that information is
+present in MCP planning context. The preview is non-authoritative and not Codex execution
+authorization. Codex must still show the authoritative start gate after local revalidation and
+wait for separate Codex-side execution confirmation before any mutation.
+
+The handoff must be short and copyable. Required handoff fields: `project_id`, optional
+`workspace_id`, `mode`, `source_refs`, `snapshot_id`, `requested_action`, and
+`stop_condition`. `mode` must be `ChatGPT/MCP planning with Codex execution`. The handoff must
+include source refs and must not include full project history or full file contents. The
+handoff must include a stop condition such as show the next phase gate only or execute only the
+current confirmed phase and stop. Codex treats the handoff as planning input, not as a source
+of truth or execution authorization. Codex still revalidates local files, phase gates,
+authorization branch, and stop condition before execution. The handoff block still begins with
+`phase_workflow_handoff: 1`.
 
 Handoff recognition is header-based. Do not infer ChatGPT/MCP handoff mode from natural
 language alone. Missing header means ordinary Codex-only conversation. A valid header includes

@@ -184,9 +184,26 @@ selected project and the documented local registry path.
 
 ## Handoff Prompt
 
-ChatGPT should hand Codex a short copyable prompt, not a full transcript:
+ChatGPT should first show a planning-only draft start gate preview, then hand Codex a short
+copyable prompt, not a full transcript. The draft preview is non-authoritative and not Codex
+execution authorization. Codex must still show the authoritative start gate after local
+revalidation and wait for separate Codex-side execution confirmation before any mutation:
 
 ```text
+draft_start_gate_preview: 1
+status: planning-only; non-authoritative; not Codex execution authorization
+current_phase: Phase 15.7
+goal: Document MCP enablement and handoff boundaries.
+non_goals: Do not execute implementation, start services, or configure ChatGPT product surfaces.
+split_decision: Keep as one documentation phase.
+verification_loop: Focused docs tests, then full pytest.
+confirmation_status: Not confirmed in Codex; Codex must show the authoritative start gate first.
+source_refs:
+  - TODO.md#Current Phase
+  - TODO.md#Next Tasks
+  - docs/phases/phase_15_optional_chatgpt_mcp_planning_companion.md#Local Lifecycle Guidance
+snapshot_id: mcp-snapshot-2026-06-19T10-30-00
+
 phase_workflow_handoff: 1
 project_id: phase-workflow
 workspace_id: desktop-phase-workflow
@@ -200,6 +217,9 @@ requested_action: Show the Phase 15.7 start gate.
 stop_condition: Stop after the visible start gate and wait for separate user confirmation.
 ```
 
+The draft preview fields include `current_phase`, `goal`, `non_goals`, `split_decision`,
+`verification_loop`, and `confirmation_status` when that information is available from MCP
+planning context.
 The handoff fields include `source_refs`, `snapshot_id`, `requested_action`, and
 `stop_condition`.
 The handoff is planning input only, not a source of truth or execution authorization.

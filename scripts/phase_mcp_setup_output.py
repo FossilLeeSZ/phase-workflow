@@ -99,8 +99,11 @@ def build_starter_prompt(
     project_config: Mapping[str, Any],
     workspace_status: Mapping[str, Any],
     *,
-    requested_action: str = "Plan the next phase and return a Codex handoff.",
-    stop_condition: str = "Return a short Codex handoff only; do not execute.",
+    requested_action: str = "Plan the next phase and return a draft start gate preview plus Codex handoff.",
+    stop_condition: str = (
+        "Return a planning-only draft start gate preview and short Codex handoff only; "
+        "do not execute."
+    ),
 ) -> str:
     validated = _validate_inputs(project_config, workspace_status)
 
@@ -123,7 +126,22 @@ def build_starter_prompt(
             "Do not start Codex or the local companion.",
             "Do not include full project history or full file contents.",
             "",
-            "Return a short Codex handoff after MCP-assisted planning.",
+            "Return a planning-only draft start gate preview after MCP-assisted planning.",
+            "The draft preview is non-authoritative and not Codex execution authorization.",
+            "Codex must still show the authoritative start gate after local revalidation and wait for separate Codex-side execution confirmation before any mutation.",
+            "The draft preview should include these fields when they are present in MCP planning context:",
+            "draft_start_gate_preview: 1",
+            "status: planning-only; non-authoritative; not Codex execution authorization",
+            "current_phase:",
+            "goal:",
+            "non_goals:",
+            "split_decision:",
+            "verification_loop:",
+            "confirmation_status:",
+            "source_refs:",
+            "snapshot_id:",
+            "",
+            "Then return the short Codex handoff.",
             "The handoff must include these header fields:",
             "phase_workflow_handoff: 1",
             f"project_id: {validated['project_id']}",
@@ -141,8 +159,11 @@ def build_chatgpt_setup_output(
     project_config: Mapping[str, Any],
     workspace_status: Mapping[str, Any],
     *,
-    requested_action: str = "Plan the next phase and return a Codex handoff.",
-    stop_condition: str = "Return a short Codex handoff only; do not execute.",
+    requested_action: str = "Plan the next phase and return a draft start gate preview plus Codex handoff.",
+    stop_condition: str = (
+        "Return a planning-only draft start gate preview and short Codex handoff only; "
+        "do not execute."
+    ),
     tunnel_id: str | None = None,
     tunnel_profile_name: str | None = None,
     tunnel_target_type: str = "stdio",

@@ -138,6 +138,13 @@ section for each on-demand read. Do not read the whole project history. Record s
 every on-demand read. On-demand reads remain targeted and read-only: do not write files,
 execute commands, or route reads through Codex.
 
+ChatGPT may first return a planning-only draft start gate preview labeled
+`draft_start_gate_preview: 1` before the copied handoff. The preview can include current phase,
+goal, non-goals, split decision, verification loop, and confirmation status when present in MCP
+planning context. The draft preview is non-authoritative and not Codex execution
+authorization. Codex must still show the authoritative start gate after local revalidation and
+wait for separate Codex-side execution confirmation before any mutation.
+
 The handoff is planning input only, not a source of truth or execution authorization. Do not
 include full project history or full file contents. Include a stop condition such as show the
 next phase gate only or execute only the current confirmed phase and stop. Codex still
