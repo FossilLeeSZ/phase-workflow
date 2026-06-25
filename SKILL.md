@@ -1,12 +1,12 @@
 ---
 name: phase-workflow
-description: Use this skill for early-stage software projects that need phase-based planning, fixtures-first and tests-first implementation, scope control, change request tracking, verification, and handoff documents for continuing work across Codex sessions.
+description: Use this skill for software projects that need zero-based project direction, phase-based planning, fixtures-first and tests-first implementation, scope control, change request tracking, verification, and handoff documents for continuing work across Codex sessions.
 ---
 
 # phase-workflow
 
-Use this skill to keep early-stage project work phase-based, testable, and recoverable across
-Codex sessions.
+Use this skill to plan and complete software projects from a zero-based project direction
+while keeping work phase-based, testable, and recoverable across Codex sessions.
 
 ## Mandatory Invocation
 
@@ -33,22 +33,23 @@ Load only the resource needed for the current decision:
   in a target project.
 - Copy `templates/project_context_template.md` as `PROJECT_CONTEXT.md` when adopting an
   existing structured project.
-- Use `examples/` only when the user needs a concrete pattern for a greenfield start, existing
-  structured project adoption, change request, new-window handoff, or optional ChatGPT/MCP
-  planning. Use `examples/chatgpt_mcp_planning_example.md` for a ChatGPT/MCP planning
-  example.
+- Use `examples/` only when the user needs a concrete pattern for an empty-folder start,
+  existing structured project re-baselining, change request, new-window handoff, or optional
+  ChatGPT/MCP planning. Use `examples/chatgpt_mcp_planning_example.md` for a ChatGPT/MCP
+  planning example.
 
 ## When To Use This Skill
 
 Use this skill when the user is working on:
 
-- A new project.
-- An existing project with a clear structure that needs lightweight phase planning and handoff
-  files.
-- An MVP project.
+- A project planned from a zero-based project direction.
+- Empty repositories and new projects.
+- An existing codebase with a clear structure that needs re-baselining toward a complete
+  delivery path.
+- A project where MVP is a possible milestone, not the universal project frame.
 - A Phase 0 initialization.
 - A phase-based development plan.
-- Scope control for a small or changing project.
+- Scope control for an evolving project.
 - New-window handoff after prior Codex work.
 - Mid-phase change request handling.
 - Updates to `TODO.md`, `DECISIONS.md`, phase notes, or handoff documents.
@@ -625,7 +626,7 @@ Classify mid-phase changes before implementing them:
 - Common current phase bug fix example: Phase X.2.
 - New capability or separate verification loop: New Major Phase.
 - Valuable but not now: Backlog.
-- MVP expansion idea: record only, do not implement directly.
+- Project or release boundary expansion idea: record only, do not implement directly.
 
 Every change request should include impact on files, tests, outputs, and acceptance criteria.
 If the classification is New Major Phase, update the plan and wait for user confirmation before

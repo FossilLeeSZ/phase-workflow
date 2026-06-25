@@ -46,7 +46,7 @@ Use Backlog when the change:
 
 - Has possible future value.
 - Is not needed for the current phase.
-- Would expand the MVP or add operational complexity.
+- Would expand the current project or release boundary or add operational complexity.
 
 Example: Integrate with an issue tracker.
 

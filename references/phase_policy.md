@@ -1,7 +1,7 @@
 # Phase Policy
 
-Use this policy to define phase boundaries and keep early-stage work small, explicit, and
-verifiable.
+Use this policy to define phase boundaries and keep zero-based project work small, explicit,
+and verifiable.
 
 ## Numbering Rules
 

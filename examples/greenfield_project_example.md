@@ -1,7 +1,7 @@
 # Greenfield Project Example
 
-This example shows how to use `phase-workflow` to start a small MVP project
-without relying on chat history.
+This example shows how to use `phase-workflow` to start a new project from a zero-based
+project direction without relying on chat history.
 
 ## Scenario
 
@@ -12,10 +12,10 @@ recoverable project baseline and then implement one narrow behavior.
 
 ## Before Phase 0: Chat-to-Codex Handoff
 
-Before Codex edits the target project, use Chat to brainstorm the project goal,
-MVP boundary, non-goals, constraints, and success criteria. Chat should then
-generate a Codex startup prompt that carries those decisions into the project
-folder.
+Before Codex edits the target project, use Chat to brainstorm the project goal, project
+boundary, first release boundary when useful, non-goals, constraints, and success criteria.
+Chat should then generate a Codex startup prompt that carries those decisions into the
+project folder.
 
 Codex should use the prompt to draft a rough phase plan, check whether Phase 0
 should stay whole or split, and wait for the user to confirm Phase 0 before
@@ -29,7 +29,7 @@ Use phase-workflow for this new project.
 Brainstorm summary:
 - Goal: create a small command-line helper that reads a plain text note and
   returns a short list of action items.
-- MVP boundary: support one basic note format first.
+- First release boundary: support one basic note format first.
 - Non-goals: no database, no cloud sync, no full CLI framework, no deployment.
 - Success criteria: Phase 0 creates recoverable project files and minimal tests;
   Phase 1 implements one fixture-backed extraction behavior.

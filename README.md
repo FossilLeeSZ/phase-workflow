@@ -1,8 +1,13 @@
 # phase-workflow
 
-`phase-workflow` is a lightweight Codex workflow skill for early-stage, greenfield,
-and MVP software projects. It helps keep long-running development work small,
-explicit, verifiable, and recoverable across Codex sessions.
+`phase-workflow` is a lightweight Codex workflow skill for planning and completing
+software projects from a zero-based project direction. It helps keep long-running
+development work small, explicit, verifiable, and recoverable across Codex sessions.
+
+Zero-based project direction means the project is being planned from a zero-based project
+direction rather than from chat history. That can mean empty repositories and new projects, or
+existing codebases that need re-baselining around a new goal, project boundaries, phases,
+acceptance criteria, and complete delivery path.
 
 Its main purpose is not to make Codex plan. Codex can already plan. Its purpose is
 to make planning, scope control, verification, and handoff repeatable through
@@ -31,8 +36,8 @@ generation framework.
 
 ## What Problem It Solves
 
-Early projects drift because scope, examples, tests, and handoff notes fall out of
-sync. `phase-workflow` keeps them synchronized through a repeatable phase rhythm.
+Projects drift when scope, examples, tests, and handoff notes fall out of sync.
+`phase-workflow` keeps them synchronized through a repeatable phase rhythm.
 
 This is a scope-control workflow skill, not just a planning template. It prevents a
 phase from silently absorbing future work. New ideas are classified before
@@ -42,9 +47,9 @@ implementation instead of being added directly to the active phase:
 - `New Major Phase`
 - `Backlog`
 
-The goal is not to add process for its own sake. The goal is to make new project
-work recoverable across Codex sessions without relying on chat history or a
-compressed long conversation.
+The goal is not to add process for its own sake. The goal is to make project work
+recoverable across Codex sessions without relying on chat history or a compressed long
+conversation.
 
 ## What It Produces
 
@@ -215,30 +220,36 @@ cloud sync, issue tracker integration, or complex CLI.
 Built-in read-only MCP companion support: In any project that has adopted
 `phase-workflow`, the user may ask Codex to enable optional ChatGPT/MCP planning for that
 project. Codex may run `scripts/phase_mcp_lifecycle.py configure`, `start`, `status`, or
-`stop` only after explicit user confirmation. After the companion is running, Codex should
-provide the ChatGPT setup card and starter ChatGPT planning prompt. The setup card includes
-connection guidance, `project_id`, `workspace_id`, display name, and allowed-file summary.
-For remote ChatGPT, use OpenAI Secure MCP Tunnel when available; local loopback endpoint
-details are for same-machine development and smoke tests only. In ChatGPT, select the
-configured MCP connector or tunnel for this setup card, paste the starter prompt, let ChatGPT
-read through MCP, and copy the resulting short handoff back into Codex. ChatGPT reads through
-MCP and returns the final Codex handoff; Codex configuration does not generate the final
-handoff. Direct Codex chat remains Codex-only; only the ChatGPT-side planning conversation
-uses MCP.
+`stop` only after explicit user confirmation. The skill only handles this repository's local
+MCP companion creation and lifecycle operations: configure, start, status, and stop. After the
+companion is running, Codex may provide local setup facts for user-owned product setup:
+`project_id`, `workspace_id`, display name, allowed-file summary, local endpoint for
+same-machine development or smoke tests, and a starter ChatGPT planning prompt. Tunnel-side
+configuration is not performed by `phase-workflow`; follow the official OpenAI Secure MCP
+Tunnel documentation:
+https://developers.openai.com/api/docs/guides/secure-mcp-tunnels. ChatGPT-side configuration
+is not performed by `phase-workflow`; follow the official ChatGPT developer mode / MCP apps
+documentation:
+https://developers.openai.com/api/docs/guides/developer-mode and
+https://help.openai.com/en/articles/12584461-developer-mode-and-mcp-apps-in-chatgpt. ChatGPT
+reads through MCP and returns the final Codex handoff; Codex configuration does not generate
+the final handoff. Direct Codex chat remains Codex-only; only the ChatGPT-side planning
+conversation uses MCP.
 
 OpenAI Secure MCP Tunnel support: Use OpenAI Secure MCP Tunnel as the preferred remote
 ChatGPT connection path when available. Local loopback remains the local development path for
 same-machine development and smoke tests. Secure Tunnel keeps the MCP server private and uses
-outbound tunnel-client connectivity instead of public inbound project ports. The setup output
-may include `tunnel_id`, profile name, target type, stdio or HTTP target guidance,
-`tunnel-client` command guidance, lifecycle guidance, and diagnostics guidance.
+outbound tunnel-client connectivity instead of public inbound project ports. `phase-workflow`
+does not configure the Tunnel side; it may only provide local companion facts that the user can
+apply while following the official Secure MCP Tunnel guide:
+https://developers.openai.com/api/docs/guides/secure-mcp-tunnels.
 
 Secure Tunnel availability depends on account, Platform tunnel, organization/workspace,
-ChatGPT connector UI, workspace association, and permissions. Check Tunnels Read and Tunnels
-Use when the tunnel is not visible or connector calls fail. Use
-`tunnel-client doctor --profile <name> --explain` and
-`tunnel-client run --profile <name>` to diagnose the user-managed tunnel-client. Stopped or
-disconnected tunnel-client processes make tunnel requests fail until they reconnect.
+ChatGPT connector UI, workspace association, and permissions. ChatGPT developer mode and MCP
+app setup are ChatGPT-side product configuration, not `phase-workflow` setup. Follow the
+official ChatGPT developer mode / MCP apps docs:
+https://developers.openai.com/api/docs/guides/developer-mode and
+https://help.openai.com/en/articles/12584461-developer-mode-and-mcp-apps-in-chatgpt.
 
 Port conflicts remain local companion issues. Secure Tunnel is not public exposure and does
 not require exposing arbitrary project ports publicly. Do not promote `ngrok` or public URL
@@ -263,10 +274,10 @@ from a thread-scoped goal.
 
 Use this skill for:
 
-- Greenfield software projects.
-- Existing projects with a clear structure that need lightweight phase planning and handoff
-  files.
-- Early MVPs with changing requirements.
+- Empty repositories and new projects that need a recoverable baseline.
+- Existing codebases that need re-baselining around a new goal, boundaries, phases,
+  acceptance criteria, and complete delivery path.
+- Projects where an MVP is a possible milestone, not the universal project frame.
 - Projects where Codex needs to resume work in a new window.
 - Work that benefits from fixtures-first and tests-first development.
 - Small teams or solo development where lightweight written context matters.
@@ -293,9 +304,10 @@ for that request. An opt-out does not rewrite project workflow records.
 
 ## Existing Projects With A Clear Structure
 
-Use `phase-workflow` for existing projects with a clear structure when the codebase has a
-recognizable purpose, clear directories, and a basic verification path, but does not yet have
-lightweight phase planning and handoff files.
+Use `phase-workflow` for existing codebases with a clear structure when the codebase has a
+recognizable purpose, clear directories, and a basic verification path, but needs
+re-baselining into a zero-based project direction with lightweight phase planning and handoff
+files.
 
 For these projects, Phase 0 should split into two confirmed sub-phases:
 
@@ -375,13 +387,13 @@ Install `phase-workflow` as a project-level Codex skill in this project. Only pe
 Chinese:
 
 ```text
-这个项目已经安装或准备安装 `phase-workflow`。现在请为本项目准备可选 ChatGPT/MCP 规划能力。仅执行安装检查和配置流程说明：确认本项目存在内置 MCP companion 脚本，说明 `configure`、`start`、`status`、`stop` 的作用，给出 ChatGPT 端 Secure Tunnel 配置流程（如果当前账号和工作区可用）、说明本地 loopback 仅用于同机开发或烟测、给出需要复制到 ChatGPT 的 starter prompt，以及后续需要我单独确认的 Codex 命令。不要把 MCP 设为强制，不要让 Codex 通过 MCP 规划或读取项目文件。不要现在创建或更新 MCP 配置、写入本地 registry、绑定端口或启动服务，除非我随后单独确认。直接 Codex 对话保持 Codex-only，MCP 只用于 ChatGPT 端只读规划。
+这个项目已经安装或准备安装 `phase-workflow`。现在请为本项目准备可选 ChatGPT/MCP 规划能力。仅执行安装检查和本仓库本地 companion 生命周期说明：确认本项目存在内置 MCP companion 脚本，说明 `configure`、`start`、`status`、`stop` 的作用。这个 skill 只负责本仓库的本地 MCP companion 创建和生命周期操作：配置、启动、状态检查和停止。Tunnel 端配置不由 `phase-workflow` 完成；请参照 OpenAI Secure MCP Tunnel 官方文档：https://developers.openai.com/api/docs/guides/secure-mcp-tunnels。ChatGPT 端配置不由 `phase-workflow` 完成；请参照 ChatGPT developer mode / MCP apps 官方文档：https://developers.openai.com/api/docs/guides/developer-mode 和 https://help.openai.com/en/articles/12584461-developer-mode-and-mcp-apps-in-chatgpt。说明本地 loopback 仅用于同机开发或烟测，给出需要复制到 ChatGPT 的 starter prompt，以及后续需要我单独确认的 Codex 命令。不要把 MCP 设为强制，不要让 Codex 通过 MCP 规划或读取项目文件。不要现在创建或更新 MCP 配置、写入本地 registry、绑定端口或启动服务，除非我随后单独确认。直接 Codex 对话保持 Codex-only，MCP 只用于 ChatGPT 端只读规划。
 ```
 
 English:
 
 ```text
-This project has installed or is ready to install `phase-workflow`. Now prepare the optional ChatGPT/MCP planning capability for this project. Only perform installation checks and configuration-flow guidance: confirm that the built-in MCP companion scripts are present, explain what `configure`, `start`, `status`, and `stop` do, give me the ChatGPT-side Secure Tunnel configuration flow when available, explain that local loopback is only for same-machine development or smoke tests, provide the starter prompt to copy into ChatGPT, and list the later Codex commands that require my separate confirmation. Do not make MCP mandatory, and do not make Codex plan or read project files through MCP. Do not create or update MCP config, write the local registry, bind a port, or start services now unless I separately confirm. Direct Codex conversation stays Codex-only; MCP is only for ChatGPT-side read-only planning.
+This project has installed or is ready to install `phase-workflow`. Now prepare the optional ChatGPT/MCP planning capability for this project. Only perform installation checks and this repository's local companion lifecycle guidance: confirm that the built-in MCP companion scripts are present and explain what `configure`, `start`, `status`, and `stop` do. This skill should only handle this repository's local MCP companion creation and lifecycle operations: configure, start, status, and stop. `phase-workflow` does not configure the Tunnel side; follow the official OpenAI Secure MCP Tunnel documentation: https://developers.openai.com/api/docs/guides/secure-mcp-tunnels. `phase-workflow` does not configure the ChatGPT side; follow the official ChatGPT developer mode / MCP apps documentation: https://developers.openai.com/api/docs/guides/developer-mode and https://help.openai.com/en/articles/12584461-developer-mode-and-mcp-apps-in-chatgpt. Explain that local loopback is only for same-machine development or smoke tests, provide the starter prompt to copy into ChatGPT, and list the later Codex commands that require my separate confirmation. Do not make MCP mandatory, and do not make Codex plan or read project files through MCP. Do not create or update MCP config, write the local registry, bind a port, or start services now unless I separately confirm. Direct Codex conversation stays Codex-only; MCP is only for ChatGPT-side read-only planning.
 ```
 
 Optional project-level hook support can add a small reminder on each user prompt.
@@ -459,9 +471,9 @@ Users may explicitly request adding or refreshing either the `AGENTS.md` section
 the `.codex/hooks.json` hook entry after updating the skill version; treat that as an
 intentional maintenance action.
 
-After installation, start with a short brainstorm. Define the project goal, MVP
-boundary, non-goals, constraints, and success criteria before asking Codex to
-create workflow files.
+After installation, start with a short brainstorm. Define the project goal, project
+boundary, first release boundary when useful, non-goals, constraints, and success criteria
+before asking Codex to create workflow files.
 
 You can brainstorm in Chat first and ask Chat to generate a first Codex prompt, or
 you can brainstorm directly in Codex. The Chat-to-Codex handoff is recommended,
@@ -481,15 +493,16 @@ current state before editing.
 
 ### Startup Guidance
 
-Before starting Phase 0, give Codex the project goal, MVP boundary, non-goals,
-constraints, and success criteria. If you already discussed the project in Chat,
+Before starting Phase 0, give Codex the project goal, project boundary, first release
+boundary when useful, non-goals, constraints, and success criteria. If you already discussed
+the project in Chat,
 you can ask Chat to generate a first Codex prompt from that summary. This is
 recommended, not required.
 
 ```text
 Use phase-workflow for this project. I want to brainstorm the project first.
-Help me define the goal, MVP boundary, non-goals, constraints, and success
-criteria before Phase 0.
+Help me define the goal, project boundary, first release boundary if useful, non-goals,
+constraints, and success criteria before Phase 0.
 ```
 
 ### Short Prompts
@@ -537,11 +550,11 @@ starting Phase 1.
 ## Chat-to-Codex Startup Flow
 
 Use Chat or Codex for product thinking, then use Codex for file-based execution across
-greenfield and existing structured project starts:
+empty, new, and re-baselined existing project starts:
 
 1. First, create or open a target project folder.
 2. Install or copy the full `phase-workflow` skill.
-3. Brainstorm the project goal, MVP boundary, non-goals, constraints, and success
+3. Brainstorm the project goal, project boundary, non-goals, constraints, and success
    criteria in Chat or directly in Codex.
 4. Optionally have Chat generate a Codex prompt that summarizes the agreed project
    direction.
@@ -611,7 +624,7 @@ language unless you explicitly ask for that.
 ```mermaid
 flowchart TD
     A["Create or open target project folder"] --> B["Install or copy phase-workflow skill"]
-    B --> C["Brainstorm project direction: goal, MVP, non-goals, constraints"]
+    B --> C["Brainstorm project direction: goal, boundaries, non-goals, constraints"]
     C --> D["Optional startup prompt"]
     D --> PM{"Plan Mode enabled?"}
     PM -->|"Yes"| PMW["Activate phase-workflow first"]
@@ -701,9 +714,9 @@ For each phase:
 10. Record durable process decisions in `DECISIONS.md`; do not record ordinary phase
     completion, verification logs, or execution history there.
 
-Keep the workflow small. If a request expands the MVP, classify it as `Phase X.N`,
-`New Major Phase`, or `Backlog` instead of disrupting the active phase. `Phase X.1` and
-`Phase X.2` are common examples, not the complete boundary.
+Keep the workflow small. If a request expands the current project or release boundary,
+classify it as `Phase X.N`, `New Major Phase`, or `Backlog` instead of disrupting the active
+phase. `Phase X.1` and `Phase X.2` are common examples, not the complete boundary.
 
 ## License
 

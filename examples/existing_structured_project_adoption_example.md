@@ -1,7 +1,11 @@
 # Existing Structured Project Adoption Example
 
-This example shows how to adopt `phase-workflow` into an existing project with a clear
-structure. It does not show code cleanup, feature work, or a roadmap inferred from code.
+This example shows how to adopt `phase-workflow` into an existing codebase with a clear
+structure when the user wants re-baselining from a zero-based project direction. It does not
+show code cleanup, feature work, or a roadmap inferred from code.
+
+For existing codebases, zero-based direction means redefining the project goal, boundaries,
+phases, acceptance criteria, and complete delivery path around the user's current intent.
 
 ## Scenario
 
