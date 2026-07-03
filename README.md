@@ -687,7 +687,7 @@ flowchart TD
     UA -->|"No"| V["Prepare fixtures or examples"]
     UB --> V
     V --> W["Write failing tests"]
-    W --> X["Implement minimal capability"]
+    W --> X["Complete phase-declared real capability"]
     X --> Y["Run actual verification command"]
     Y --> Z["Update TODO, phase note, and compact handoff"]
     Z --> AA["Report result and wait for next phase"]
@@ -715,12 +715,21 @@ For each phase:
 4. Confirm any non-trivial execution approach before related file changes.
 5. Create or update fixtures and examples before implementation.
 6. Write the failing tests that define the desired behavior.
-7. Implement only the minimum capability needed for the phase.
+7. Complete the real capability inside the declared phase boundary.
 8. Run the actual verification command, usually `python -m pytest -q`.
 9. Record current status in `TODO.md`; record verification results in the phase note and
    compact handoff note.
 10. Record durable process decisions in `DECISIONS.md`; do not record ordinary phase
     completion, verification logs, or execution history there.
+
+Keep phases narrow and reviewable. A phase can be small, but it must not be hollow. A
+verification loop should prove the user-value loop or end-to-end capability loop promised by
+the phase, not only that a local mechanism runs.
+
+Preview, smoke, contract-only, stub, fake, or simulated behavior is valid only when the phase
+boundary, user-facing labels, artifact fields, and acceptance criteria explicitly say so. If UI,
+job, progress, artifact, and result surfaces imply a real capability, the real execution path
+must be connected before the phase is complete.
 
 Keep the workflow small. If a request expands the current project or release boundary,
 classify it as `Phase X.N`, `New Major Phase`, or `Backlog` instead of disrupting the active

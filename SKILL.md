@@ -79,7 +79,7 @@ For each phase:
 1. Lock phase scope.
 2. Prepare fixtures/examples.
 3. Write failing tests.
-4. Implement the minimal capability.
+4. Complete the real capability inside the declared phase boundary.
 5. Verify with actual commands.
 6. Update `TODO.md`, phase notes, and handoff/current-state.
 7. Move to the next phase only after verification.
@@ -409,7 +409,14 @@ When a phase violation is discovered:
 
 ## Operating Rules
 
-- Keep one phase focused on one closed loop.
+- Keep one phase focused on one user-value loop or end-to-end capability loop.
+- A phase can be small, but it must not be hollow. It must complete the real capability
+  inside the declared phase boundary.
+- Preview, smoke, contract-only, stub, fake, or simulated behavior is acceptable only when the
+  phase boundary, user-facing labels, artifact fields, and acceptance criteria explicitly say
+  so.
+- Do not treat UI, job, progress, artifact, and result surfaces as complete when the real
+  execution path is not connected.
 - Before starting a major phase or sub-phase, output a visible phase start gate.
 - The phase start gate must include the current phase, goal, non-goals, split decision,
   verification loop, and confirmation status.
@@ -486,7 +493,8 @@ When a phase violation is discovered:
   phase boundary.
 - Prefer fixtures/examples before implementation.
 - Prefer failing tests before changing behavior.
-- Implement only the minimum capability needed for the active phase.
+- Complete only the real capability promised by the active phase boundary; do not add
+  later-phase behavior, but do not substitute a hollow preview for promised execution.
 - Record scope changes before implementing them.
 - Run actual verification commands before marking work complete.
 - Update project files so the next Codex session can resume without chat history.

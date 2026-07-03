@@ -1,7 +1,8 @@
 # Phase Policy
 
 Use this policy to define phase boundaries and keep zero-based project work small, explicit,
-and verifiable.
+and verifiable without hollowing out the promised capability. A phase can be small, but it must
+not be hollow.
 
 ## Numbering Rules
 
@@ -9,7 +10,7 @@ and verifiable.
 - Phase 0.1: workflow adoption for an existing structured project candidate.
 - Phase 0.2: planning baseline for an adopted existing structured project.
 - Phase N: one coherent major phase after the baseline. It should have one goal, one reviewable
-  output set, and one closed verification loop.
+  output set, and one real-capability verification loop.
 - Phase N.x: any one-decimal sub-phase under the current major phase. Phase X.1 and Phase X.2
   are common examples, not the complete boundary.
 - Phase X.1: common small scoped addition example under the current major phase.
@@ -72,7 +73,7 @@ migrations, file restores, or technical implementation. After Phase 0.2, stop be
 ### Phase N
 
 Use Phase N for the next coherent major capability after the previous phase exits cleanly.
-Keep the phase focused on one goal and one closed verification loop.
+Keep the phase focused on one goal and one user-value loop or end-to-end capability loop.
 
 ### Phase N.x
 
@@ -412,16 +413,22 @@ user chooses, recovery-record mutations may repair `PLAN.md`, `TODO.md`, phase n
 handoff records. The goal is to make the state honest and recoverable so a new Codex session
 can resume without chat history.
 
-## One Closed Loop Per Phase
+## One Real Capability Loop Per Phase
 
 Each phase should include:
 
 1. Scope boundary.
 2. Fixtures or examples.
 3. Failing tests.
-4. Minimal implementation.
-5. Verification.
+4. The real capability inside the declared phase boundary.
+5. Verification of the phase-declared capability, not merely an internal mechanism.
 6. Documentation and handoff.
+
+The phase may be narrow, but it must be vertically complete for the promised capability.
+Preview, smoke, contract-only, stub, fake, or simulated behavior is acceptable only when the
+phase boundary and user-facing labels say so. If UI, job, progress, artifact, and result
+surfaces imply a real capability, the real execution path must be connected before the phase is
+marked complete.
 
 Do not start later-phase implementation while the current phase is still open.
 

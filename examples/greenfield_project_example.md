@@ -97,7 +97,7 @@ Handoff:
 - Record Phase 1 as the next step.
 - Record the non-goals so the next session does not expand scope.
 
-## Phase 1: First Minimal Capability
+## Phase 1: First Real Capability Slice
 
 Before creating fixtures, tests, or implementation changes, Codex should output a visible phase
 start gate and wait for user confirmation.
@@ -112,10 +112,10 @@ Example phase start gate:
 Current phase: Phase 1.
 Goal: implement one fixture-backed action extraction behavior.
 Non-goals: no full CLI framework, no database, no cloud sync, no extra parsing modes.
-Split decision: do not split; Phase 1 is one user-visible behavior and one verification loop.
+Split decision: do not split; Phase 1 is one user-visible behavior and one user-value loop or end-to-end capability loop.
 Change request classification options remain Phase X.N, New Major Phase, or Backlog.
 Phase X.1 and Phase X.2 are common examples, not the complete boundary.
-Verification loop: fixture, failing test, minimal parser, python -m pytest -q.
+Verification loop: fixture, failing test, action extractor behavior, python -m pytest -q.
 Confirmation needed: wait for user confirmation before creating fixtures, tests, or
 implementation changes.
 After this gate: stop after reporting the phase start gate and wait for a separate user
@@ -132,7 +132,7 @@ Example split interpretation gate:
 ```text
 Split reason: reviewability, transparency, and avoiding opaque large phases.
 Interpretation: split Phase 1 into Phase 1.1 for fixtures and tests, then Phase 1.2 for the
-minimal parser implementation and verification.
+phase-declared action extractor behavior and verification.
 Files to update after confirmation: PLAN.md, TODO.md, and the active phase note.
 Confirmation needed: confirm the split before updating planning files.
 Execution status: do not execute Phase X.N immediately; for this example, do not execute Phase X.1 immediately.
@@ -149,7 +149,7 @@ Goal:
 - Define one narrow user-visible capability.
 - Prepare fixtures/examples that describe expected behavior.
 - Write failing tests against those fixtures.
-- Implement only the minimal code needed for the tests to pass.
+- Implement the real capability inside the declared phase boundary without adding extra modes.
 - Update project records after verification.
 
 Example flow:
@@ -158,7 +158,7 @@ Example flow:
 2. Add `examples/basic_actions.json` with the expected action items.
 3. Add `tests/test_extract_actions.py` that compares actual output to the fixture.
 4. Run `python -m pytest -q` and confirm the test fails for the expected reason.
-5. Implement the smallest parser function that passes the fixture test.
+5. Implement the parser behavior promised by the phase boundary and no extra parsing modes.
 6. Run `python -m pytest -q` again.
 7. Update `TODO.md`, the phase note, and the handoff note.
 
@@ -174,14 +174,14 @@ Acceptance criteria:
 ```markdown
 ## Current Phase
 
-Phase 1: First minimal action extraction.
+Phase 1: First real action extraction slice.
 
 ## Active Task
 
 - [x] Add basic note fixture.
 - [x] Add expected action output fixture.
 - [x] Add failing extraction test.
-- [x] Implement minimal extraction behavior.
+- [x] Implement fixture-backed extraction behavior.
 - [x] Run final verification.
 
 ## Next Tasks
@@ -196,7 +196,7 @@ Phase 1: First minimal action extraction.
 ## Example Phase Note Entry
 
 ```markdown
-## 2026-05-23 - Phase 1 Minimal Action Extraction
+## 2026-05-23 - Phase 1 Real Action Extraction Slice
 
 Changes:
 
