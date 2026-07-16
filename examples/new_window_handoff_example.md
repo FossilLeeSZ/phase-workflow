@@ -1,85 +1,108 @@
 # New Window Handoff Example
 
-This example shows how a new Codex window can recover context from files.
+Example role: illustrative, not authoritative. Follow the
+[recovery protocol](../references/recovery_protocol.md) for anchor ownership and Context Gaps,
+and the [phase policy](../references/phase_policy.md#authorization-and-recovery-state-machine)
+for the resulting authorization state.
+
+## Scenario
+
+A new Codex task opens after prior conversation was compressed or is unavailable. `TODO.md`
+points to the exact Phase 2 note and matching PLAN section. The note records one remaining output
+and a blocking `GAP-2-03`: the required escaped-delimiter behavior is ambiguous. An optional
+handoff may be missing, stale, or present only as a pointer index.
 
 ## Opening Prompt
 
 ```text
-Use phase-workflow for this repository. Do not rely on previous chat history.
-Read `AGENTS.md` first.
-Read only the first 80-120 lines of the latest compact handoff or current-state file.
-Read only the current phase, active task, blocked, and next task sections of `TODO.md`.
-Use `rg` to inspect `PLAN.md`, `DECISIONS.md`, `PROJECT_CONTEXT.md`, or phase notes only when
-compact state is missing, conflicting, or explicitly requested.
-Summarize current phase, verified state, blockers, and next recommended action before editing
-files.
+Use phase-workflow for this project. Read AGENTS.md and open the current SKILL.md.
+Follow references/recovery_protocol.md.
+Use relevant available conversation when present, but do not invent unavailable history or
+treat imported chat, a compressed summary, or old confirmation as authorization.
+Follow TODO's exact active phase-note and PLAN pointers, read only referenced decisions and
+stable project-context headings, and compare factual claims with repository evidence.
+List Context Gaps. If a blocking gap remains, enter CONTEXT_BLOCKED and stop. Otherwise show the
+required revalidation gate and wait for a new live confirmation before mutation.
+Desired response language: Chinese for this task.
 ```
 
 ## Expected Recovery Steps
 
-1. Read `AGENTS.md` for repository rules.
-2. Read the first 80-120 lines of the latest compact handoff or current-state file.
-3. Read only the current phase, active task, blocked, and next task sections of `TODO.md`.
-4. Use `rg` or scoped section reads for `PLAN.md`, `DECISIONS.md`, `PROJECT_CONTEXT.md`, and
-   phase notes only when scope changes, conflicts, missing verification, unclear decision
-   sources, or explicit history requests require them.
+1. Read repository instructions and the current skill.
+2. Use relevant available conversation as current-intent context.
+3. Read TODO's compact current sections and follow its exact active-note pointer.
+4. Read the matching PLAN section and compare the phase-contract revision.
+5. Read only TODO-referenced decisions and stable project-context headings.
+6. Compare the anchors with actual files, tests, artifacts, and recorded verification.
+7. Record each Context Gap in the active phase note and mirror only blocking IDs in TODO.
+8. Apply materiality: a gap affecting outputs, acceptance, approach, or safety blocks mutation.
+9. Choose the state from current evidence; do not reconstruct an old authorization transition.
 
 ## Example Recovered State
 
-```text
-Current phase: Phase 1.
-Verified state: Phase 0 completed with python -m pytest -q.
-Active task: tighten SKILL.md and references.
-Known blockers: none recorded.
-Next action: update SKILL.md, then run documentation tests.
-Do not do: add Web UI, database, complex CLI, cloud sync, or issue tracker integration.
-```
-
-The recovered state should come from files, not from memory. If two files
-conflict, stop and resolve the conflict before editing.
+- Current intent source: current request and relevant available conversation.
+- Compact current state owner: `TODO.md`.
+- Phase contract owner: the TODO-linked PLAN section.
+- Detailed execution owner: the exact TODO-linked active phase note.
+- Actual state owner: repository evidence.
+- Remaining output: escaped-delimiter behavior.
+- Blocking Context Gap: `GAP-2-03`, because the expected delimiter semantics affect output and
+  acceptance.
+- Authorization state: `CONTEXT_BLOCKED`.
+- Allowed mutation: none.
 
 ## Example TODO Update
-
-After recovery, the new window can update `TODO.md` only if the file-based
-state is clear:
 
 ```markdown
 ## Current Phase
 
-Phase 1: Tighten skill instructions and templates.
+Phase 2: Parser Edge Cases.
+
+## Compact Status
+
+Two declared outputs are verified. The remaining escaped-delimiter output is blocked by
+GAP-2-03.
 
 ## Active Task
 
-- [x] Recover current state from project files.
-- [ ] Update SKILL.md resource navigation.
-- [ ] Update template fields.
-- [ ] Run final verification.
+- [ ] Resolve GAP-2-03 before resuming the remaining output.
+
+## Next Action
+
+Resolve or clarify GAP-2-03 against the Phase 2 contract and user intent.
 
 ## Blocked
 
-- None.
+- GAP-2-03
+
+## Context Anchors
+
+- PLAN phase: `PLAN.md` -> `## Phase 2: Parser Edge Cases`
+- Active phase note: `docs/phases/phase_2_parser_edge_cases.md` -> `# Phase 2 Parser Edge Cases`
+- Relevant decisions: `DECISIONS.md` -> `## D-0004: Preserve Escape Semantics`
+- Stable project context: `PROJECT_CONTEXT.md` -> `## Stable Verification Entry Points`
+- Latest verification: `docs/phases/phase_2_parser_edge_cases.md` -> `## Latest Verification`
+
+## Do Not Do Yet
+
+- Do not mutate the remaining parser output while GAP-2-03 is blocking.
+- Do not start Phase 3 or repeat the two verified outputs.
 ```
 
-If the files are incomplete, do not invent missing history. Use a narrow TODO
-instead:
+Detailed evidence for `GAP-2-03` remains only in the active phase note. TODO mirrors the blocking
+ID and compact consequence, not the evidence ledger.
 
-```markdown
-## Blocked
+## Missing Or Stale Handoff
 
-- Need clarification: `TODO.md` says Phase 2, but the Phase 1 phase note has no
-  verification result.
-```
-
-Do not read full `PLAN.md`, `DECISIONS.md`, `PROJECT_CONTEXT.md`, full `TODO.md`, full
-handoff files, or full phase notes by default. Treat them as audit and policy history, then
-look up exact sections only when the compact recovery files conflict or omit verification
-context.
+Missing handoff is a supported normal path. If an optional handoff exists, validate only its
+pointers and Context Gap IDs against TODO and the owner files. A stale or conflicting handoff is
+itself a Context Gap and cannot override current owners or repository evidence.
 
 ## Important Rule
 
-If the files do not explain a decision, do not invent chat history. Mark the point as unknown,
-ask a focused question if it affects implementation, or record it as a TODO.
+Only after all blocking Context Gaps are resolved may recovery enter a visible revalidation gate
+and `AWAITING_LIVE_CONFIRMATION`. The gate must then stop and wait for a new live confirmation.
 
-The new window should not continue from unstated assumptions. It should either
-recover a coherent state from files or make the uncertainty visible before
-changing behavior.
+A handoff, TODO, phase note, imported chat, compressed summary, old confirmation, or file saying
+`confirmed` may describe prior work but cannot grant execution authorization. Recovery either
+remains `CONTEXT_BLOCKED` or ends at the applicable gate; it never reconstructs permission.

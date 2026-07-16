@@ -1,26 +1,27 @@
 # Phase Policy
 
+> Policy role: canonical owner for applicability, complete delivery, real-capability semantics,
+> phase lifecycle, visible gates, live authorization, mutation preflight, and violation
+> recovery. `policy-owner: phase-lifecycle`
+
 Use this policy to define phase boundaries and keep zero-based project work small, explicit,
 and verifiable without hollowing out the promised capability. A phase can be small, but it must
-not be hollow.
+not be hollow. Use [change-request policy](change_request_policy.md) for Phase X.N allocation
+and scope-change routing, [recovery protocol](recovery_protocol.md) for context/state recovery,
+and [verification policy](verification_policy.md) for evidence and completion.
 
-## Numbering Rules
+## Quick Navigation
 
-- Phase 0: initialization, project skeleton, baseline docs, first verification.
-- Phase 0.1: workflow adoption for an existing structured project candidate.
-- Phase 0.2: planning baseline for an adopted existing structured project.
-- Phase N: one coherent major phase after the baseline. It should have one goal, one reviewable
-  output set, and one real-capability verification loop.
-- Phase N.x: any one-decimal sub-phase under the current major phase. Phase X.1 and Phase X.2
-  are common examples, not the complete boundary.
-- Phase X.1: common small scoped addition example under the current major phase.
-- Phase X.2: common bug fix or correction example within the current phase boundary.
-- New Major Phase: a separate capability, direction change, or verification loop that no longer
-  fits the current major phase.
-- Backlog: useful but non-urgent work that should not interrupt the current phase.
-
-Use one decimal level only. Do not introduce Phase X.N.M. If the change no longer fits under
-the current major phase, make it a New Major Phase or backlog item.
+- [Phase meanings](#phase-meanings)
+- [Project context, applicability, and complete delivery](#project-context-applicability-and-complete-delivery)
+- [Authorization and recovery state machine](#authorization-and-recovery-state-machine)
+- [Live confirmation binding](#live-confirmation-binding)
+- [Partial execution revalidation](#partial-execution-revalidation)
+- [Mutation preflight](#mutation-preflight)
+- [Violation recovery and selected rollback](#violation-recovery-and-selected-rollback)
+- [Approach confirmation](#approach-confirmation)
+- [Phase start checklist](#phase-start-checklist)
+- [Phase exit checklist](#phase-exit-checklist)
 
 ## Phase Meanings
 
@@ -31,12 +32,18 @@ starts with a visible Phase 0 start gate. Codex must list the baseline workflow 
 creating any project files. Baseline workflow files include README.md, AGENTS.md, PLAN.md,
 TODO.md, and DECISIONS.md.
 
-Before Phase 0, classify folder state as `empty folder`, `existing structured project
-candidate`, `existing workflow project`, or `unclear project state`.
+Those files are Phase 0 outputs, not preconditions. The gate uses relevant available
+conversation, read-only folder evidence, and provisional anchors and gaps until the user
+authorizes their creation.
 
-If the folder state is `unclear project state`, stop and report why adoption is not recommended
-yet. Ask for clarification or recommend a separate project assessment instead of creating
-workflow files.
+Before Phase 0, classify folder state as `empty folder`, `existing structured project
+candidate`, `existing workflow project`, or `unclear project state`. Missing one entry point,
+test command, goal, or evidence source does not by itself determine this result; inspect each
+fact and apply the Context Gap materiality rule.
+
+Use `unclear project state` only when a genuinely blocking uncertainty still affects the
+adoption outputs, acceptance, approach, or safety after bounded read-only assessment. Enter
+`CONTEXT_BLOCKED`, report the gap, and stop instead of guessing or creating workflow files.
 
 For an existing workflow project, recover compact current state from project files before
 proposing the next phase gate.
@@ -51,6 +58,10 @@ create or fill, and files not to overwrite.
 Phase 0.1 must not overwrite existing project files, plan future feature work, modify
 application code, refactor code, or start a cleanup campaign.
 
+Missing adoption files are expected Phase 0.1 outputs. Use relevant available conversation and
+read-only repository evidence to propose a stable factual baseline; do not require the new
+anchors to exist before their gate and authorized creation.
+
 `AGENTS.md` and `.codex/hooks.json` are Phase 0 or Phase 0.1 adoption outputs. Create or fill
 `.codex/hooks.json` only when optional project-level hook support is selected or explicitly
 requested.
@@ -58,12 +69,15 @@ requested.
 ### Phase 0.2
 
 Use Phase 0.2 for a planning baseline only after the user separately requests it and provides
-or confirms the next project goal. Phase 0.2 uses `PROJECT_CONTEXT.md` and the user-confirmed
-goal to update `PLAN.md`, `TODO.md`, and handoff notes with a rough roadmap and candidate
+or confirms the next project goal. Phase 0.2 reconciles the factual `PROJECT_CONTEXT.md`
+baseline, relevant available conversation, repository evidence, and the user-confirmed goal to
+update `PLAN.md`, `TODO.md`, and the active phase note with the target boundary, project-level
+completion target, complete delivery path, candidate major capability phases, and candidate
 Phase 1 goal. It must not infer the roadmap from code observations alone.
 
-Phase 0.2 allows planning records only: `PLAN.md`, `TODO.md`, phase notes, handoff notes,
-planning baselines, roadmaps, and candidate Phase 1 goals. During Phase 0.2 there are no
+Phase 0.2 allows planning records only: `PLAN.md`, `TODO.md`, phase notes, selected optional
+handoff indexes, planning baselines, roadmaps, and candidate Phase 1 goals. During Phase 0.2
+there are no
 tests, code skeletons, migrations, file restores, technical implementation, scripts, or
 non-planning technical documentation. Non-planning technical documentation includes API docs,
 architecture docs, migration guides, usage docs, module docs, or generated technical docs. Do
@@ -75,220 +89,183 @@ migrations, file restores, or technical implementation. After Phase 0.2, stop be
 Use Phase N for the next coherent major capability after the previous phase exits cleanly.
 Keep the phase focused on one goal and one user-value loop or end-to-end capability loop.
 
-### Phase N.x
+Phase X.N allocation, New Major Phase routing, Backlog routing, Change Type, and split
+classification are owned by [change-request policy](change_request_policy.md#classification).
+After a phase or direct sub-phase is confirmed and recorded there, it enters the same visible
+gate, independent verification, and stop lifecycle defined by this policy. One direct
+sub-phase level is supported; the change-request policy prohibits Phase X.N.M.
 
-Use Phase N.x for one-decimal sub-phases under the active major phase. Create a sub-phase only
-after a phase boundary change proposal is confirmed and recorded. A sub-phase does not
-authorize work in later sub-phases.
+## Project Context, Applicability, And Complete Delivery
 
-### New Major Phase
+### Context source responsibilities
 
-Use a New Major Phase when the change adds an independent capability, changes project
-direction, requires separate examples or tests, changes acceptance criteria substantially, or
-needs a separate verification loop.
+Use relevant available conversation for current intent and durable anchors for persisted
+meaning. Detailed source responsibilities, recovery order, conflict resolution, Context Gaps,
+and state ownership are owned by [recovery protocol](recovery_protocol.md). Recovery inputs do
+not grant mutation authorization; the live state defined by this policy does.
 
-### Backlog
+### Applicability and target-product boundary
 
-Use Backlog for ideas that may be valuable later but are not needed for the current phase.
-Backlog items do not authorize implementation.
+Applicability is not determined by maturity, project size, implementation size, or team size:
+solo developers, small teams, and large teams may all use the workflow. Do not classify or
+reject work merely because the project is mature, large, long-running, multi-release,
+regulated, a repair or migration, or needs a large refactor. An unclear or tangled repository
+requires a bounded read-only assessment rather than immediate adoption or permanent rejection.
+
+A target product or target system may legitimately require a database, Web UI, cloud service,
+authentication, complex CLI, business workflow, issue-tracker integration, migration, or large
+refactor. Architecture restrictions and non-goals for this repository limit the
+`phase-workflow` implementation itself; they are not restrictions on the target product or
+target system governed by the workflow.
+
+Do not adopt the workflow for a one-off question that needs no continuity, an explicit user
+opt-out, or a higher-priority process that is incompatible and that the user does not want
+changed. A compatible mature or regulated process may use `phase-workflow` as a subordinate
+file-based execution anchor.
+
+### Complete-delivery and phase mapping
+
+Plan toward the complete target system. Record the project goal, target boundary, project-level
+completion target, complete delivery path, durable constraints, non-goals, and candidate major
+capability phases. Each executable phase must identify the project-level completion criterion
+it advances and verify the real capability declared by that phase.
+
+MVP, prototype, pilot, preview, smoke, or first release is a user-selected, project-specific
+possible milestone, not the default project identity, universal cap, or project completion
+target. Completing a milestone or one phase does not silently reduce the target, prove the
+whole project complete, authorize unlimited scope, or authorize the next phase.
+
+Fixtures, tests, documents, scaffolding, UI shells, job stubs, and fake results do not
+substitute for the real capability or prove runtime or executable behavior when the phase
+promises such behavior. Documents are the declared product only when the phase explicitly says
+so; in that case, verify the real document deliverable and its acceptance criteria. Otherwise
+documentation does not substitute for a promised runtime capability.
+
+### Bootstrap and missing context
+
+For Phase 0 or Phase 0.1, missing durable files are expected. Show provisional Context Anchors
+and Context Gaps in the visible gate and create the durable baseline files as declared phase
+outputs; do not require those outputs to pre-exist or already exist before their authorized
+creation. From Phase 0.2 and ordinary technical phases onward, revalidate the applicable
+durable anchors before execution.
+
+When relevant conversation is unavailable, recover known anchors from project files and
+repository evidence, make missing or conflicting meaning explicit as Context Gaps, and do not
+invent history or require a full transcript. Recovered context never restores a previous
+execution confirmation.
 
 ## Optional Project-Level Hook Reminders
 
-Optional project-level Codex hook support stays reminder-only. The hook may inject context, but
-it must not scan the project, recover project state, read workflow files, write files, or invoke
-the skill directly. Codex still decides whether `phase-workflow` applies.
-
-`AGENTS.md` and `.codex/hooks.json` are Phase 0 or Phase 0.1 adoption outputs while keeping
-their responsibilities separate. Do not overwrite existing files; merge only the
-`phase-workflow` `UserPromptSubmit` entry and ask before replacing conflicts. If a
-`phase-workflow` hook entry already exists, do not add it again. A conflicting hook command or
-hook location requires user confirmation before replacement.
-
-Use an absolute path for the hook command. Do not rely on the hook runner's current working
-directory. Restart Codex and re-review/trust the hook after changing the absolute hook command.
-
-Mandatory skill invocation and hook boundary: Open the current `SKILL.md` when
-`phase-workflow` applies; hook reminders do not count as invocation. Project `AGENTS.md` rules
-and compressed chat history do not replace opening the skill.
-
-## Optional ChatGPT/MCP Planning Boundary
-
-Optional ChatGPT MCP Planning Companion guidance adds an optional planning path without changing
-the default Codex-only workflow.
-
-Codex-only remains the default compatible path. Codex reads bounded recovery context from
-project files, shows gates, validates authorization, executes commands, and edits files after
-confirmation.
-
-ChatGPT/MCP planning with Codex execution is optional. ChatGPT may use the read-only MCP
-companion through an available connector path to read bounded project context and generate a
-short handoff prompt for Codex. Codex still validates local files, phase gates, authorization
-branch, and stop conditions before execution.
-
-Codex-direct MCP planning is not a supported mode. The local MCP companion does not call Codex,
-run `codex exec`, start Codex, or use Codex as a compression backend.
-
-The default snapshot matches bounded Codex recovery context. Read `AGENTS.md`, the needed skill
-entry or reference guidance, the first 80-120 lines of the compact handoff or current-state
-file when present, and current `TODO.md` sections: current phase, active task, blockers, next
-tasks, and do-not-do-yet. Full `PLAN.md`, full `TODO.md`, `DECISIONS.md`, full handoff files,
-and phase notes are targeted or on-demand reads. Do not route MCP snapshot reads through Codex.
-
-Use on-demand reads only when planning needs more context. Name a concrete file, heading, or
-section for each on-demand read. Do not read the whole project history. Record source refs for
-every on-demand read. On-demand reads remain targeted and read-only: do not write files,
-execute commands, or route reads through Codex.
-
-ChatGPT may first return a planning-only draft start gate preview labeled
-`draft_start_gate_preview: 1` before the copied handoff. The preview can include current phase,
-goal, non-goals, split decision, verification loop, and confirmation status when present in MCP
-planning context. The draft preview is non-authoritative and not Codex execution
-authorization. Codex must still show the authoritative start gate after local revalidation and
-wait for separate Codex-side execution confirmation before any mutation.
-
-The handoff is planning input only, not a source of truth or execution authorization. Do not
-include full project history or full file contents. Include a stop condition such as show the
-next phase gate only or execute only the current confirmed phase and stop. Codex still
-revalidates local files, phase gates, authorization branch, and stop condition before
-execution.
-
-Handoff recognition is header-based. Do not infer ChatGPT/MCP handoff mode from natural
-language alone. Missing header means ordinary Codex-only conversation. A valid header includes
-`phase_workflow_handoff: 1`, `mode: ChatGPT/MCP planning with Codex execution`, `project_id`,
-`source_refs`, `snapshot_id`, `requested_action`, and `stop_condition`. `workspace_id` is
-required when multiple local checkouts or ambiguity exist. Missing required fields, mismatched
-project identity, missing source refs, unclear stop condition, or wrong `mode` fails closed
-before execution. A valid handoff remains planning input only, not a source of truth or
-execution authorization. Codex must revalidate local files, phase gates, authorization branch,
-and stop condition before execution.
-
-Direct conversation with Codex remains Codex-only. Codex must not route its own planning,
-recovery reads, local validation, command execution, or file mutations through MCP. MCP is
-only for ChatGPT-side planning reads. Codex may configure, start, check status, and stop the
-local MCP companion after user confirmation, but service management does not make Codex
-planning use MCP.
-
-`project_id` selects the project. `workspace_id` distinguishes local checkouts. `display_name`
-is human-facing only. Do not use `display_name` as an identity anchor. The setup card is
-connector configuration guidance, not execution authorization.
-
-Explicit user request is required before creating or updating project MCP configuration or the
-local registry. Project-local MCP config lives under `.phase-workflow/mcp/project.json`. The
-project config stores `schema_version`, `project_id`, `display_name`, and `allowed_files`.
-The project config must not store the local absolute `workspace_root`. The local MCP registry
-lives at `~/.phase-workflow/mcp/registry.json`. The local registry stores `project_id`,
-`workspace_id`, `workspace_root`, port, endpoint, and PID or lock metadata. `project_id` is
-generated once for the project and stored in project config. `workspace_id` is generated per
-local checkout and stored in the local registry. Missing or ambiguous `project_id` or
-`workspace_id` fails closed. Configuration writes stay inside the selected project and the
-documented local registry path.
-
-Lifecycle controls remain start, status, and stop only. Bind to loopback by default. Track the
-running process with a PID or lock file. Report port conflicts explicitly. Fail closed when
-`project_id` is missing, unknown, or ambiguous. ChatGPT-side planning uses an already running
-companion only through an available connector path. For remote ChatGPT, prefer OpenAI Secure
-MCP Tunnel when available; keep loopback endpoint details for same-machine development and
-smoke tests. ChatGPT must not start Codex, start the local companion, or execute project
-commands.
-
-### Built-In Read-Only MCP Companion
-
-For projects that have adopted `phase-workflow`, use the built-in read-only MCP companion only
-when the user explicitly asks to enable optional ChatGPT/MCP planning for that project.
-
-Use `scripts/phase_mcp_lifecycle.py` for configure/start/status/stop only after explicit user
-request and confirmation. Use `scripts/phase_mcp_setup_output.py` after the selected workspace
-reports `running` to prepare ChatGPT setup guidance and a starter ChatGPT planning prompt.
-
-Do not hard-code unstable ChatGPT product UI steps; provide connection guidance, project
-identity, workspace identity, allowed files summary, and starter prompt. The final Codex
-handoff is ChatGPT output after MCP-assisted planning, not Codex configuration output.
-
-Do not make Codex read, plan, validate, execute, or mutate files through MCP. Direct Codex
-conversation remains Codex-only unless a valid ChatGPT/MCP handoff header is pasted back and
-passes local validation.
-
-### OpenAI Secure MCP Tunnel
-
-Use OpenAI Secure MCP Tunnel as the preferred remote ChatGPT connection path when available.
-Local loopback remains the local development path for same-machine development and smoke
-tests. Secure Tunnel keeps the MCP server private and uses outbound tunnel-client
-connectivity instead of public inbound project ports.
-
-Secure Tunnel setup output is ChatGPT connector guidance, not Codex execution authorization.
-It may include `tunnel_id`, profile name, selected `project_id`, selected `workspace_id`,
-target type, stdio or HTTP target guidance, `tunnel-client` command guidance, lifecycle
-guidance, and diagnostics guidance. The final Codex handoff remains ChatGPT output after
-MCP-assisted planning.
-
-Availability depends on account, Platform tunnel, organization/workspace, ChatGPT connector
-UI, workspace association, and permissions. If the tunnel is not visible or connector calls
-fail, check workspace association, Tunnels Read and Tunnels Use, rerun
-`tunnel-client doctor --profile <name> --explain`, and confirm
-`tunnel-client run --profile <name>` is still healthy.
-
-Port conflicts remain local companion issues. Secure Tunnel is not public exposure and does
-not require exposing arbitrary project ports publicly. Do not promote `ngrok` or public URL
-tunneling as the primary supported MCP connection path. Do not imply that Secure Tunnel is
-universally available. Do not store OpenAI API keys, tunnel runtime keys, or other tunnel
-secrets in project config, local registry, handoff prompts, README examples, or tests.
-
-## Compact Recovery And Handoff
-
-Compact recovery is the default: start with `AGENTS.md`, the first 80-120 lines of the latest
-compact handoff or current-state file when present, and current `TODO.md` sections. Full plans,
-decision logs, project context, handoff files, and phase notes are targeted or on-demand
-sources.
-
-Use `rg` or scoped section reads for heavier files. Use `rg` to inspect `PLAN.md`,
-`DECISIONS.md`, `PROJECT_CONTEXT.md`, or phase notes only when compact state is missing,
-conflicting, or explicitly requested. Read older entries only when scope changes, conflicts,
-missing verification, unclear decision sources, or explicit history requests require them.
-
-The compact handoff/current-state file is not a complete history, audit log, phase table, or
-`PLAN.md` summary. Historical completed task lists belong in phase notes, not in the default
-`TODO.md` recovery area.
-
-`PROJECT_CONTEXT.md` is an adoption/background baseline, not a routine status file. Update it
-only when stable project identity, directory responsibilities, verification commands, or
-durable boundaries change.
-
-`DECISIONS.md` is for durable decisions only. Do not record ordinary phase completion,
-verification logs, or execution history there.
-
-`DEV_LOG.md` is not a baseline workflow file, default recovery source, end-of-round record, or
-recovery repair target. Legacy `DEV_LOG.md` files may remain in adopted projects, but the
-workflow no longer requires creating, reading, or updating them.
-
-Phase-exit and end-of-round record updates use the same bounded context rule. Do not read full
-`PLAN.md`, `TODO.md`, `DECISIONS.md`, `PROJECT_CONTEXT.md`, full handoff files, or full phase
-notes just to update status records. For `TODO.md`, read and update only the current phase,
-active task, blocked, next task, and do-not-do sections. For `PLAN.md`, use `rg` or
-heading-scoped reads to locate the relevant phase only when phase boundaries, scope, or roadmap
-entries change. For `PROJECT_CONTEXT.md`, use scoped reads only for adoption or stable baseline
-changes. For handoff and phase notes, read only the relevant heading or the first 80-120 lines
-unless a conflict requires more context.
+Hook adoption and operation are user-facing setup concerns owned by [README](../README.md).
+The policy invariant is compact: a hook is optional and reminder-only; it cannot invoke the
+skill, mutate files, recover state, or grant authorization. When the workflow applies, open the
+current `SKILL.md` regardless of hook presence.
 
 ## Authorization Model
 
-Use this single authorization model before the detailed phase-boundary rules below. When two
-signals conflict, the narrower authorization controls and Codex must stop at the next required
-gate.
+Use this single authorization model before the detailed phase-boundary rules below. Authorization
+follows the recorded phase contract and its declared outputs, not the file type being changed.
+When two signals conflict, the narrower authorization controls and Codex must stop at the next
+required gate.
 
 | Signal | Authorizes | Does not authorize | Required stop |
 | --- | --- | --- | --- |
-| Plan-change confirmation | planning-file updates only | Technical files, fixtures, tests, implementation, scripts, migrations, or restores | Stop after planning files |
+| Plan-change confirmation | The disclosed planning-boundary update only | A phase gate, current-phase execution, technical work, or later phases | Stop after the planning update |
 | Phase start request | phase analysis and visible start gate only | Execution, file edits, or current-phase mutations | Stop after the gate |
-| Post-gate execution confirmation | current-phase technical mutations that pass mutation preflight | Next-phase work, multi-phase execution, planning-file mutations, recovery-record mutations, or unstated approach choices | Stop when the current phase exits |
-| Approach confirmation | approved non-trivial approach inside the current phase | Phase boundary changes or broader scope | Stop if the approach is rejected |
-| Mutation preflight pass | The checked current-phase mutation branch | Failed-gate, unconfirmed, wrong-branch, next-phase, or multi-phase mutations | Stop before files if any check fails |
-| Phase violation detected | read-only recovery audit and chat-visible incident report before user choice; recovery record repairs after user choice | New implementation, next-feature work, continuing the violated flow, or pre-choice record repair | Stop before record repairs until the user chooses keep-and-audit or rollback |
+| Post-gate execution confirmation | The current phase's disclosed declared outputs that pass mutation preflight | Undeclared outputs, later phases, multi-phase execution, or a changed contract or approach | Stop when the current phase exits |
+| Approach confirmation | The fully disclosed non-trivial approach inside the current phase; it may share one explicit reply with execution confirmation | An unstated or materially revised approach, phase boundary changes, or broader scope | Stop when the approach is rejected or materially revised |
+| Mutation preflight pass | The checked current state transition and declared-output mutation | Failed-gate, stale-confirmation, wrong-state, undeclared-output, later-phase, or multi-phase mutations | Stop before files if any check fails |
+| Phase violation detected | Read-only violation audit before user choice; keep-and-audit record repair or selected rollback after the corresponding live choice | New implementation, next-feature work, continuing the violated flow, or mutations outside the selected recovery branch | Stop before the recovery choice and again after recovery verification |
 
 Plan-change confirmation, phase start request, post-gate execution confirmation, approach
 confirmation, mutation preflight, and phase violation recovery are separate controls. They
 cannot substitute for each other and do not authorize multi-phase execution. A successful
 authorization does not authorize next-phase work and does not authorize multi-phase execution.
 Do not use the phase violation row to write recovery record repairs before user choice.
+
+## Authorization And Recovery State Machine
+
+The state machine below is normative. A state transition, rather than a filename category,
+determines whether a mutation is allowed. Every mutation must be part of one row, use the row's
+required evidence, remain within its allowed mutation, and stop at its Required stop. If no row
+fits or the evidence is incomplete, enter `CONTEXT_BLOCKED` and do not mutate files.
+
+| State | Trigger and required evidence | Allowed mutation | Forbidden outcome | Required stop |
+| --- | --- | --- | --- | --- |
+| `READ_ONLY_RECOVERY` | Current request plus relevant available conversation, scoped Context Anchors, and repository evidence | None; read and reconcile only | Treating recovered text as permission | Move to `CONTEXT_BLOCKED`, `PLAN_UPDATE_AUTHORIZED`, or `GATE_READY` |
+| `CONTEXT_BLOCKED` | A material Context Gap, conflicting anchor, missing field, or unclear repository state affects output, acceptance, approach, or safety | None | Guessing the missing contract or continuing an old confirmation | Stop for clarification or a corrected boundary |
+| `PLAN_UPDATE_AUTHORIZED` | Explicit confirmation of a disclosed phase-boundary, roadmap, goal, non-goal, output, acceptance, or verification-loop change | Only the named planning-boundary update and matching planning records | Tests, implementation, a phase gate in the same turn, or current/later phase execution | Stop after the planning update; a later request may show the gate |
+| `GATE_READY` | Current phase, previous verification, repository state, contract revision, approach revision, declared outputs, acceptance, verification loop, non-goals, and stop condition have been revalidated | Show the visible gate only | Any repository mutation | Move to `AWAITING_LIVE_CONFIRMATION` and stop |
+| `AWAITING_LIVE_CONFIRMATION` | The visible gate has been shown in the current task and no later material drift is known | None | Treating `Start Phase X`, files, summaries, or historical replies as confirmation | Stop until an explicit live confirmation arrives |
+| `EXECUTION_AUTHORIZED` | A live confirmation matches the binding in the shown gate and mutation preflight passes | Only the disclosed declared outputs, including their tests, documents, code, planning-only outputs, and bounded evidence/status records | Undeclared output, changed approach, next phase, multi-phase work, or reusable authorization receipt | Move to `PARTIAL_REVALIDATION`, `APPROACH_REVISION_REQUIRED`, `VIOLATION_AUDIT`, or `PHASE_EXIT` |
+| `PARTIAL_REVALIDATION` | Execution was interrupted; actual files, completed outputs, remaining outputs, modified files, and verification results have been inspected | Verified remaining declared outputs only | Repeating verified completed work or assuming unverified completion | Resume `EXECUTION_AUTHORIZED`, or return to a revalidation gate if the binding cannot be proven |
+| `APPROACH_REVISION_REQUIRED` | The phase contract or material approach changed after confirmation | Record the proposed revision only under the applicable planning/status rule | Continuing under stale confirmation | Show a revalidation gate and return to `AWAITING_LIVE_CONFIRMATION` |
+| `VIOLATION_AUDIT` | Evidence shows an approved boundary was crossed | None; perform a read-only audit and chat-visible incident report | New implementation, rollback, or record repair before user choice | Move to `RECOVERY_CHOICE_REQUIRED` and stop |
+| `RECOVERY_CHOICE_REQUIRED` | The audit identifies affected technical changes and records | None | Inferring keep-and-audit or rollback from old context | Stop for a live user choice |
+| `SELECTED_ROLLBACK_AUTHORIZED` | A live user choice names the reverse technical scope and matching records | User-named reverse technical changes, corresponding record repair, and verification only | Broad cleanup, forward implementation, unrelated rollback, or later-phase work | Stop after verification and an honest recovery record |
+| `PHASE_EXIT` | Declared outputs and acceptance criteria are met by actual verification | Bounded verification, TODO, phase-note, handoff/current-state, and durable-decision records disclosed by the phase contract | Next-phase work or an unverified completion claim | Stop before the next phase's separate gate and separate live confirmation |
+
+`keep-and-audit` is the recovery alternative to `SELECTED_ROLLBACK_AUTHORIZED`. After a live
+keep-and-audit choice, repair only the records needed to describe the already-existing changes,
+verification, violation, and remaining boundary. It does not authorize new technical work.
+
+## Live Confirmation Binding
+
+A valid live confirmation is bound to the shown Phase ID, phase-contract revision, approach
+revision, declared outputs, acceptance criteria, verification loop, revalidated repository
+state, and stop condition. Record those values in the visible gate in readable form; do not
+persist the reply as a reusable authorization receipt.
+
+`Start Phase X`, `begin`, `continue`, `next`, or similar phase-start language does not authorize
+execution. It requests gate analysis only. A fully disclosed approach may be confirmed by the
+same one explicit reply that confirms execution. The reply must clearly accept both execution
+and that disclosed approach; a generic phase request does neither.
+
+A phase-contract revision or material approach revision invalidates the prior confirmation. A
+related unknown repository drift, missing binding field, context compaction that removes direct
+evidence of the gate and reply, or a new window also returns the workflow to a concise
+revalidation gate and `AWAITING_LIVE_CONFIRMATION`. Harmless conversation changes that do not
+affect the binding do not force a new confirmation.
+
+Imported chat, a compressed summary, handoff text, TODO text, a phase note, historical
+confirmation, or a file saying `confirmed` is context or audit evidence only. None can enter
+`EXECUTION_AUTHORIZED` or `SELECTED_ROLLBACK_AUTHORIZED` without the applicable live transition.
+
+## Declared-Output Authorization
+
+Post-gate authorization is determined by the current phase's declared outputs, not by file
+type. A declared output may be a document, planning record, fixture, test, script, code change,
+migration, restore, generated artifact, status record, or verification command. Mutation
+preflight checks that the exact output and purpose were disclosed before allowing it.
+
+- Phase 0 may create its gate-listed workflow baseline as declared outputs after post-gate live
+  confirmation, even though those files did not exist before the gate.
+- Phase 0.1 may create or fill its gate-listed adoption and `PROJECT_CONTEXT.md` outputs after
+  post-gate live confirmation without overwriting excluded project files.
+- Phase 0.2 is planning-only. Its post-gate confirmation authorizes exactly its declared
+  planning outputs and no technical implementation. This is phase execution, not a later
+  plan-change shortcut.
+- An ordinary technical phase may change only its declared technical, documentation, test,
+  verification, and bounded status outputs.
+- A plan-change branch is for changing the recorded phase boundary, contract, roadmap, or
+  verification loop. It updates only the disclosed planning boundary and must stop before a
+  gate or execution.
+
+Classify by intent and declared output, not by filename. The same `TODO.md` or phase-note file
+may contain a Phase 0.2 declared planning output, a current execution-status output, a later
+boundary change, or a recovery repair; each requires its own applicable state transition.
+
+## Partial Execution Revalidation
+
+When execution is interrupted, inspect actual files, completed outputs, remaining outputs,
+modified files, and verification results. Mark only evidence-backed completion. Do not repeat
+verified completed work merely because the prior conversation was compacted.
+
+Resume the verified remaining outputs only when the current task still contains direct evidence
+of the gate, live confirmation, unchanged binding, and repository state. Otherwise show a short
+revalidation gate that states the recovered completed outputs, remaining outputs, drift check,
+contract and approach revisions, verification still needed, and stop condition; then wait for
+new live confirmation.
 
 ## Workflow Authority
 
@@ -309,8 +286,8 @@ Todo lists, checklists, progress trackers, and `update_plan` cannot substitute f
 gates, split confirmation, approach confirmation, or post-gate execution confirmation.
 
 Do not record batch phase completions such as `Phase 1-5 complete`, `Phase 2/3/4`, or
-`multi-phase migration complete`; each phase must have separate status, verification, and
-handoff records.
+`multi-phase migration complete`; each phase must have separate TODO status and phase-note
+verification/history. An optional handoff index does not replace either owner.
 
 ## Mutation Preflight
 
@@ -321,97 +298,58 @@ before modifying files.
 
 Mutation Authorization Branches:
 
-- A planning-file mutation requires plan-change confirmation and planning-file scope only; it
-  does not require post-gate execution confirmation.
-- A recovery audit before user choice is read-only and may produce only a chat-visible
-  incident report.
-- A recovery-record mutation requires Phase Violation Recovery and the user's keep-or-rollback
-  choice. After the user chooses, recovery-record mutations may repair `PLAN.md`, `TODO.md`,
-  phase notes, and handoff records.
-- A status/handoff-record mutation requires current phase execution or phase exit context. It
-  can update `TODO.md`, phase notes, handoff notes, and `DECISIONS.md` when recording a
-  durable decision already made inside the authorized phase or phase exit context.
-  It must record actual verification results when claiming completion or test status. If
-  verification has not run, record that status honestly and do not claim completion or passing
-  tests. It can update blocker, unfinished status, handoff, or current-state records without a
-  fresh verification command when no completion or test status is claimed. It does not
-  authorize plan changes, new strategy decisions, technical implementation, or recovery repair.
-- A technical mutation requires visible phase start gate, post-gate execution confirmation,
-  and mutation preflight.
-- If the mutation type is unclear, stop before mutating files.
+- Read-only recovery and violation audit allow no repository mutation.
+- A plan-update mutation requires explicit plan-change confirmation, the named planning-boundary
+  output, and a stop before any gate or phase execution.
+- A declared-phase-output mutation requires a visible gate, matching live confirmation, valid
+  binding, and mutation preflight. It may include planning-only, technical, documentation,
+  test, verification, or status outputs disclosed by the phase.
+- A keep-and-audit record repair requires the live recovery choice and may describe only the
+  already-existing violated state.
+- A selected rollback requires the live user-named reverse scope and may perform only those
+  reverse technical changes, corresponding record repair, and verification.
+- If the state transition, mutation intent, or declared output is unclear, stop before mutating
+  files.
 
-Post-gate execution confirmation authorizes technical mutations only. It does not authorize
-planning-file mutations or recovery-record mutations. Planning-file mutations use plan-change
-confirmation. Recovery-record mutations use Phase Violation Recovery.
+For every proposed mutation, answer:
 
-Classify mutation branches by change intent and content, not by file name alone. `TODO.md`,
-phase notes, and handoff notes can contain planning-file mutations or status/handoff-record
-mutations. Scope, phase boundary, active task, acceptance criteria, or roadmap changes are
-planning-file mutations. Verification results, current status, and handoff summaries are
-status/handoff-record mutations.
+- What is the current state and Phase ID?
+- What live signal entered this state?
+- What phase-contract and approach revisions were confirmed?
+- Which exact declared output does the mutation produce?
+- Is the repository state still the state revalidated for the gate?
+- Does the mutation stay inside the acceptance criteria and one verification loop?
+- Is the required stop still explicit?
+- Would it create an undeclared output, complete multiple phases, or enter a later phase?
 
-Do not apply technical mutation gate checks to planning-file mutations or recovery-record
-mutations; visible phase start gate and post-gate execution confirmation are technical
-mutation checks.
+For plan updates, also confirm the named boundary change and stop after its planning records.
+For partial execution, confirm completed and remaining outputs from evidence. For recovery,
+confirm the live keep-and-audit or selected rollback choice. If any answer fails, stop before
+mutating files.
 
-Planning-file mutation checks:
-
-- What planning change has the user confirmed?
-- Is every changed file a planning file or planning note?
-- Will the work stop after planning-file updates?
-- Would this mutation complete multiple phases at once?
-
-Recovery-record mutation checks:
-
-- Is Phase Violation Recovery open?
-- Has the user chosen keep implementation and backfill audit, or roll back selected changes?
-- Is the mutation limited to repairing planning, phase, and handoff records?
-- Does the mutation avoid new implementation?
-
-Status/handoff-record mutation checks:
-
-- Is the update reporting current phase execution, verification, blocker, unfinished status,
-  handoff, or current-state status?
-- Is it limited to `TODO.md`, phase notes, handoff notes, or a narrow `DECISIONS.md` update?
-- Is any `DECISIONS.md` update limited to recording a durable decision already made inside the
-  authorized phase or phase exit context?
-- Are actual verification results recorded when completion or test status is claimed?
-- If verification has not run, does the record say so without claiming completion or passing
-  tests?
-- Does it avoid plan changes, technical implementation, and recovery repair?
-
-Technical mutation checks:
-
-- What is the current phase?
-- Has the visible phase start gate been shown?
-- Is there a separate post-gate execution confirmation?
-- Does this mutation belong only to the current phase?
-- Would this mutation complete multiple phases at once?
-
-If any answer fails, stop before mutating files. Do not use one mutation to complete multiple
-phases; split the work or return to the appropriate phase gate.
-
-Plan-change confirmation only authorizes planning-file updates, then stop. It does not
-authorize tests, code, scripts, migrations, restores, or other technical files.
-
-## Phase Violation Recovery
+## Violation Recovery And Selected Rollback
 
 Use Phase Violation Recovery when an approved phase boundary has already been crossed. This is
 a mandatory recovery flow, not permission to continue implementation.
 
-When a violation is discovered, stop new implementation immediately, do not continue to the
-next feature, and do not keep implementing while recovery is open. Before the user chooses
-keep-and-audit or rollback, recovery audit is read-only. Audit files and records changed
-outside the approved phase boundary as a read-only step. Use a chat-visible incident report to
-mark `implementation happened outside approved phase boundary`. The chat-visible incident
-report should record which files, tests, migrations, restores, docs, and status records were
-affected.
+When a violation is discovered, stop new implementation and enter a read-only audit. Report
+`implementation happened outside approved phase boundary`, affected files, tests, migrations,
+restores, docs, status records, known verification, and uncertain effects. Then enter
+`RECOVERY_CHOICE_REQUIRED` and ask for a live choice between keep-and-audit and selected
+rollback. No mutation is allowed before that choice.
 
-Ask the user to choose between keeping implementation and backfilling the audit, or rolling
-back selected changes. Do not write recovery record repairs before the user chooses. After the
-user chooses, recovery-record mutations may repair `PLAN.md`, `TODO.md`, phase notes, and
-handoff records. The goal is to make the state honest and recoverable so a new Codex session
-can resume without chat history.
+Keep-and-audit permits corresponding record repair only. Record the already-existing changes,
+violation, evidence, unfinished work, and current boundary; do not add new feature work.
+
+Selected rollback is a bounded reverse-technical branch. Require the user-named reverse
+technical changes, corresponding record repair, and verification plan. Change only that named
+scope, repair only the records affected by it, run verification, report remaining effects, and
+stop. It authorizes no new feature work, cleanup, unrelated restore, later phase, or broad reset.
+
+A new window does not inherit and therefore invalidates an earlier rollback authorization. A
+compressed summary, handoff, recovery record, or old reply may describe the audit but cannot
+restore the live rollback choice. Show the recovered audit and selected scope in a revalidation
+gate, then wait for new live confirmation before reverse technical changes.
 
 ## One Real Capability Loop Per Phase
 
@@ -422,7 +360,7 @@ Each phase should include:
 3. Failing tests.
 4. The real capability inside the declared phase boundary.
 5. Verification of the phase-declared capability, not merely an internal mechanism.
-6. Documentation and handoff.
+6. Documentation and recoverable context checkpoint.
 
 The phase may be narrow, but it must be vertically complete for the promised capability.
 Preview, smoke, contract-only, stub, fake, or simulated behavior is acceptable only when the
@@ -435,10 +373,10 @@ Do not start later-phase implementation while the current phase is still open.
 ## Execution Order
 
 Scope-changing work must update planning files before technical files. After a phase start gate
-and separate user confirmation, the first file changes for new phases, sub-phases, phase
-splits, New Major Phase work, route changes, or acceptance criteria changes should update
-`PLAN.md`, `TODO.md`, and any relevant phase note, handoff note, `PROJECT_CONTEXT.md`, or
-`DECISIONS.md`.
+only when the phase boundary already exists and the live confirmation authorizes its declared
+outputs. Creating or changing a phase boundary follows
+[change-request policy](change_request_policy.md): propose, confirm the planning change, update
+the planning owners, and stop before any phase start gate or technical work.
 
 Do not start fixtures, tests, implementation, or other technical file changes before the
 relevant plan record exists. Do not treat `PLAN.md` or `TODO.md` as after-the-fact summaries
@@ -447,39 +385,19 @@ for scope-changing work. Prohibited order: Implement first, document plan later.
 Verification results, actual modified file lists, phase note updates, handoff summaries, and
 small non-scope-changing corrections can be recorded after technical work.
 
-## Phase Boundary Change Confirmation
+## Phase Boundary Authorization
 
-Any phase split is a phase boundary change, regardless of whether the split is requested by the
-user or recommended by Codex. Use one split flow for both sources. Phase boundary changes
-include splits, any one-decimal Phase X.N sub-phase, New Major Phase work, Backlog moves, and
-phase goal, non-goal, acceptance criteria, or verification loop changes. Phase X.1 and Phase
-X.2 are common examples, not the complete boundary.
+Phase-boundary creation, split proposals, sequential identifiers, and plan-change updates are
+owned by [change-request policy](change_request_policy.md). This policy owns the authorization
+outcome after that planning flow: plan-change confirmation, a later phase-start request, and a
+post-gate live execution confirmation are distinct signals and cannot substitute for each
+other.
 
-When Codex recommends a split, it must propose the complete currently visible sub-phase
-structure before asking for confirmation. The proposal must assign Phase X.1, Phase X.2, and
-later one-decimal numbers to known follow-up sub-phases, and mark uncertain or out-of-scope
-work as later phase work or Backlog. Do not create only the immediate next Phase X.1 and route
-the user directly to the Phase X.1 start gate.
-
-When Codex proposes a new Phase X.N, it must:
-
-1. Explain why the sub-phase is needed.
-2. Show a split interpretation or phase boundary change proposal.
-3. Ask the user to confirm the planning change before updating planning files.
-4. If confirmed, update `PLAN.md`, `TODO.md`, and any relevant phase note.
-5. Stop.
-6. Show the already-recorded Phase X.N start gate only after a later user request.
-
-After confirmed planning-file updates, Codex stops before showing the new phase or sub-phase
-start gate. Use one decimal level only; do not introduce Phase X.N.M.
-
-After plan-change update, a later request to start, continue, enter, or execute the
-already-recorded Phase X.N only authorizes the phase start gate. It does not authorize
-execution. The start gate must stop before execution and wait for post-gate execution
-confirmation.
-
-Plan-change confirmation, phase start request, and post-gate execution confirmation cannot
-substitute for each other.
+Reviewability can motivate a split, but the reasons, complete proposed split, allocation, and
+planning update are owned by
+[change-request policy](change_request_policy.md#phase-boundary-changes). Once recorded, every
+resulting phase or sub-phase requires its own gate, live confirmation, real-capability
+verification, and exit stop.
 
 ## Plan Mode Skill Invocation Guard
 
@@ -492,36 +410,6 @@ requests still require `phase-workflow` classification before returning a propos
 
 Plan Mode proposed plan cannot substitute for plan-change confirmation, phase start request,
 and post-gate execution confirmation. Plan Mode does not authorize execution.
-
-## Reviewable Split Policy
-
-A split can be justified by reviewability, transparency, phase size, risk, user confidence,
-avoiding opaque large phases, multiple independent outputs, unrelated user-visible
-capabilities, or separate verification loops.
-
-Any phase split is a phase boundary change, regardless of whether the split is requested by the
-user or recommended by Codex. Use one split flow for both sources. Codex should interpret the
-requested or recommended split, output the proposed Phase X.N boundary, and wait for user
-confirmation.
-
-When Codex recommends a split, it must propose the complete currently visible sub-phase
-structure before asking for confirmation. The proposal must assign Phase X.1, Phase X.2, and
-later one-decimal numbers to known follow-up sub-phases, and mark uncertain or out-of-scope
-work as later phase work or Backlog. Do not create only the immediate next Phase X.1 and route
-the user directly to the Phase X.1 start gate.
-
-Split flow:
-
-1. Recommend or interpret the split.
-2. Show a split interpretation or phase boundary change proposal.
-3. Ask the user to confirm the planning change before updating planning files.
-4. Wait for user confirmation of the split boundary.
-5. Update planning files such as `PLAN.md`, `TODO.md`, and the active phase note.
-6. Stop.
-7. Show the next phase or sub-phase start gate only after the user asks to continue.
-
-Split confirmation only authorizes planning-file updates, then stop. It does not authorize
-Phase X.N execution, fixtures, tests, implementation, or other technical file changes.
 
 ## Approach Confirmation
 
@@ -536,6 +424,12 @@ confirmation.
 Non-trivial approach choices include algorithms, architecture, libraries or dependencies, data
 structures, Markdown document structure, prompt rewrite strategy, template field design, policy
 semantics, test strategy, migration or compatibility strategy, and user-visible output format.
+
+A material approach revision invalidates the earlier live confirmation even when the goal and
+declared outputs stay the same. Record the revised approach in the active phase note, update
+TODO's compact state and next action, show a revalidation gate, and wait for a new live
+confirmation before continuing. If outputs, acceptance criteria, risk, or the verification loop
+also changes, route the change through `references/change_request_policy.md`.
 
 Approval model:
 
@@ -591,21 +485,13 @@ confirmation.
 
 ## Phase Exit Checklist
 
-- Required tests pass.
-- Smoke test passes, if relevant.
-- Outputs match the phase agreement.
-- `TODO.md` is current.
-- The phase note records historical scope, files, tests, risks, and next steps.
-- The handoff note lets a new Codex session continue without chat history.
-- `DECISIONS.md` records durable decisions only.
-- Scope expansion is either absent or documented as a change request.
-- Record updates should use scoped reads, not default full-file reads.
+Use [verification policy](verification_policy.md) for evidence, failure handling, phase versus
+project completion, and the completion record. After verified exit, update each fact in its
+owner defined by [recovery protocol](recovery_protocol.md), then stop before the next phase
+gate.
 
 ## Avoiding Scope Creep
 
-- Write non-goals at phase start.
-- Treat "while we are here" ideas as change requests.
-- Move new capabilities to a future phase.
-- Put useful but non-urgent ideas in Backlog.
-- Do not implement unplanned features because they seem small.
-- Update `DECISIONS.md` when the long-term strategy changes.
+Write non-goals at phase start. Route new requirements through
+[change-request policy](change_request_policy.md) rather than absorbing them into the active
+phase. Record durable strategy changes in `DECISIONS.md`.

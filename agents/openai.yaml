@@ -1,0 +1,7 @@
+interface:
+  display_name: "Phase Workflow"
+  short_description: "Plan complete systems through confirmed, verified phases"
+  default_prompt: "Use $phase-workflow to recover the current project state, show the required phase gate, and execute only after separate confirmation."
+
+policy:
+  allow_implicit_invocation: true

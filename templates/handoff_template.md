@@ -1,68 +1,35 @@
 # Handoff Template
 
-This handoff is not a complete history, audit log, phase table, or `PLAN.md` summary. Keep
-the first 80-120 lines focused on current recoverable state.
+Template role: structural, not authoritative. Follow
+[recovery protocol](../references/recovery_protocol.md) for the canonical recovery prompt,
+owner files, and optional handoff behavior.
 
-## Project Summary
+Handoff is optional and non-authoritative. Missing handoff is supported. This index points to
+authoritative owner files; it must not copy current phase, status, output ledger, verification,
+next action, or authorization facts. It cannot grant execution authorization.
 
-Project summary:
+## Authority Notice
 
-## Current Phase
+This handoff is a pointer-only compatibility index. Validate every pointer against
+`references/recovery_protocol.md` and the owner file. A stale or conflicting handoff becomes a
+Context Gap and cannot override an authoritative anchor.
 
-Current phase:
+## Anchor Pointers
 
-## Current State
+- TODO current state:
+- Active phase note:
+- Matching PLAN phase:
+- Relevant decisions:
+- Stable PROJECT_CONTEXT headings, when present:
+- Latest verification record:
 
-Current state:
+## Context Gaps
 
-## Recently Completed Work
-
-Recently completed work:
-
-## Modified Files
-
-Modified files:
-
-## Verified Work
-
-Verified work:
-
-## Last Verification
-
-Last verification:
-
-## Verification Commands
-
-Verification commands:
-
-```bash
-python -m pytest -q
-```
-
-## Known Issues
-
-Known issues:
-
-## Next TODO
-
-Next TODO:
-
-## Next Action
-
-Next action:
-
-## Do Not Do
-
-Do not do:
+- Gap IDs and owner phase-note pointers only; do not copy detailed evidence.
 
 ## Recommended New Window Prompt
 
 ```text
-Use phase-workflow for this repository. Do not rely on previous chat history.
-Read `AGENTS.md` first.
-Read only the first 80-120 lines of the latest compact handoff or current-state file.
-Read only the current phase, active task, blocked, and next task sections of `TODO.md`.
-Use `rg` to inspect `PLAN.md`, `DECISIONS.md`, `PROJECT_CONTEXT.md`, or phase notes only when
-compact state is missing, conflicting, or explicitly requested.
-Summarize current state and next action before editing.
+Use the canonical new-window prompt from references/recovery_protocol.md and supply only the
+project-specific anchor pointers and Context Gap IDs listed above.
 ```

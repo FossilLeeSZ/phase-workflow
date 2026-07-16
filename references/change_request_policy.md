@@ -1,33 +1,60 @@
 # Change Request Policy
 
+> Policy role: canonical owner for change classification, sequential Phase X.N allocation,
+> Change Type, phase-boundary creation, and plan-change updates.
+> `policy-owner: change-requests`
+
 Use this policy to classify and contain scope changes when new requirements appear during an
 active phase.
 
+Use [phase policy](phase_policy.md) for gate and live-authorization outcomes,
+[recovery protocol](recovery_protocol.md) for state ownership, and
+[verification policy](verification_policy.md) for completion.
+
 ## Classification
 
-`Phase X.1` and `Phase X.2` are common examples under the broader Phase X.N pattern. Phase
-X.N means any one-decimal sub-phase under the current major phase.
+Choose the route, identifier, and work type separately. The route is Phase X.N, New Major
+Phase, or Backlog. A Phase X.N identifier expresses sequence only.
 
-### Phase X.1: Small Scoped Addition
+### Sequential Phase X.N Identifier
 
-Use Phase X.1 when the change:
+When the route is Phase X.N:
 
-- Supports the current phase goal.
-- Adds a narrow clarification or missing piece.
-- Does not change the acceptance criteria substantially.
-- Can be verified with the current test approach.
+- Read the repository's durably recorded direct sub-phases under major Phase X.
+- Treat every suffix N as a positive integer.
+- If none exist, assign Phase X.1.
+- Otherwise assign `max(existing N) + 1`.
+- Count completed, cancelled, superseded, or abandoned identifiers as already used.
+- Do not fill a gap or reuse an identifier.
+- Do not let an occupied or otherwise conflicting chat-proposed number override repository
+  state.
+- Treat X.10 as the tenth sub-phase identifier, not as a decimal value.
 
-Example: Add a missing "Known issues" field to a handoff template during a documentation phase.
+## Change Type
 
-### Phase X.2: Current Phase Bug Fix
+Every Phase X.N change record must include `Change Type:` separately from its identifier. The
+allowed values are:
 
-Use Phase X.2 when the change:
+- `addition`: adds a narrow clarification, missing piece, or compatible capability inside the
+  recorded phase boundary.
+- `bugfix`: fixes incorrect runtime behavior.
+- `correction`: fixes incorrect policy, documentation, fixture, expectation, or other
+  non-runtime behavior.
+- `migration`: moves an existing capability, representation, dependency, or data shape to a
+  new supported form.
+- `documentation`: produces documentation as the declared product of the change.
+- `other`: covers a type not represented above and requires a short explanation.
 
-- Fixes incorrect behavior or documentation in the current phase.
-- Keeps the same goal and outputs.
-- Prevents the current phase from exiting cleanly if ignored.
+The type describes the work but never selects or changes the identifier. If the type changes
+later, keep the recorded Phase X.N identifier. Record classification reasoning when the type
+affects scope, verification, or rollout. A narrow addition and a blocking bugfix can each be
+Phase X.1 if they are the first recorded sub-phase under different major phases; if the bugfix
+is first and an addition follows it under the same major phase, they are Phase X.1 and Phase
+X.2 respectively.
 
-Example: Fix a test that checks the wrong required filename.
+Example: adding a missing Context Gap field can be `Change Type: addition`; fixing a test that
+checks the wrong required filename can be `Change Type: correction`. Their Phase X.N numbers
+still come only from recorded sequence state.
 
 ### New Major Phase
 
@@ -56,8 +83,11 @@ Before implementing a change request, record the classification and impact analy
 files. For scope-changing work, update planning files before technical files.
 
 - Reason for the change.
-- Classification: Phase X.N, New Major Phase, or Backlog. Use Phase X.1 and Phase X.2 as
-  common examples when they fit.
+- Route: Phase X.N, New Major Phase, or Backlog.
+- Assigned identifier and the recorded numbering state used to derive it, when the route is
+  Phase X.N.
+- Change Type and classification reasoning. Record classification reasoning when the type
+  affects scope, verification, or rollout.
 - Files likely affected.
 - Tests to add or update.
 - Outputs that will change.
@@ -67,16 +97,16 @@ files. For scope-changing work, update planning files before technical files.
 ## Phase Boundary Changes
 
 A change request that creates or changes a sub-phase is a phase boundary change. This includes
-splits, any one-decimal Phase X.N sub-phase, New Major Phase work, Backlog moves, and phase
-goal, non-goal, acceptance criteria, or verification loop changes.
+splits, any direct Phase X.N sub-phase, New Major Phase work, Backlog moves, and phase goal,
+non-goal, acceptance criteria, or verification loop changes.
 
 Any phase split is a phase boundary change, regardless of whether the split is requested by
 the user or recommended by Codex. Use one split flow for both sources. When Codex recommends a
 split, it must propose the complete currently visible sub-phase structure before asking for
-confirmation. The proposal must assign Phase X.1, Phase X.2, and later one-decimal numbers to
-known follow-up sub-phases, and mark uncertain or out-of-scope work as later phase work or
-Backlog. Do not create only the immediate next Phase X.1 and route the user directly to the
-Phase X.1 start gate.
+confirmation. Starting after the highest already-recorded N, the proposal must assign the next
+sequential Phase X.N identifiers to all known follow-up sub-phases and mark uncertain or
+out-of-scope work as later phase work or Backlog. Do not create only one immediate next
+sequential Phase X.N and route the user directly to its start gate.
 
 Before adding Phase X.N, Codex must explain why it is needed, show a phase boundary change
 proposal, and ask the user to confirm the planning change before updating planning files. If
@@ -90,32 +120,23 @@ After the planning files are updated, the change request flow is complete. Do no
 from a completed planning update into fixtures, tests, documents, prompts, templates,
 policies, or code changes.
 
-After plan-change update, a later request to start, continue, enter, or execute that
-already-recorded Phase X.N only authorizes the phase start gate. It does not authorize
-execution. The start gate must stop before execution and wait for post-gate execution
-confirmation.
+The later phase-start gate and live execution confirmation are owned by
+[phase policy](phase_policy.md); this planning confirmation cannot substitute for either.
 
-Plan-change confirmation, phase start request, and post-gate execution confirmation cannot
-substitute for each other.
-
-Use one decimal level only; do not introduce Phase X.N.M.
+Use one sub-phase nesting level only; do not introduce Phase X.N.M. X.10 follows X.9 as an
+integer sequence identifier.
 
 ## Plan Mode Change Requests
 
-Plan Mode is optional. When Plan Mode is enabled for a task covered by this workflow, Codex
-must activate and follow phase-workflow first.
-
-Plan Mode cannot bypass phase-workflow activation, phase boundary change checks, or the
-confirm-plan-update-stop flow. In Plan Mode, plan, phase, scope, or design-change requests
-still require change request classification before returning a proposed plan.
-
-Plan Mode proposed plan cannot substitute for plan-change confirmation, phase start request,
-and post-gate execution confirmation. Plan Mode does not authorize execution.
+Plan Mode is optional. When enabled, use the current `SKILL.md` for activation and apply the
+same classification and confirm-plan-update-stop flow. Authorization remains owned by
+[phase policy](phase_policy.md).
 
 ## Handling During An Active Phase
 
 - Do not let a change request silently interrupt the active phase.
-- If the change is urgent and blocks verification, classify it as Phase X.2.
+- If the change is urgent and fixes incorrect runtime behavior, record `Change Type: bugfix`.
+  If it needs a separate verification loop, assign the next sequential Phase X.N.
 - If the change needs a separate goal, acceptance criteria, or verification loop, classify it
   as New Major Phase.
 - If the change is useful but not blocking, record it in `TODO.md` or Backlog.
@@ -128,20 +149,10 @@ and post-gate execution confirmation. Plan Mode does not authorize execution.
 
 ## Approach Override
 
-If the user rejects the proposed execution approach, stop execution. Do not keep editing
-fixtures, tests, implementation, documents, prompts, templates, or policies under the rejected
-approach.
-
-If the goal and output stay the same, update `TODO.md` or the active phase note with the revised execution approach, then show the revised approach confirmation before continuing.
-
-If acceptance criteria, outputs, risk, or the verification loop changes, handle the request as
-scope-changing work: update `PLAN.md`, `TODO.md`, and any relevant phase note before technical
-file changes.
-
-Approach rejection does not automatically cancel the phase. It pauses execution until the
-revised approach is recorded and confirmed.
+Classify any scope-changing consequence here. The stop, revalidation, and renewed-confirmation
+semantics for a material approach revision are owned by [phase policy](phase_policy.md).
 
 ## Completion Rule
 
-A change request is not complete until its verification command has run and the result is
-recorded in the phase note or handoff note.
+A change request is complete only under [verification policy](verification_policy.md). Store
+completion evidence through the owners defined by [recovery protocol](recovery_protocol.md).

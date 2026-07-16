@@ -1,439 +1,309 @@
 # phase-workflow
 
-`phase-workflow` is a lightweight Codex workflow skill for planning and completing
-software projects from a zero-based project direction. It helps keep long-running
-development work small, explicit, verifiable, and recoverable across Codex sessions.
+> Policy role: canonical owner for the user-facing introduction, installation, adoption,
+> optional hook operations, and usage guidance. `policy-owner: public-adoption`
 
-Zero-based project direction means the project is being planned from a zero-based project
-direction rather than from chat history. That can mean empty repositories and new projects, or
-existing codebases that need re-baselining around a new goal, project boundaries, phases,
-acceptance criteria, and complete delivery path.
+`phase-workflow` is a lightweight project-level Codex skill for planning and completing
+software projects through reviewable, testable phases. It supports empty projects, existing
+structured systems, mature or large systems, repairs, migrations, refactors, and long-running
+work.
 
-Its main purpose is not to make Codex plan. Codex can already plan. Its purpose is
-to make planning, scope control, verification, and handoff repeatable through
-project files instead of chat history.
+It plans toward the complete target system. An MVP, prototype, pilot, preview, or first release
+may be a user-selected milestone, but it is not the default project identity or completion cap.
 
-Casually speaking, it helps everyone borrow useful MBTI J habits: clear phase boundaries,
-explicit decisions, and verified next steps. The engineering value is that new Codex windows
-can recover the work from files, and long conversations do not have to keep compressing
-context until stale assumptions, lost decisions, mixed context, or scope drift creep in.
+## Policy Guide
 
-The workflow is simple:
+Detailed behavior has one owner per topic:
 
-1. Lock the current phase boundary.
-2. Output a visible start gate and wait for separate confirmation.
-3. Update planning files before technical work starts.
-4. Confirm any non-trivial execution approach before related file changes.
-5. Prepare fixtures or examples.
-6. Write failing tests.
-7. Implement the smallest useful capability.
-8. Verify with actual commands.
-9. Update TODO, phase notes, and handoff documents.
-10. Move to the next phase only after verification.
+- [Phase policy](references/phase_policy.md): applicability, complete delivery, real capability,
+  phase lifecycle, visible gates, live authorization, mutation preflight, and recovery choices.
+- [Change-request policy](references/change_request_policy.md): scope routing, sequential
+  Phase X.N identifiers, Change Type, splits, and plan-change updates.
+- [Recovery protocol](references/recovery_protocol.md): conversation/context responsibilities,
+  durable anchors, current-state ownership, Context Gaps, partial recovery, and optional handoff.
+- [Verification policy](references/verification_policy.md): evidence, failed verification,
+  phase completion, and project-completion claims.
+- [SKILL.md](SKILL.md): activation, resource routing, global stop invariants, and the compact
+  workflow.
 
-The project is not a business application, a RAG system, a web UI, or a code
-generation framework.
+This README summarizes those policies for users. It does not redefine their detailed rules.
 
 ## What Problem It Solves
 
-Projects drift when scope, examples, tests, and handoff notes fall out of sync.
-`phase-workflow` keeps them synchronized through a repeatable phase rhythm.
+Long projects drift when plans, tests, examples, and status records disagree, or when important
+decisions survive only in a chat window. `phase-workflow` gives each changing fact one owner,
+keeps scope changes visible, and makes every implementation phase prove its declared real
+capability.
 
-This is a scope-control workflow skill, not just a planning template. It prevents a
-phase from silently absorbing future work. New ideas are classified before
-implementation instead of being added directly to the active phase:
+The workflow helps prevent:
 
-- `Phase X.N` sub-phase, such as `Phase X.1` or `Phase X.2`
-- `New Major Phase`
-- `Backlog`
-
-The goal is not to add process for its own sake. The goal is to make project work
-recoverable across Codex sessions without relying on chat history or a compressed long
-conversation.
+- Starting implementation before the phase boundary and approach are reviewable.
+- Treating `next`, `start`, or an old confirmation as permission to edit files.
+- Expanding one phase into several unreviewed capabilities.
+- Delivering fixtures, shells, stubs, or documentation while claiming a connected runtime
+  capability that was never implemented.
+- Losing current intent or durable constraints after conversation compression or a new window.
+- Copying the same current state into TODO, handoff, project context, and logs until they drift.
 
 ## What It Produces
 
-A project using this workflow usually maintains:
+A typical adopted project contains:
 
-- `AGENTS.md` - repository-level rules for Codex
-- `PLAN.md` - phase roadmap and execution input
-- `TODO.md` - current phase, active task, next tasks, blockers, and do-not-do-yet
-- `DECISIONS.md` - durable decisions only
-- `PROJECT_CONTEXT.md` - adoption/background baseline for existing structured project adoption
-- phase notes - historical phase scope, modified files, verification, risks, and next steps
-- handoff notes - compact current state for new Codex sessions
+```text
+project/
+├── AGENTS.md
+├── PLAN.md
+├── TODO.md
+├── DECISIONS.md
+├── PROJECT_CONTEXT.md        # only when stable existing-system facts are needed
+├── docs/
+│   └── phases/
+│       └── phase_N_*.md
+├── .agents/skills/phase-workflow/
+│   ├── SKILL.md
+│   ├── README.md
+│   ├── LICENSE
+│   ├── agents/
+│   │   └── openai.yaml
+│   ├── references/
+│   ├── templates/
+│   ├── examples/
+│   ├── hooks/
+│   └── docs/
+│       └── retired_companion_migration.md
+└── .codex/
+    └── hooks.json             # optional reminder hook
+```
 
-`DEV_LOG.md` is not a baseline workflow file. Legacy `DEV_LOG.md` files may remain in adopted
-projects, but the workflow no longer requires creating, reading, or updating them.
-
-The output is not a complex tool. The output is recoverable project state that a
-new Codex window can read before editing files.
+The workflow does not require a handoff file. When a project uses one, it is a pointer-only,
+non-authoritative compatibility index.
 
 ## Core Guarantees
 
-When used correctly, `phase-workflow` aims to ensure that:
+- The complete target, release path, and phase acceptance criteria are recorded before
+  implementation expands.
+- A phase can be narrow but cannot be hollow: it must complete and verify the real capability
+  named by its boundary.
+- A phase start request displays a visible gate and stops; execution waits for a later live
+  confirmation.
+- Scope changes use a proposal, planning confirmation, planning update, and stop before the new
+  phase gate.
+- Tests or other verification are updated before behavior when the project supports them.
+- Current conversation is used for current intent; durable anchors preserve confirmed meaning;
+  repository evidence establishes actual state.
+- Old chat, TODO text, a phase note, handoff, or file saying `confirmed` cannot restore
+  authorization.
+- After phase completion, Codex reports results and waits instead of automatically starting the
+  next phase.
 
-- every phase has a narrow goal and explicit non-goals;
-- phase start gates stop for separate confirmation before edits;
-- phase boundaries stay explicit and do not advance automatically;
-- examples or fixtures define behavior before implementation;
-- tests or verification criteria guide the smallest useful change;
-- verification commands are actually run and recorded;
-- mutation branches separate planning, technical work, status/handoff records, and recovery;
-- the next Codex session can resume from a recoverable handoff in project files.
+See the [phase policy](references/phase_policy.md) for the normative lifecycle and live
+authorization model.
 
-Fixtures and tests are not ceremony. They define expected behavior before
-implementation begins. A phase is not complete until verification results are
-recorded; "should work" is not an exit criterion.
+## Fit
 
-When a request includes multiple phases, multiple verification loops, or multiple independent
-outputs, only the currently confirmed phase may execute.
-Scope-changing work is recorded before technical work starts.
-Plan-change confirmation stops after planning-file updates.
+### Good Fit
 
-Classify mutation branches by change intent and content, not by file name alone. `TODO.md`,
-phase notes, and handoff notes can contain planning-file mutations or status/handoff-record
-mutations. Scope, phase boundary, active task, acceptance criteria, or roadmap changes are
-planning-file mutations. Verification results, current status, and handoff summaries are
-status/handoff-record mutations.
+- A new project that needs a complete-delivery roadmap.
+- An existing system that needs re-baselining, migration, repair, or refactoring.
+- Work with multiple capability phases or review points.
+- A project that must survive conversation compression or continue in a new Codex window.
+- A user who wants visible scope, approach, risk, and verification before edits begin.
 
-If an approved boundary has already been crossed, new implementation stops. Recovery uses a
-read-only audit and chat-visible incident report before user choice, then repairs records only
-after the user chooses keep-and-audit or rollback.
+### Poor Fit
 
-For detailed rules, read `SKILL.md` and the files in `references/`.
+- A simple question or tiny one-off task with no continuity requirement.
+- A request explicitly opted out of this workflow.
+- A project with a higher-priority incompatible process that the user does not want changed.
+- An unclear or tangled repository before a bounded read-only assessment.
+
+A target product may legitimately need a database, Web UI, cloud service, authentication,
+complex CLI, external integration, migration, large refactor, or business workflow. Restrictions
+against those features apply to this `phase-workflow` repository itself, not to products governed
+by the workflow.
 
 ## Tradeoffs
 
-`phase-workflow` may use more tokens than an ad hoc Codex chat because Codex checks
-phase boundaries, records verification results, and maintains handoff notes.
+The workflow uses more planning and token budget than direct ad-hoc editing. In return, it
+improves recoverability, scope control, reviewability, and confidence about what was actually
+verified. The useful tradeoff is explicit boundaries and evidence, independent of any named
+working-style framework.
 
-The tradeoff is intentional: the workflow spends extra context on recoverability,
-scope control, verification, and new-window handoff.
+## Compatibility
 
-This has not been benchmarked yet. Actual token usage will depend on project size,
-how many workflow files are read, and how often phases or sub-phases are updated.
-Measured reports or practical suggestions are welcome.
+This repository is designed and tested as a project-level Codex skill. Other agents may reuse
+the Markdown policies, but their activation, hook, and tool behavior is not tested here.
 
-To keep recovery context small, new Codex windows should start from `AGENTS.md`, the first
-80-120 lines of the latest compact handoff or current-state file, and the current `TODO.md`
-phase/task/blocker sections. Do not read full `PLAN.md`, `DECISIONS.md`,
-`PROJECT_CONTEXT.md`, full `TODO.md`, full handoff files, or full phase notes by default.
-Treat `PLAN.md`, `DECISIONS.md`, `PROJECT_CONTEXT.md`, full `TODO.md`, full handoff files,
-and phase notes as targeted or on-demand recovery sources. Use `rg` or scoped section reads
-when scope changes, conflicts, missing verification, unclear decision sources, or explicit
-history requests require more history.
+For a workspace that still contains retired companion files, use the
+[older-installation migration guide](docs/retired_companion_migration.md). It is cleanup
+guidance only and does not restore the retired feature.
 
-The compact handoff/current-state file is not a complete history, audit log, phase table, or
-`PLAN.md` summary. It should contain the current recoverable state: project summary, current
-phase, recently completed work, last verification, blockers, next action, and do-not-do
-items. Historical completed task lists belong in phase notes. `TODO.md` should keep only
-current phase, active task, next tasks, blockers, and do-not-do-yet in the default recovery
-area.
+## Installation
 
-The same bounded-read rule applies when updating phase-exit or end-of-round records. Do not
-read large workflow files in full just to update status records; update the relevant TODO
-sections, phase note, and compact handoff. Update DECISIONS only for durable decisions. Use
-heading-scoped reads for phase notes, handoff notes, `PLAN.md`, `DECISIONS.md`, and
-`PROJECT_CONTEXT.md`.
-
-Phase 15 planning guidance supports two paths. Codex-only: the default path. In this path,
-Codex reads bounded recovery context, shows gates, validates authorization, executes
-commands, and edits files after confirmation. ChatGPT/MCP planning with Codex execution: an
-optional path. In this path, ChatGPT may use the read-only MCP companion through an available
-connector path to read bounded project context and produce a short handoff prompt for Codex.
-The MCP path is optional and selected by the user. Codex-direct MCP planning is not a Phase
-15 supported mode. The local MCP companion must not call Codex, run `codex exec`, start
-Codex, or use Codex as a compression backend.
-
-Default recovery snapshot contract: ChatGPT/MCP default snapshot must match the bounded
-recovery context Codex would read. Default snapshot includes `AGENTS.md`, the needed skill
-entry or reference guidance, the first 80-120 lines of the compact handoff or current-state
-file, and current `TODO.md` sections: current phase, active task, blockers, next tasks, and
-do-not-do-yet. Full `PLAN.md`, full `TODO.md`, `DECISIONS.md`, full handoff files, and phase
-notes are targeted or on-demand reads. The local MCP companion reads this snapshot directly;
-it must not route snapshot reads through Codex.
-
-On-demand planning reads: Default snapshot remains the Phase 15.2 bounded snapshot. Use
-on-demand reads only when planning needs more context: scope conflict, missing verification,
-unclear phase boundary, explicit history request, or a specific `PLAN.md` section, phase note,
-or `DECISIONS.md` entry. Each on-demand read must name a concrete file or section; do not read
-the whole project history. Record source refs for every on-demand read so the
-ChatGPT-to-Codex handoff can cite them. On-demand MCP reads remain read-only: no file writes,
-no command execution, and no Codex-routed reads.
-
-ChatGPT-to-Codex handoff contract: ChatGPT may first return a planning-only draft start gate
-preview labeled `draft_start_gate_preview: 1`. The preview can include current phase, goal,
-non-goals, split decision, verification loop, and confirmation status when that information is
-present in MCP planning context. The preview is non-authoritative and not Codex execution
-authorization. Codex must still show the authoritative start gate after local revalidation and
-wait for separate Codex-side execution confirmation before any mutation.
-
-The handoff must be short and copyable. Required handoff fields: `project_id`, optional
-`workspace_id`, `mode`, `source_refs`, `snapshot_id`, `requested_action`, and
-`stop_condition`. `mode` must be `ChatGPT/MCP planning with Codex execution`. The handoff must
-include source refs and must not include full project history or full file contents. The
-handoff must include a stop condition such as show the next phase gate only or execute only the
-current confirmed phase and stop. Codex treats the handoff as planning input, not as a source
-of truth or execution authorization. Codex still revalidates local files, phase gates,
-authorization branch, and stop condition before execution. The handoff block still begins with
-`phase_workflow_handoff: 1`.
-
-Handoff recognition is header-based. Do not infer ChatGPT/MCP handoff mode from natural
-language alone. Missing header means ordinary Codex-only conversation. A valid header includes
-`phase_workflow_handoff: 1`, `mode: ChatGPT/MCP planning with Codex execution`, `project_id`,
-`source_refs`, `snapshot_id`, `requested_action`, and `stop_condition`. `workspace_id` is
-required when multiple local checkouts or ambiguity exist. Missing required fields, mismatched
-project identity, missing source refs, unclear stop condition, or wrong `mode` fails closed
-before execution. A valid handoff remains planning input only, not a source of truth or
-execution authorization. Codex must revalidate local files, phase gates, authorization branch,
-and stop condition before execution.
-
-Direct conversation with Codex remains Codex-only. Codex must not route its own planning,
-recovery reads, local validation, command execution, or file mutations through MCP. MCP is
-only for ChatGPT-side planning reads. Codex may configure, start, check status, and stop the
-local MCP companion after user confirmation, but service management does not make Codex
-planning use MCP.
-
-Project identity and setup card: The setup card helps ChatGPT pick the intended local project
-for MCP planning. `project_id` is the stable project identity. `workspace_id` distinguishes
-multiple local checkouts of the same project. `display_name` is human-facing only and must not
-be used as the identity anchor. `workspace_root` is the local absolute path stored in the
-local MCP registry. `allowed_files` is the explicit read allowlist for MCP planning. The
-copied Codex handoff should reference project identity and source refs, not expose the local
-absolute path unless local validation needs it. The setup card is configuration guidance, not
-Codex execution authorization.
-
-Project configuration and local registry: Explicit user request is required before creating
-or updating project MCP configuration or the local registry. Project-local MCP config lives
-under `.phase-workflow/mcp/project.json`. The project config stores `schema_version`,
-`project_id`, `display_name`, and `allowed_files`. The project config must not store the local
-absolute `workspace_root`. The local MCP registry lives at
-`~/.phase-workflow/mcp/registry.json`. The local registry stores `project_id`,
-`workspace_id`, `workspace_root`, port, endpoint, and PID or lock metadata. `project_id` is
-generated once for the project and stored in project config. `workspace_id` is generated per
-local checkout and stored in the local registry. Missing or ambiguous `project_id` or
-`workspace_id` fails closed. Configuration writes stay inside the selected project and the
-documented local registry path.
-
-Local read-only MCP lifecycle guidance: The local companion is started and stopped outside
-ChatGPT. ChatGPT connects only after the local companion is already running. Lifecycle
-commands stay lightweight: start, status, and stop. Bind to loopback by default. Track the
-running process with a PID or lock file. Report port conflicts explicitly instead of silently
-switching projects or ports. Fail closed when `project_id` is missing, unknown, or ambiguous.
-The local companion must remain read-only and must not call Codex, run `codex exec`, start
-Codex, or execute project commands. Lifecycle guidance must not become a Web UI, database,
-cloud sync, issue tracker integration, or complex CLI.
-
-Built-in read-only MCP companion support: In any project that has adopted
-`phase-workflow`, the user may ask Codex to enable optional ChatGPT/MCP planning for that
-project. Codex may run `scripts/phase_mcp_lifecycle.py configure`, `start`, `status`, or
-`stop` only after explicit user confirmation. The skill only handles this repository's local
-MCP companion creation and lifecycle operations: configure, start, status, and stop. After the
-companion is running, Codex may provide local setup facts for user-owned product setup:
-`project_id`, `workspace_id`, display name, allowed-file summary, local endpoint for
-same-machine development or smoke tests, and a starter ChatGPT planning prompt. Tunnel-side
-configuration is not performed by `phase-workflow`; follow the official OpenAI Secure MCP
-Tunnel documentation:
-https://developers.openai.com/api/docs/guides/secure-mcp-tunnels. ChatGPT-side configuration
-is not performed by `phase-workflow`; follow the official ChatGPT developer mode / MCP apps
-documentation:
-https://developers.openai.com/api/docs/guides/developer-mode and
-https://help.openai.com/en/articles/12584461-developer-mode-and-mcp-apps-in-chatgpt. ChatGPT
-reads through MCP and returns the final Codex handoff; Codex configuration does not generate
-the final handoff. Direct Codex chat remains Codex-only; only the ChatGPT-side planning
-conversation uses MCP.
-
-OpenAI Secure MCP Tunnel support: Use OpenAI Secure MCP Tunnel as the preferred remote
-ChatGPT connection path when available. Local loopback remains the local development path for
-same-machine development and smoke tests. Secure Tunnel keeps the MCP server private and uses
-outbound tunnel-client connectivity instead of public inbound project ports. `phase-workflow`
-does not configure the Tunnel side; it may only provide local companion facts that the user can
-apply while following the official Secure MCP Tunnel guide:
-https://developers.openai.com/api/docs/guides/secure-mcp-tunnels.
-
-Secure Tunnel availability depends on account, Platform tunnel, organization/workspace,
-ChatGPT connector UI, workspace association, and permissions. ChatGPT developer mode and MCP
-app setup are ChatGPT-side product configuration, not `phase-workflow` setup. Follow the
-official ChatGPT developer mode / MCP apps docs:
-https://developers.openai.com/api/docs/guides/developer-mode and
-https://help.openai.com/en/articles/12584461-developer-mode-and-mcp-apps-in-chatgpt.
-
-Port conflicts remain local companion issues. Secure Tunnel is not public exposure and does
-not require exposing arbitrary project ports publicly. Do not promote `ngrok` or public URL
-tunneling as the primary supported MCP connection path. Do not imply that Secure Tunnel is
-universally available. Do not store OpenAI API keys, tunnel runtime keys, or other tunnel
-secrets in project config, local registry, handoff prompts, README examples, or tests. The
-setup output is ChatGPT connector guidance, not Codex execution authorization.
-
-## How It Differs From Goal Mode
-
-Codex Goal mode is useful when a single Codex thread needs to keep working toward
-a persistent objective. `phase-workflow` is a file-based project workflow.
-
-It stores continuity in repository files such as `PLAN.md`, `TODO.md`,
-`DECISIONS.md`, phase notes, and handoff notes. It is not a
-replacement for Goal mode, and it does not require Goal mode.
-
-Use `phase-workflow` when project continuity should come from files rather than
-from a thread-scoped goal.
-
-## Good Fit
-
-Use this skill for:
-
-- Empty repositories and new projects that need a recoverable baseline.
-- Existing codebases that need re-baselining around a new goal, boundaries, phases,
-  acceptance criteria, and complete delivery path.
-- Projects where an MVP is a possible milestone, not the universal project frame.
-- Projects where Codex needs to resume work in a new window.
-- Work that benefits from fixtures-first and tests-first development.
-- Small teams or solo development where lightweight written context matters.
-
-## Poor Fit
-
-Do not use this skill for:
-
-- Mature projects with established engineering process that should not change.
-- One-off questions or tiny bug fixes that do not need phase tracking.
-- Direct small bug fixes in projects that have not adopted `phase-workflow`, or requests where
-  the user explicitly opts out of `phase-workflow` for that request.
-- Projects that already have strict project management, release, or compliance workflows.
-- Unclear or heavily tangled legacy projects. In practice, unclear or heavily tangled legacy
-  projects need assessment before workflow adoption.
-- Projects where the main entrypoint, test command, or current goal cannot be identified.
-- Work whose real need is large refactor or governance work.
-- Work that needs a full issue tracker, database, cloud sync, or web UI.
-- Business-specific workflows that should live in a separate project skill.
-
-In a project that has adopted `phase-workflow`, a direct small bug fix is still governed by
-phase-workflow. Classify it as Phase X.2 unless the user explicitly opts out of phase-workflow
-for that request. An opt-out does not rewrite project workflow records.
-
-## Existing Projects With A Clear Structure
-
-Use `phase-workflow` for existing codebases with a clear structure when the codebase has a
-recognizable purpose, clear directories, and a basic verification path, but needs
-re-baselining into a zero-based project direction with lightweight phase planning and handoff
-files.
-
-For these projects, Phase 0 should split into two confirmed sub-phases:
-
-1. Phase 0.1 adopts the workflow around the current project state. It creates or fills standard
-   workflow files and `PROJECT_CONTEXT.md`, but it does not overwrite existing project files,
-   plan future feature work, refactor code, or start a cleanup campaign.
-2. Phase 0.2 creates a planning baseline only after the user provides or confirms the next
-   project goal. It updates `PLAN.md` and `TODO.md` with a rough roadmap and a candidate
-   Phase 1 goal, then stops.
-
-If the project state is unclear, Codex should report the uncertainty and ask for clarification
-or recommend a separate assessment before adopting the workflow.
-
-Do not use this workflow as the first step for unclear or heavily tangled legacy projects.
-
-## Using It As A Codex Skill
-
-`phase-workflow` is intended as a project-level workflow skill. Copy it into the
-target repository so its rules and examples stay close to the project files it
-helps maintain.
-
-User-level installation is not recommended. This workflow is designed to live
-with the project files it governs.
-
-Recommended project-level installation layout:
+Codex discovers repository skills under `.agents/skills` from the current working directory up
+to the repository root. Install this skill at the following canonical project path:
 
 ```text
-your-project/
-  AGENTS.md
-  .codex/
-    hooks.json
-    skills/
-      phase-workflow/
-        SKILL.md
-        references/
-        templates/
-        examples/
-        hooks/
-          phase_workflow_prompt.py
+.agents/skills/phase-workflow/
 ```
 
-Copy the whole `phase-workflow` folder into `.codex/skills/phase-workflow/`, not
-only `SKILL.md`. Keep these paths together:
+Project-level installation keeps adoption explicit and allows repository instructions to define
+when the skill applies.
 
-- `SKILL.md`
-- `references/`
-- `templates/`
-- `examples/`
-- `hooks/`
-- `hooks/phase_workflow_prompt.py`
+### Fresh Installation
 
-See `examples/chatgpt_mcp_planning_example.md` for a ChatGPT/MCP planning example that keeps
-planning optional while Codex remains responsible for local validation and execution.
+Copy the complete release package into `.agents/skills/phase-workflow`. Do not install only
+`SKILL.md`; keep the root files, `agents/openai.yaml`, `references/`, `templates/`, `examples/`,
+`hooks/`, and the bounded migration guide together.
+
+Codex does not merge same-name skills. Before installing, check the repository and parent
+directories for another `phase-workflow` copy so the skill does not appear more than once.
+
+### Update An Existing Installation
+
+Treat the GitHub source checkout, the installed copy, and any temporary release package as three
+different locations. Back up or reconcile intentional local edits before updating the installed
+copy.
+
+Use a deletion-aware update: build or obtain the current release package, replace the files in
+`.agents/skills/phase-workflow` from that package, and remove files that are no longer in the
+release manifest. Do not copy `PLAN.md`, `TODO.md`, tests, phase history, caches, or other
+development-only files into the installed skill. Updating the skill does not authorize changes to
+application code, `AGENTS.md`, or `.codex/hooks.json`.
+
+### Migrate A Legacy Installation
+
+Older installations may exist at `.codex/skills/phase-workflow`. Treat that location only as a
+legacy migration source:
+
+1. Inspect the legacy copy for intentional local changes and preserve any change that still
+   matters.
+2. Install the current release package at `.agents/skills/phase-workflow`.
+3. If `.codex/hooks.json` points to the legacy script, review and update only that command after
+   separate Hook-maintenance authorization.
+4. Verify the new installation and explicitly invoke `$phase-workflow` from the project.
+5. After verification, delete the legacy copy.
+
+Do not keep both same-name skill copies. Codex can expose both rather than combining them, which
+creates ambiguous selection and stale behavior.
+
+This path migration is separate from the
+[retired companion cleanup guide](docs/retired_companion_migration.md), which covers removed
+runtime files and external state from much older releases.
+
+### Verify Installation
+
+Verify at least the following before relying on the installed copy:
+
+1. `.agents/skills/phase-workflow/SKILL.md` exists.
+2. `agents/openai.yaml`, `references/`, `templates/`, `examples/`, and `hooks/` are present inside
+   the installed skill.
+3. No legacy same-name copy remains after a completed migration.
+4. A new Codex task started inside the project can explicitly invoke `$phase-workflow`.
+5. If the skill is not visible after files change, restart Codex and check the installation path
+   again; do not assume discovery succeeded merely because the files were copied.
+
+### Source And Release Contents
+
+The maintained source is
+[FossilLeeSZ/phase-workflow](https://github.com/FossilLeeSZ/phase-workflow). A source checkout
+contains internal planning records and tests that do not belong in the installed copy.
+
+The local `release_manifest.json` is the development-time allowlist used to construct and test a
+release package. The package contains `SKILL.md`, `README.md`, `LICENSE`, `agents/openai.yaml`,
+`references/`, `templates/`, `examples/`, `hooks/`, and
+`docs/retired_companion_migration.md`.
+
+It excludes `AGENTS.md`, `PLAN.md`, `TODO.md`, `DECISIONS.md`, tests, phase/history records,
+`pyproject.toml`, the manifest itself, caches, and reports. Those exclusions keep installation
+content separate from this repository's development history.
 
 ### Copyable Initialization Prompts
-
-Use these prompts separately. The first prompt installs or enables only the project-level
-skill. The second prompt prepares optional ChatGPT/MCP planning guidance and must not make MCP
-mandatory.
 
 #### Skill-only initialization
 
 Chinese:
 
 ```text
-请把 `phase-workflow` 作为项目级 Codex skill 安装到当前项目中。仅执行安装/启用工作：把完整的 skill 文件夹放到 `.codex/skills/phase-workflow/`，并保留 `SKILL.md`、`references/`、`templates/`、`examples/` 和 `hooks/`。不要创建或配置 MCP，不要启动服务，不要修改项目功能代码。安装后请告诉我下一步如何用它开始 Phase 0 或 Phase 0.1。
+请把 phase-workflow 作为当前项目的 project-level Codex skill 安装到
+.agents/skills/phase-workflow/。只执行安装和启用：复制 release package 的完整内容，
+包括 SKILL.md、README.md、LICENSE、agents/openai.yaml、references、templates、examples、
+hooks 和迁移说明；不要复制开发记录或修改业务代码。完成后验证不存在同名旧副本，
+并说明如何请求 Phase 0、Phase 0.1 或 Phase 0.2 启动门。
 ```
 
 English:
 
 ```text
-Install `phase-workflow` as a project-level Codex skill in this project. Only perform skill installation/enabling: place the full skill folder at `.codex/skills/phase-workflow/`, and keep `SKILL.md`, `references/`, `templates/`, `examples/`, and `hooks/` together. Do not configure MCP, do not start services, and do not modify application code. After installation, tell me how to start Phase 0 or Phase 0.1.
+Install phase-workflow as a project-level Codex skill at
+.agents/skills/phase-workflow/. Only perform installation and enablement: copy the complete
+release package, including SKILL.md, README.md, LICENSE, agents/openai.yaml, references,
+templates, examples, hooks, and the migration guide; do not copy development records or modify
+application code. Verify that no legacy same-name copy remains, then explain how to request the
+Phase 0, Phase 0.1, or Phase 0.2 start gate.
 ```
 
-#### Optional MCP initialization
+## Existing Project Adoption
 
-Chinese:
+For an existing structured project, request Phase 0.1. Codex first performs a bounded factual
+assessment, shows the adoption gate, lists existing files, and explains what will be created,
+filled, merged, or left untouched. Phase 0.1 must not overwrite existing project instructions or
+application code.
 
-```text
-这个项目已经安装或准备安装 `phase-workflow`。现在请为本项目准备可选 ChatGPT/MCP 规划能力。仅执行安装检查和本仓库本地 companion 生命周期说明：确认本项目存在内置 MCP companion 脚本，说明 `configure`、`start`、`status`、`stop` 的作用。这个 skill 只负责本仓库的本地 MCP companion 创建和生命周期操作：配置、启动、状态检查和停止。Tunnel 端配置不由 `phase-workflow` 完成；请参照 OpenAI Secure MCP Tunnel 官方文档：https://developers.openai.com/api/docs/guides/secure-mcp-tunnels。ChatGPT 端配置不由 `phase-workflow` 完成；请参照 ChatGPT developer mode / MCP apps 官方文档：https://developers.openai.com/api/docs/guides/developer-mode 和 https://help.openai.com/en/articles/12584461-developer-mode-and-mcp-apps-in-chatgpt。说明本地 loopback 仅用于同机开发或烟测，给出需要复制到 ChatGPT 的 starter prompt，以及后续需要我单独确认的 Codex 命令。不要把 MCP 设为强制，不要让 Codex 通过 MCP 规划或读取项目文件。不要现在创建或更新 MCP 配置、写入本地 registry、绑定端口或启动服务，除非我随后单独确认。直接 Codex 对话保持 Codex-only，MCP 只用于 ChatGPT 端只读规划。
-```
+Phase 0.2 is a later, separately gated planning baseline. It records the target system,
+complete-delivery path, non-goals, candidate phases, and verification entry points. Completing
+Phase 0.1 does not authorize Phase 0.2.
 
-English:
+Detailed bootstrap and adoption behavior is owned by
+[phase policy](references/phase_policy.md).
 
-```text
-This project has installed or is ready to install `phase-workflow`. Now prepare the optional ChatGPT/MCP planning capability for this project. Only perform installation checks and this repository's local companion lifecycle guidance: confirm that the built-in MCP companion scripts are present and explain what `configure`, `start`, `status`, and `stop` do. This skill should only handle this repository's local MCP companion creation and lifecycle operations: configure, start, status, and stop. `phase-workflow` does not configure the Tunnel side; follow the official OpenAI Secure MCP Tunnel documentation: https://developers.openai.com/api/docs/guides/secure-mcp-tunnels. `phase-workflow` does not configure the ChatGPT side; follow the official ChatGPT developer mode / MCP apps documentation: https://developers.openai.com/api/docs/guides/developer-mode and https://help.openai.com/en/articles/12584461-developer-mode-and-mcp-apps-in-chatgpt. Explain that local loopback is only for same-machine development or smoke tests, provide the starter prompt to copy into ChatGPT, and list the later Codex commands that require my separate confirmation. Do not make MCP mandatory, and do not make Codex plan or read project files through MCP. Do not create or update MCP config, write the local registry, bind a port, or start services now unless I separately confirm. Direct Codex conversation stays Codex-only; MCP is only for ChatGPT-side read-only planning.
-```
+## Bootstrap Templates
 
-Optional project-level hook support can add a small reminder on each user prompt.
-This hook injects reminder context; it is not a skill invoker. It does not scan the
-project, does not recover project state, and does not read workflow files. Codex
-still decides whether `phase-workflow` applies. The hook cannot guarantee 100%
-skill activation. The hook does not replace `AGENTS.md`, and the hook does not
-modify files.
+The release includes [an AGENTS template](templates/agents_template.md) and
+[a PLAN template](templates/plan_template.md). They are file-based bootstrap aids, not a
+generator or a second policy source.
 
-Hook-injected reminders do not count as skill invocation. Project `AGENTS.md` rules do not
-replace opening `.codex/skills/phase-workflow/SKILL.md` when the skill applies. If
-`phase-workflow` applies, Codex should open the skill file in the current turn, then read only
-the needed reference file for the current decision.
+Use a template only when the target file is a declared Phase 0 or Phase 0.1 output and the user
+has provided a separate live confirmation after the visible gate:
 
-### Hook Operations And Updates
+1. If the target file is missing, read the source template from
+   `.agents/skills/phase-workflow/templates/`, render it to the target project root as
+   `AGENTS.md` or `PLAN.md`, remove the marked template-metadata block, and replace every
+   `{{...}}` placeholder with confirmed project-specific content.
+2. Rewrite source links such as `../SKILL.md` and `../references/...` to
+   `.agents/skills/phase-workflow/SKILL.md` and
+   `.agents/skills/phase-workflow/references/...`, then verify the rendered headings, anchors,
+   and links from the project root.
+3. If `AGENTS.md` or `PLAN.md` already exists, do not overwrite it. Render a separate candidate,
+   compare and merge section by section, preserve existing project meaning and the instruction
+   hierarchy, and keep historical phase records intact.
+4. If a conflict affects the project target, boundary, acceptance, approach, instructions, or
+   safety and cannot be resolved from current intent and evidence, record a blocking Context Gap
+   and stop before replacing or merging the target.
+5. During Phase 0.1, record only the factual adoption contract and known evidence. Leave an
+   unconfirmed future goal as `Not yet confirmed; requires separately gated Phase 0.2`; do not
+   use the PLAN template to invent or pre-authorize the later roadmap.
 
-Use the `.codex/hooks.json` example below only when optional project-level hook support is
-selected or explicitly requested. The Python hook emits `additionalContext` only. Git can distribute hook files and example hook configuration, but cannot automatically trust hooks.
-After copying or modifying project hooks, review and trust them with `/hooks` or Codex Hooks
-settings.
+No production rendering CLI is required. The templates, their source links, the rendered
+root-file links, placeholder replacement, and no-overwrite candidate behavior are verified by
+the repository tests.
 
-Use an absolute path in the hook command. Do not rely on the hook runner's current working
-directory. When Codex creates or refreshes this hook entry, it should resolve the target
-project's actual absolute path.
+## Optional Hook Support
 
-After a Codex-driven skill update that adds or changes hook-related files or
-`.codex/hooks.json`, restart Codex so the client reloads hook configuration. Codex should
-show the hook trust prompt after restart. Approve it only after reviewing the hook command
-and file contents. After changing the absolute hook command, restart Codex and
-re-review/trust the hook.
+The optional `UserPromptSubmit` hook injects a short reminder to check whether
+`phase-workflow` applies when the prompt contains an explicit workflow cue. It exits successfully
+with no output for empty, malformed, wrong-event, or unrelated input.
 
-Example `.codex/hooks.json`:
+The hook:
+
+- Is optional and cannot guarantee skill activation.
+- Does not invoke the skill.
+- Does not replace `AGENTS.md` or `SKILL.md`.
+- Does not scan the project or recover project state.
+- Does not modify files or grant execution authorization.
+
+Use the target project's quoted absolute path in `.codex/hooks.json`; commands run from the
+session working directory, so a relative installed-skill path is unsafe. `UserPromptSubmit`
+currently ignores `matcher`, so the script performs the bounded relevance check itself.
 
 ```json
 {
@@ -443,8 +313,9 @@ Example `.codex/hooks.json`:
         "hooks": [
           {
             "type": "command",
-            "command": "python C:\\absolute\\path\\to\\your-project\\.codex\\skills\\phase-workflow\\hooks\\phase_workflow_prompt.py",
-            "statusMessage": "Checking phase-workflow"
+            "command": "python3 \"<ABSOLUTE_PROJECT_PATH>/.agents/skills/phase-workflow/hooks/phase_workflow_prompt.py\"",
+            "commandWindows": "python \"<ABSOLUTE_PROJECT_PATH>\\.agents\\skills\\phase-workflow\\hooks\\phase_workflow_prompt.py\"",
+            "timeout": 5
           }
         ]
       }
@@ -453,288 +324,120 @@ Example `.codex/hooks.json`:
 }
 ```
 
-Projects that do not want this workflow can omit `.codex/skills/phase-workflow/` and
-`.codex/hooks.json`.
+When adopting hook support:
 
-### Adoption Outputs
+1. Review any existing `.codex/hooks.json`.
+2. Merge only the `phase-workflow` entry; do not overwrite unrelated hooks.
+3. Do not duplicate an existing matching entry.
+4. Ask before replacing a conflicting command or hook location.
+5. Restart Codex after creating or changing the hook configuration.
+6. Confirm the project's `.codex` layer is trusted. Review the command and file contents, then
+   trust the new or changed project Hook through the Codex Hook settings or `/hooks` surface.
 
-`AGENTS.md` and `.codex/hooks.json` are Phase 0 or Phase 0.1 adoption outputs, but
-they have different jobs. `AGENTS.md` records repository workflow guidance.
-`.codex/hooks.json` records optional project hook configuration.
+After a skill update, refresh `AGENTS.md` or the hook entry only when requested or when the
+adoption output explicitly includes that maintenance.
 
-`AGENTS.md` is created or filled by `phase-workflow` during Phase 0 or Phase 0.1
-adoption. Do not overwrite an existing `AGENTS.md`; append a small
-`phase-workflow` section instead. If the section already exists, do not add it
-again. This is an adoption-time action, not a per-prompt action. Users may
-explicitly request adding or refreshing the `phase-workflow` section after updating
-the skill version; treat that as an intentional maintenance action.
+See the current [Codex Hooks documentation](https://developers.openai.com/codex/hooks) for the
+handler schema, trust model, input/output contract, and supported events.
 
-Only create or fill `.codex/hooks.json` when optional project-level hook support is
-selected or explicitly requested. Do not create, inspect, or update `.codex/hooks.json`
-on every prompt. Do not overwrite an existing `.codex/hooks.json`; merge only the
-`phase-workflow` `UserPromptSubmit` entry. If the `phase-workflow` hook entry
-already exists, do not add it again. If an existing hook command or hook location
-conflicts, report the conflict and ask for user confirmation before replacing it.
-Users may explicitly request adding or refreshing either the `AGENTS.md` section or
-the `.codex/hooks.json` hook entry after updating the skill version; treat that as an
-intentional maintenance action.
+## Starting And Continuing Work
 
-After installation, start with a short brainstorm. Define the project goal, project
-boundary, first release boundary when useful, non-goals, constraints, and success criteria
-before asking Codex to create workflow files.
-
-You can brainstorm in Chat first and ask Chat to generate a first Codex prompt, or
-you can brainstorm directly in Codex. The Chat-to-Codex handoff is recommended,
-not required.
-
-## Compatibility
-
-`phase-workflow` currently supports Codex only. Other agents have not been tested.
-
-Claude Code support is planned for a future release.
-
-## Example Prompts
-
-The prompts do not need to be long once the workflow files exist. Short commands
-are usually enough because Codex should read the project files and recover the
-current state before editing.
-
-### Startup Guidance
-
-Before starting Phase 0, give Codex the project goal, project boundary, first release
-boundary when useful, non-goals, constraints, and success criteria. If you already discussed
-the project in Chat,
-you can ask Chat to generate a first Codex prompt from that summary. This is
-recommended, not required.
+Useful prompts include:
 
 ```text
-Use phase-workflow for this project. I want to brainstorm the project first.
-Help me define the goal, project boundary, first release boundary if useful, non-goals,
-constraints, and success criteria before Phase 0.
-```
-
-### Short Prompts
-
-```text
-Phase 0 is complete. Start Phase 1.
+Use phase-workflow for this project. Inspect the current durable anchors and show the next
+visible phase gate only. Do not modify files until I confirm after the gate.
 ```
 
 ```text
-Start Phase 1.
+Use phase-workflow. Assess whether this existing project is a structured adoption candidate and
+show the Phase 0.1 gate. Do not create or overwrite files yet.
 ```
 
 ```text
-Use phase-workflow. Continue from project files and summarize state first.
+Use phase-workflow. This request may change the current scope. Classify it under the
+change-request policy and show any required planning-boundary proposal before editing files.
 ```
 
-```text
-Classify this change request before implementation: ...
-```
+`下一步`, “next step”, or “start Phase X” requests the next gate. It does not authorize file
+changes. After the gate, a separate live reply confirms the disclosed phase and approach.
+New requirements are routed as the next sequential `Phase X.N`, a `New Major Phase`, or
+`Backlog` under the change-request policy.
 
-```text
-Adopt phase-workflow into this existing project. First classify the folder state and show the
-Phase 0.1 adoption gate before creating workflow files.
-```
-
-```text
-Refresh phase-workflow adoption outputs for the updated skill. Update the AGENTS.md workflow
-section and optional .codex/hooks.json hook entry. If hook files or hooks.json change, write
-the hook command with the target project absolute path, remind me to restart Codex and review
-the hook trust prompt, but ask before replacing conflicts.
-```
-
-```text
-This phase feels too large. Please propose a reviewable split before execution.
-```
-
-```text
-I do not like the proposed approach. Stop, update the plan or phase note, and show a revised
-approach before editing files.
-```
-
-If Phase 0 is not complete, Codex should report that blocker instead of silently
-starting Phase 1.
-
-## Chat-to-Codex Startup Flow
-
-Use Chat or Codex for product thinking, then use Codex for file-based execution across
-empty, new, and re-baselined existing project starts:
-
-1. First, create or open a target project folder.
-2. Install or copy the full `phase-workflow` skill.
-3. Brainstorm the project goal, project boundary, non-goals, constraints, and success
-   criteria in Chat or directly in Codex.
-4. Optionally have Chat generate a Codex prompt that summarizes the agreed project
-   direction.
-5. In Codex, classify the folder state as empty folder, existing structured project,
-   existing workflow project, or unclear project state.
-6. For an empty folder, create a rough phase plan in Phase 0. For an existing structured
-   project, use Phase 0.1 for adoption and Phase 0.2 for planning baseline.
-   If optional hook support is selected or requested, create or fill `.codex/hooks.json`
-   during adoption only; do not create or refresh it on every prompt.
-7. Before starting each major phase, check whether the scope should stay whole or
-   split into `Phase X.N`, move to a later phase, or move to backlog.
-8. Start Phase 0, Phase 0.1, Phase 0.2, or the next phase only after user confirmation of the phase
-   boundary.
-9. After each phase completes, report verification results, scope status, and the
-   next recommended action, then wait for user confirmation before continuing.
-
-Do not split a major phase only because it has several mechanical tasks. Split when the work
-no longer fits one verification loop, when the user asks for a more reviewable boundary, or
-when reviewability, transparency, phase size, risk, user confidence, or avoiding opaque large
-phases makes the phase easier to supervise. A confirmed split updates planning files and then
-stops; it does not authorize Phase X.N implementation.
-
-Any phase split is a phase boundary change, regardless of whether the split is requested by
-the user or recommended by Codex. Use one split flow for both sources. Codex should show a
-split interpretation or phase boundary change proposal and ask the user to confirm the
-planning change before updating planning files. When Codex recommends a split, it should
-propose the complete currently visible sub-phase structure instead of only the immediate next
-Phase X.1.
-
-A request to start a phase, such as "start Phase X", "begin Phase X", "continue Phase X", or
-"enter Phase X", asks Codex to analyze the phase and show the phase start gate. It
-does not authorize file edits. Codex should wait for separate user confirmation after the gate
-before creating or modifying files.
-
-**Strongly recommended, but optional:** if your Codex client supports Plan Mode, use it to
-review the phase start gate and proposed execution plan before confirming file edits.
-`phase-workflow` does not require Plan Mode. If Plan Mode is enabled, Codex must activate and
-follow `phase-workflow` first; the proposed plan is review content, not execution approval.
-
-## New Window Hygiene
-
-**Strongly recommended, but optional:** start a new Codex window at the start of each phase,
-and consider doing the same for each sub-phase. This keeps the working context short and helps
-Codex recover from project files instead of compressed chat history. Treat it as a clean context
-checkpoint.
-
-At the start of each new window, include your desired response language in the opening prompt.
-For example:
-
-```text
-Use phase-workflow for this project. Do not rely on previous chat history.
-Read `AGENTS.md` first.
-Read only the first 80-120 lines of the latest compact handoff or current-state file.
-Read only the current phase, active task, blocked, and next task sections of `TODO.md`.
-Use `rg` to inspect `PLAN.md`, `DECISIONS.md`, `PROJECT_CONTEXT.md`, or phase notes only when
-compact state is missing, conflicting, or explicitly requested.
-
-Desired response language: Chinese for this chat.
-Keep project files in English unless I say otherwise.
-```
-
-The response language preference is for chat output only. It does not change the project file
-language unless you explicitly ask for that.
-
-## Workflow Diagram
+## High-Level Workflow
 
 ```mermaid
 flowchart TD
-    A["Create or open target project folder"] --> B["Install or copy phase-workflow skill"]
-    B --> C["Brainstorm project direction: goal, boundaries, non-goals, constraints"]
-    C --> D["Optional startup prompt"]
-    D --> PM{"Plan Mode enabled?"}
-    PM -->|"Yes"| PMW["Activate phase-workflow first"]
-    PM -->|"No"| E
-    PMW --> E
-    E["Read compact recovery context"]
-    E --> EH["Read first 80-120 handoff/current-state lines"]
-    EH --> ET["Read current TODO sections only"]
-    ET --> EL["Use rg-targeted history only if needed"]
-
-    EL --> F{"Folder state?"}
-    F -->|"Empty folder"| G["Output Phase 0 start gate"]
-    F -->|"Existing structured project"| ES["Output Phase 0.1 adoption start gate"]
-    F -->|"Unclear"| EU["Report unclear project state and stop"]
-    F -->|"Existing workflow project"| H["Summarize compact current state"]
-
-    G --> I["Wait for separate user confirmation"]
-    I --> J["Create baseline workflow files"]
-    J --> K["Run actual verification command"]
-    K --> L["Update TODO, phase note, and compact handoff"]
-    L --> M["Report result and wait for next phase request"]
-
-    ES --> EC["Wait for separate user confirmation"]
-    EC --> EJ["Create workflow files and PROJECT_CONTEXT"]
-    EJ --> EK["Run actual verification command"]
-    EK --> EM["Report Phase 0.1 result and wait for Phase 0.2 request"]
-    EM --> E2["Output Phase 0.2 planning start gate"]
-    E2 --> E2C["Wait for separate user confirmation"]
-    E2C --> E2P["Update PLAN, TODO, and planning notes"]
-    E2P --> E2K["Run actual verification command"]
-    E2K --> E2M["Report Phase 0.2 result and wait for Phase 1 request"]
-
-    H --> N["Output phase start gate"]
-    M --> N
-    E2M --> N
-    N --> O{"split decision"}
-    O -->|"Keep phase"| P["Keep current phase"]
-    O -->|"Phase X.N"| Q["Show phase boundary change proposal"]
-    O -->|"New Major Phase"| S["Show phase boundary change proposal"]
-    O -->|"Backlog"| T["Record for later"]
-
-    P --> U["Wait for post-gate execution confirmation"]
-    Q --> BC["Wait for plan-change confirmation"]
-    S --> BC
-
-    U --> UP["Update planning files"]
-    BC --> BUP["Update planning files for boundary change"]
-    BUP --> BSTOP["Stop after planning-file update"]
-    BSTOP --> NR
-    UP --> UA{"Non-trivial execution approach?"}
-    UA -->|"Yes"| UB["Show approach and wait for confirmation"]
-    UA -->|"No"| V["Prepare fixtures or examples"]
-    UB --> V
-    V --> W["Write failing tests"]
-    W --> X["Complete phase-declared real capability"]
-    X --> Y["Run actual verification command"]
-    Y --> Z["Update TODO, phase note, and compact handoff"]
-    Z --> AA["Report result and wait for next phase"]
-    AA --> NR["Wait for later user request"]
-
-    T --> AA
-    NR --> N["Output phase start gate"]
+    A["User request"] --> P{"Plan Mode enabled?"}
+    P -->|"Yes"| B["Open current SKILL.md"]
+    P -->|"No"| B
+    B --> C["Recover current anchors and evidence"]
+    C --> D{"Scope or boundary change?"}
+    D -->|"Yes"| E["Show boundary proposal"]
+    E --> F{"Planning change confirmed?"}
+    F -->|"No"| G["Stop and wait"]
+    F -->|"Yes"| H["Update planning owners"]
+    H --> I["Stop; wait for later start request"]
+    I --> J["Show phase start gate"]
+    D -->|"No; phase already recorded"| J
+    J --> K{"Later live execution confirmation?"}
+    K -->|"No"| G
+    K -->|"Yes"| L["Fixtures or examples, tests, implementation"]
+    L --> M["Verify declared real capability"]
+    M --> N["Update owner records and report"]
+    N --> O["Wait for later user request"]
 ```
+
+The diagram is a user summary. The normative flows are in
+[phase policy](references/phase_policy.md) and
+[change-request policy](references/change_request_policy.md).
+
+## New Window And Recovery
+
+In a new Codex window, ask Codex to open the current `SKILL.md` and follow the
+[recovery protocol](references/recovery_protocol.md). Recovery uses relevant available
+conversation, current TODO pointers, the matching active phase note and PLAN section, referenced
+decisions, and repository evidence. Missing or conflicting meaning becomes a Context Gap.
+Continue in the user's current response language unless the user requests another language.
+
+Recovery ends at a revalidation gate when current live authorization cannot be proven. A
+handoff is optional and cannot grant permission.
+
+Copyable prompt:
+
+```text
+Use phase-workflow for this project. Open the current SKILL.md and follow
+references/recovery_protocol.md. Use relevant available conversation, follow TODO's exact
+active anchors, validate claims against repository evidence, list material Context Gaps, and
+show the required gate. Do not restore authorization from files or old confirmations.
+```
+
+## Examples
+
+- [Greenfield project](examples/greenfield_project_example.md)
+- [Existing structured project adoption](examples/existing_structured_project_adoption_example.md)
+- [New-window handoff](examples/new_window_handoff_example.md)
+- [Sequential Phase X.N change request](examples/phase_x1_change_request_example.md)
+
+Examples are illustrative, not authoritative. Follow their linked canonical policies when an
+example and an active policy differ.
 
 ## Optional Companion Tools
 
-`phase-workflow` can be used alone.
-
-It may pair well with [Superpowers](https://github.com/obra/superpowers) as an
-optional companion for brainstorming, planning, TDD, and verification. Superpowers
-is not required to use this skill.
+Plan Mode, test tools, browser automation, debuggers, refactoring helpers, and other skills may
+be useful inside the current phase. They do not replace the phase gate or expand authorization.
 
 ## Recommended Flow
 
-For each phase:
+1. Install the complete project-level skill.
+2. Request Phase 0 for an empty project or Phase 0.1 for existing-system adoption.
+3. Review the visible gate and proposed approach.
+4. Confirm execution in a later reply.
+5. Let Codex implement and verify only that phase.
+6. Review the evidence and ask for the next gate when ready.
 
-1. Define the phase goal, non-goals, inputs, outputs, and acceptance criteria.
-2. Show the phase start gate and wait for separate user confirmation.
-3. Update planning files before technical work starts when scope changes.
-4. Confirm any non-trivial execution approach before related file changes.
-5. Create or update fixtures and examples before implementation.
-6. Write the failing tests that define the desired behavior.
-7. Complete the real capability inside the declared phase boundary.
-8. Run the actual verification command, usually `python -m pytest -q`.
-9. Record current status in `TODO.md`; record verification results in the phase note and
-   compact handoff note.
-10. Record durable process decisions in `DECISIONS.md`; do not record ordinary phase
-    completion, verification logs, or execution history there.
-
-Keep phases narrow and reviewable. A phase can be small, but it must not be hollow. A
-verification loop should prove the user-value loop or end-to-end capability loop promised by
-the phase, not only that a local mechanism runs.
-
-Preview, smoke, contract-only, stub, fake, or simulated behavior is valid only when the phase
-boundary, user-facing labels, artifact fields, and acceptance criteria explicitly say so. If UI,
-job, progress, artifact, and result surfaces imply a real capability, the real execution path
-must be connected before the phase is complete.
-
-Keep the workflow small. If a request expands the current project or release boundary,
-classify it as `Phase X.N`, `New Major Phase`, or `Backlog` instead of disrupting the active
-phase. `Phase X.1` and `Phase X.2` are common examples, not the complete boundary.
+For detailed behavior, return to the [Policy Guide](#policy-guide).
 
 ## License
 
-This project is licensed under the MIT License. See `LICENSE`.
+This project is licensed under the MIT License. See [LICENSE](LICENSE).

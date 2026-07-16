@@ -1,278 +1,114 @@
-# Phase X.1 Change Request Example
+# Sequential Phase X.N Change Request Example
 
-This example shows how to handle a small mid-phase request without losing the
-active verification loop.
+Example role: illustrative, not authoritative. Follow the
+[change-request policy](../references/change_request_policy.md#phase-boundary-changes) for
+classification, allocation, and planning updates; follow the
+[phase policy](../references/phase_policy.md#live-confirmation-binding) for the later gate and
+execution authorization; and follow the
+[verification policy](../references/verification_policy.md) for completion evidence.
 
 ## Scenario
 
-During Phase 1, the project is adding a minimal parser. While reviewing the
-output, the user asks to include a `source_file` field in the result.
+Phase 1 already delivers and verifies one concrete capability: parse one supported input file
+into a normalized result object. During review, the user asks for that result to include a
+`source_file` field.
 
-Current Phase 1 goal:
+Repository evidence shows no recorded direct sub-phase under Phase 1. Under the canonical
+change-request policy, the bounded request is proposed as Phase 1.1 and records
+`Change Type: addition` separately from its identifier. The example does not restate the
+allocator or classification rules.
 
-- Parse one input file into a normalized result object.
-- Verify the output against one fixture.
-- Avoid building a full import system.
+## Required Two-Confirmation Flow
 
-New request:
+This scenario has two distinct confirmations and a required stop between planning and the later
+phase gate:
 
-- Include the source file path in the parser output.
+| Order | State | Allowed mutation | Must wait or stop |
+| --- | --- | --- | --- |
+| 1 | BOUNDARY_PROPOSAL | none | plan-change confirmation |
+| 2 | PLAN_UPDATE_AUTHORIZED | PLAN.md, TODO.md, active phase note | stop after the planning update |
+| 3 | GATE_READY -> AWAITING_LIVE_CONFIRMATION | none | separate live execution confirmation |
+| 4 | EXECUTION_AUTHORIZED | declared Phase 1.1 outputs only | Phase 1.1 phase exit stop |
 
-## Step 1: Classify The Request
+The first confirmation cannot authorize the gate or technical work. The later request to start
+the now-recorded Phase 1.1 requests the visible gate only. Only the separate live execution
+confirmation after that gate authorizes its declared outputs.
 
-Ask whether the request changes the phase goal.
+## Phase 1.1 Impact And Contract
 
-Phase X.1 and Phase X.2 are common examples under Phase X.N. Use Phase X.N for any
-one-decimal sub-phase under the active major phase.
+- Reason: `source_file` is output metadata inside the supported single-file parse capability.
+- Route and identifier: Phase 1.1, derived under the canonical change-request policy from the
+  recorded repository state.
+- Change Type: `addition`.
+- Goal: include the source file path in the normalized parser result.
+- Files likely affected: parser result assembly, parser tests, and the expected-output fixture.
+- Declared outputs: an updated fixture, a failing metadata test, the bounded implementation, and
+  verification evidence.
+- Acceptance: `source_file` is present and accurate; existing fields retain their names and
+  values; the full test suite passes.
+- Non-goals: no directory walking, glob import, batch parsing, new import system, or unrelated
+  parser refactor.
+- Risk: threading paths through every parser function would be more invasive than attaching the
+  field at result assembly.
 
-- If `source_file` is just metadata for the existing parser output, classify it as Phase 1.1.
-- If it fixes an incorrect existing output, classify it as Phase 1.2.
-- If it introduces a new import system, classify it as a new Phase.
-- If it is useful but not needed now, put it in Backlog.
+## Boundary Proposal
 
-Decision for this scenario:
-
-- Classification: Phase 1.1.
-- Reason: the parser already receives a file path, and `source_file` is narrow
-  metadata on the existing output.
-
-## Step 2: Impact Analysis
-
-Record:
-
-- Files affected: parser implementation, parser tests, example output fixture.
-- Tests affected: expected parser output test.
-- Output affected: result object includes `source_file`.
-- Acceptance criteria: existing parser tests pass and new fixture includes the field.
-- Risks: this must not add directory walking, glob imports, or batch parsing.
-
-Acceptance criteria:
-
-- The parser output includes `source_file`.
-- Existing fields keep the same names and values.
-- The fixture shows the new metadata field.
-- `python -m pytest -q` passes.
-
-## Step 3: Do Not Interrupt Blindly
-
-If the active Phase 1 work is not verified yet, finish or explicitly pause it before starting
-Phase 1.1. Do not mix unrelated changes into the same verification loop.
-
-Recommended handling:
-
-1. If Phase 1 is green, output a Phase 1.1 start gate and wait for user confirmation.
-2. If Phase 1 is red because the original parser is unfinished, finish Phase 1 first.
-3. If the user wants the change before Phase 1 is complete, write the pause in
-   `TODO.md` and make Phase 1.1 the active task.
-
-Do not treat "start Phase X" as confirmation for Phase X.1 work. After the Phase 1.1 start
-gate, wait for a separate user response after the phase start gate is displayed before changing
-fixtures, tests, or implementation.
-
-Plan-first execution order: Update planning files before technical files. Update `PLAN.md` and
-`TODO.md` before changing fixtures, tests, or implementation when the request changes scope,
-outputs, or acceptance criteria.
-
-## Phase X.N Boundary Change Example
-
-If later review shows the same parser needs a narrow unsupported-note fixture after Phase 1.1
-and Phase 1.2 have already been planned or completed, Codex may propose Phase 1.3.
-
-Codex must output a phase boundary change proposal before adding Phase 1.3:
+Before any planning or technical mutation, show a proposal such as:
 
 ```text
-Proposed boundary change: add Phase 1.3 for one unsupported-note fixture and its focused
-verification.
-Reason: the work is still inside the Phase 1 parser goal, but it needs a separate reviewable
-verification loop.
-Files to update after confirmation: PLAN.md, TODO.md, and the active phase note.
-Confirmation needed: confirm the planning change before updating planning files.
-Execution status: do not show the Phase 1.3 start gate immediately.
+Proposed boundary change: add Phase 1.1 for source_file metadata and its focused verification.
+Recorded numbering state: Phase 1 has no recorded direct sub-phase; the canonical policy assigns
+the next sequential identifier.
+Change Type: addition.
+Reason: the output contract changes, but the request remains inside the single-file parser goal.
+Planning owners after confirmation: PLAN.md, TODO.md, and the active phase note.
+Confirmation needed: confirm the planning change only.
+Execution status: no gate, fixture, test, documentation, or implementation mutation is authorized.
 ```
 
-After the planning files are updated, stop. The next action is only to show the
-already-recorded Phase 1.3 start gate after the user later asks to start Phase 1.3.
+If the user rejects or revises this boundary, remain read-only and update the proposal. Do not
+turn a request to start Phase 1.1 into plan-change confirmation.
 
-## Post-plan-change start gate example
+## Planning Update And Required Stop
 
-After Phase 1.3 is recorded, the next user message might ask to start it:
+After the user confirms the planning change, update only the three named planning owners:
 
-```text
-User request after planning update: start Phase 1.3.
-Start gate action: show the Phase 1.3 start gate and proposed execution approach only.
-Execution status: wait for post-gate execution confirmation before changing fixtures, tests, docs, or code.
-Do not treat the Phase 1.3 start request as execution confirmation.
-```
+- add the Phase 1.1 contract to `PLAN.md`;
+- point `TODO.md` to Phase 1.1 and its exact anchors; and
+- create or update the active Phase 1.1 note with the contract and proposed approach.
 
-The Phase 1.3 start gate should list the goal, non-goals, inputs, outputs, acceptance
-criteria, verification loop, proposed execution approach, and confirmation status. Then Codex
-must stop until the user confirms execution after the gate.
+Then stop. Do not display the Phase 1.1 gate in the same response, and do not create the fixture,
+test, documentation, or implementation output.
 
-## Plan Mode phase boundary change example
+## Later Visible Gate
 
-Plan Mode is optional, but enabling it does not change the phase boundary rules.
+Only after a later user request to start the already-recorded Phase 1.1 should Codex display a
+gate. The gate binds the Phase ID, contract and approach revisions, repository state, goal,
+complete-delivery mapping, declared outputs, acceptance criteria, non-goals, risk, verification
+loop, and stop condition.
 
-```text
-User request in Plan Mode: add Phase 1.4 for an additional parser edge-case fixture.
-Required first action: must activate and follow phase-workflow first.
-Classification: Phase X.N boundary change.
-Plan Mode status: Plan Mode proposed plan cannot substitute for plan-change confirmation.
-Boundary action: show a phase boundary change proposal and ask whether to update the plan.
-If confirmed: update planning files and stop.
-Gate status: do not show the Phase 1.4 start gate in the same response.
-Execution status: no fixtures, tests, docs, or code changes are authorized.
-```
+The gate then stops in `AWAITING_LIVE_CONFIRMATION`. A start request, the completed planning
+update, TODO text, or an old reply cannot substitute for the separate live execution
+confirmation.
 
-Only after the user later asks to start the already-recorded Phase 1.4 should Codex show the
-Phase 1.4 start gate. That start request still does not authorize execution.
+## Post-Gate Execution
 
-## Codex-recommended full split proposal example
+After the later confirmation matches the displayed gate and mutation preflight passes:
 
-Codex may recommend a split when a phase has multiple verification loops, different risk
-surfaces, or work that would be hard to review as one opaque phase. Codex-recommended splits
-use the same phase boundary change flow as user-requested splits.
+1. Update the expected result fixture with `source_file`.
+2. Add the focused test and run it to record the expected failure.
+3. Attach `source_file` at result assembly without expanding the parser boundary.
+4. Run the focused test and `python -m pytest -q`.
+5. Record actual modified files and command results in the active phase note.
+6. Update compact current state and pointers in `TODO.md`.
+7. Stop at Phase 1.1 exit; do not resume Phase 1 or enter another phase automatically.
 
-```text
-Scenario: Phase 8 has not started. Codex sees long SOP context strategy, hybrid chunking,
-OCR, scanned PDF handling, bbox extraction, image flowcharts, and complex layout strategy in
-one broad phase.
+If the disclosed result-assembly approach materially changes, use the phase policy's
+[approach-confirmation route](../references/phase_policy.md#approach-confirmation) and wait for
+renewed confirmation. Do not copy that detailed lifecycle into this example.
 
-Incorrect behavior: recommend only Phase 8.1 and route the user to the Phase 8.1 start gate before planning update.
+## Verification
 
-Correct behavior: show a split interpretation or phase boundary change proposal and ask
-whether to update planning files.
-
-Proposed split:
-- Phase 8.1: Long SOP context management strategy.
-  Goal: section indexing, context budget strategy, and process candidate section selection.
-  Non-goals: hybrid chunking implementation, OCR, scanned PDF handling, bbox extraction,
-  image flowcharts, and complex layout strategy.
-- Phase 8.2: Hybrid chunking implementation.
-  Goal: implement and verify the selected chunking path after the context strategy is tested.
-  Non-goals: OCR, bbox extraction, scanned PDFs, image flowcharts, and complex layouts.
-- Phase 8.3: OCR and scanned PDF handling.
-  Goal: define and test text extraction for scanned or OCR-dependent inputs.
-  Non-goals: bbox-driven layout semantics and image flowchart interpretation.
-- Phase 8.4: Layout, bbox, and image flowchart strategy.
-  Goal: define the later strategy for visual layout, bbox use, and image-based process flows.
-  Non-goals: earlier text-first SOP context selection and hybrid chunking work.
-
-If confirmed: update planning files and stop.
-Gate status: do not show the Phase 8.1 start gate in the same response.
-Execution status: no fixtures, tests, docs, or code changes are authorized.
-```
-
-## Multi-phase implementation anti-example
-
-```text
-User request: implement this Phase 0.2-5 plan.
-Incorrect behavior: audit, create tests, migrate files, restore files, and verify all phases in one run.
-Correct behavior: execute only the currently confirmed phase; unconfirmed phases stop at their own phase gates.
-```
-
-Even when a plan executor, test workflow, debugging workflow, refactoring workflow, migration
-workflow, code generation helper, documentation generator, task checklist, or tool-specific
-workflow is useful, it must stay inside the authorized phase. A checklist or progress tracker
-does not replace the phase start gate or post-gate execution confirmation.
-
-Mutation preflight result: blocked because the edit would complete multiple phases.
-Correct next action: split the work or return to the appropriate phase gate.
-
-## Phase violation recovery example
-
-```text
-Violation: implementation happened outside approved phase boundary.
-Stop new implementation immediately.
-Audit: list files, tests, migrations, restores, docs, and status records changed outside the
-approved phase boundary.
-User choice needed: keep implementation and backfill audit, or roll back selected changes.
-Repair PLAN.md, TODO.md, phase notes, and handoff records.
-```
-
-Do not continue to the next feature while recovery is open.
-
-## Approach Rejection And Adjustment
-
-If Phase 1.1 has a non-trivial execution approach choice, Codex should show the approach before
-changing files. For example, Codex might propose adding `source_file` by threading an absolute
-path through every parser function. If the user says that approach is too invasive, treat it as
-approach rejected.
-
-When the goal and output stay the same, stop execution and update the phase note with the
-revised execution approach. For this scenario, the revised approach might keep parser internals
-unchanged and add `source_file` only at the result assembly boundary.
-
-Then show a new approach confirmation:
-
-```text
-Current phase: Phase 1.1.
-Goal: add source_file metadata to parser output.
-Revised execution approach: keep parser internals unchanged and attach source_file at result
-assembly.
-Planning update: update the phase note with the revised execution approach.
-Confirmation needed: wait for user confirmation before changing fixtures, tests, or code.
-```
-
-Documents, prompts, templates, policies, tests, and code can all require approach confirmation
-when the approach is non-trivial.
-
-## Example TODO Update
-
-```markdown
-## Current Phase
-
-Phase 1.1: Add source_file metadata to parser output.
-
-## Active Task
-
-- [x] Classify source_file request as a small scoped addition.
-- [x] Update expected parser output fixture.
-- [x] Add failing test for source_file metadata.
-- [x] Implement metadata field.
-- [x] Run final verification.
-
-## Next Tasks
-
-- Resume Phase 1 handoff update after Phase 1.1 verification.
-
-## Blocked
-
-- None.
-```
-
-## Example Phase Note Entry
-
-```markdown
-## 2026-05-23 - Phase 1.1 Parser Source Metadata
-
-Changes:
-
-- Classified the user request as Phase 1.1.
-- Updated the expected parser output fixture with `source_file`.
-- Added a focused test for source file metadata.
-- Added the field without adding batch import behavior.
-
-Verification:
-
-- Red test command: `python -m pytest -q`
-- Red result: failed because `source_file` was missing from parser output.
-- Green test command: `python -m pytest -q`
-- Green result: all tests passed.
-
-Next:
-
-- Continue the original Phase 1 handoff update.
-```
-
-## Step 4: Verification
-
-Run:
-
-```bash
-python -m pytest -q
-```
-
-Record the command and result in the active phase note and handoff note.
-
-Do not mark Phase 1.1 complete if verification fails. Keep the request open in
-`TODO.md` with the failure summary and next fix.
+The active phase note records the actual RED and GREEN commands, exit statuses, result summaries,
+deviations, and remaining gaps. `TODO.md` stores only compact current state and the pointer to
+that evidence. A failing verification keeps Phase 1.1 open.

@@ -1,41 +1,39 @@
 # PROJECT_CONTEXT Template
 
-Use this file as an adoption/background baseline. Normal development rounds should not update
-this file. Update only when stable project identity, directory responsibilities, verification
-commands, or durable boundaries change.
+Template role: structural, not authoritative. Follow
+[recovery protocol](../references/recovery_protocol.md) for stable-context ownership and
+dynamic-state exclusions.
 
-## What This Project Is
+Use this file only for stable, evidence-backed existing-system facts. Normal development rounds
+do not update it. Do not store dynamic workflow progress, target-roadmap changes, current phase,
+active task, next action, temporary blockers, authorization state, or routine verification
+results here.
 
-What this project is:
+## System Identity
 
-## Current User-Visible Purpose
+- Project name and repository identity:
+- Existing-system type and factual purpose:
 
-Current user-visible purpose:
+## Factual Baseline
+
+- Existing capabilities and observed state:
+- Languages, frameworks, and runtime facts:
+
+## Durable Constraints
+
+- Stable technical, regulatory, compatibility, or operational constraints:
+- Do-not-change-casually boundaries:
 
 ## Important Directories
 
-Important directories:
+- Path and evidence-backed responsibility:
 
-## Verification Commands
+## Stable Verification Entry Points
 
-How to run tests/build/smoke checks:
+- Test command:
+- Build command:
+- Smoke or integration command:
 
-```bash
-python -m pytest -q
-```
+## Evidence Sources
 
-## Current Known Constraints
-
-Current known constraints:
-
-## Do Not Change Casually
-
-What not to change casually:
-
-## Workflow Adoption Status
-
-Workflow adoption status:
-
-## Next Planning Step
-
-Next planning step:
+- Files, manifests, commands, artifacts, or runtime observations supporting this baseline:

@@ -1,5 +1,9 @@
 # Decision Record Template
 
+Template role: structural, not authoritative. Follow
+[recovery protocol](../references/recovery_protocol.md) for the responsibility of durable
+decision records.
+
 Use decision records for durable decisions only. Do not record ordinary phase completion.
 Do not record verification logs. Do not record execution history.
 
