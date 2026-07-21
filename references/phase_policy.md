@@ -14,6 +14,7 @@ and [verification policy](verification_policy.md) for evidence and completion.
 
 - [Phase meanings](#phase-meanings)
 - [Project context, applicability, and complete delivery](#project-context-applicability-and-complete-delivery)
+- [Optional shared-understanding interview](#optional-shared-understanding-interview)
 - [Authorization and recovery state machine](#authorization-and-recovery-state-machine)
 - [Live confirmation binding](#live-confirmation-binding)
 - [Partial execution revalidation](#partial-execution-revalidation)
@@ -123,6 +124,11 @@ opt-out, or a higher-priority process that is incompatible and that the user doe
 changed. A compatible mature or regulated process may use `phase-workflow` as a subordinate
 file-based execution anchor.
 
+A project that has not adopted the workflow may handle a direct small task through direct
+execution when the user requests it. Inside an adopted project, a direct bugfix still follows
+the workflow unless the user explicitly chooses to opt out for that request; classify any required
+sub-phase through the change-request policy.
+
 ### Complete-delivery and phase mapping
 
 Plan toward the complete target system. Record the project goal, target boundary, project-level
@@ -160,6 +166,22 @@ Hook adoption and operation are user-facing setup concerns owned by [README](../
 The policy invariant is compact: a hook is optional and reminder-only; it cannot invoke the
 skill, mutate files, recover state, or grant authorization. When the workflow applies, open the
 current `SKILL.md` regardless of hook presence.
+
+## Optional Shared-Understanding Interview
+
+Use the [shared-understanding protocol](shared_understanding_protocol.md) when the user explicitly
+asks to be grilled or to stress-test a plan, or when a material unresolved user decision affects
+outputs, acceptance, approach, or safety. For an ordinary well-defined phase, do not require the
+optional interview; continue through the existing gate path.
+
+The interview does not create a new lifecycle state. Keep it read-only within
+`READ_ONLY_RECOVERY` or `CONTEXT_BLOCKED` while facts and decisions are reconciled. If it begins
+after a gate and changes the contract or material approach, use the existing contract or
+approach-revision route and require a new gate binding.
+
+Shared-understanding closure does not advance lifecycle state and cannot satisfy plan-change
+confirmation, a phase-start request, the visible gate, or live execution confirmation. After
+closure, return to the applicable existing classification, plan-change, recovery, or gate flow.
 
 ## Authorization Model
 
@@ -254,6 +276,17 @@ preflight checks that the exact output and purpose were disclosed before allowin
 Classify by intent and declared output, not by filename. The same `TODO.md` or phase-note file
 may contain a Phase 0.2 declared planning output, a current execution-status output, a later
 boundary change, or a recovery repair; each requires its own applicable state transition.
+
+Before the gate binds Declared Outputs, inventory lifecycle-coupled tests and artifacts whose
+expectations depend on the current Phase ID, PLAN anchor or heading, active phase-note path or
+heading, owner revision, or other changing workflow state. Make each one derive current values
+from the canonical owners, or name it as an exact Declared Output with its transition purpose.
+Do not assume a test is lifecycle-independent merely because it passed in the previous phase.
+
+A later-discovered stale lifecycle-coupled test or artifact remains current failed evidence. If
+it is undeclared, do not edit it under an implicit maintenance exception; stop and route the
+new output through a contract revision and renewed live confirmation. Discovery never expands
+the existing authorization.
 
 ## Partial Execution Revalidation
 
@@ -452,6 +485,10 @@ Do not treat phase or sub-phase confirmation as approval for an unstated approac
 - Is there a non-trivial execution approach choice? If yes, what approach is being proposed?
 - What inputs are available?
 - What outputs must exist?
+- Which lifecycle-coupled tests or artifacts depend on the current phase, owner anchors, paths,
+  headings, or revisions?
+- Does each lifecycle-coupled artifact derive current values from canonical owners, or is it an
+  exact declared output for this transition?
 - What acceptance criteria define completion?
 - What work is explicitly not allowed?
 - For Phase 0, what baseline workflow files will be created?

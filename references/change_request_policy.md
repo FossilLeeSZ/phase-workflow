@@ -126,6 +126,19 @@ The later phase-start gate and live execution confirmation are owned by
 Use one sub-phase nesting level only; do not introduce Phase X.N.M. X.10 follows X.9 as an
 integer sequence identifier.
 
+## Shared Understanding Before A Boundary Change
+
+When material user decisions are unresolved, the optional
+[shared-understanding protocol](shared_understanding_protocol.md) may clarify the proposed
+boundary before the phase-change proposal is finalized. It does not create a new lifecycle
+state and is not mandatory for an ordinary well-defined change.
+
+Keep the interview read-only. Shared-understanding closure is not plan-change confirmation and
+does not authorize planning mutation. After closure, show the complete separate plan-change
+proposal, wait for its separate confirmation, update only the disclosed planning owners, and
+stop under [Phase Boundary Changes](#phase-boundary-changes). Execution still requires the later
+visible phase gate and separate live confirmation owned by phase policy.
+
 ## Plan Mode Change Requests
 
 Plan Mode is optional. When enabled, use the current `SKILL.md` for activation and apply the

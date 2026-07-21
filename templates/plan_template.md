@@ -65,6 +65,7 @@ contract explicitly declares it as the product and verifies its consumer-facing 
 - Boundary: {{PHASE_BOUNDARY}}
 - Non-goals: {{PHASE_NON_GOALS}}
 - Declared inputs: {{DECLARED_INPUTS}}
+- Lifecycle-coupled artifacts: {{LIFECYCLE_COUPLED_ARTIFACTS}}
 - Declared outputs: {{DECLARED_OUTPUTS}}
 - Acceptance criteria: {{ACCEPTANCE_CRITERIA}}
 - Verification: {{VERIFICATION}}

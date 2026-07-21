@@ -23,6 +23,9 @@ Detailed behavior has one owner per topic:
   durable anchors, current-state ownership, Context Gaps, partial recovery, and optional handoff.
 - [Verification policy](references/verification_policy.md): evidence, failed verification,
   phase completion, and project-completion claims.
+- [Shared-understanding protocol](references/shared_understanding_protocol.md): optional
+  decision grilling, fact discovery, one-question turns, bounded closure, and authorization
+  separation.
 - [SKILL.md](SKILL.md): activation, resource routing, global stop invariants, and the compact
   workflow.
 
@@ -98,6 +101,23 @@ non-authoritative compatibility index.
 
 See the [phase policy](references/phase_policy.md) for the normative lifecycle and live
 authorization model.
+
+## Optional Shared-Understanding Interview
+
+Ask Codex to “grill me” or stress-test a material phase decision to enter an optional
+shared-understanding interview. Codex first investigates discoverable repository facts, then
+asks one user-owned decision per turn with a recommendation, basis, tradeoff, and material
+uncertainty. Ordinary well-defined phases do not require this interview.
+
+Finishing the interview does not authorize a plan change or implementation. A durable change
+still needs a separate plan-change proposal and confirmation; execution still needs a later
+visible phase gate and separate live confirmation.
+
+This protocol is inspired by Matt Pocock's MIT-licensed
+[`grill-me`](https://github.com/mattpocock/skills/blob/main/skills/productivity/grill-me/SKILL.md)
+and
+[`grilling`](https://github.com/mattpocock/skills/blob/main/skills/productivity/grilling/SKILL.md)
+skills. See the third-party notice in [LICENSE](LICENSE).
 
 ## Fit
 
@@ -258,9 +278,10 @@ Detailed bootstrap and adoption behavior is owned by
 
 ## Bootstrap Templates
 
-The release includes [an AGENTS template](templates/agents_template.md) and
-[a PLAN template](templates/plan_template.md). They are file-based bootstrap aids, not a
-generator or a second policy source.
+The release includes [an AGENTS template](templates/agents_template.md),
+[a PLAN template](templates/plan_template.md), and a
+[transition-stable project-document test template](templates/test_project_docs_template.py).
+They are file-based bootstrap aids, not a generator or a second policy source.
 
 Use a template only when the target file is a declared Phase 0 or Phase 0.1 output and the user
 has provided a separate live confirmation after the visible gate:
@@ -282,10 +303,15 @@ has provided a separate live confirmation after the visible gate:
 5. During Phase 0.1, record only the factual adoption contract and known evidence. Leave an
    unconfirmed future goal as `Not yet confirmed; requires separately gated Phase 0.2`; do not
    use the PLAN template to invent or pre-authorize the later roadmap.
+6. When `tests/test_project_docs.py` is a declared output, copy the installed
+   `templates/test_project_docs_template.py` into that target path. The copied test reads the
+   current phase and current owner pointers from TODO, then cross-checks PLAN and the active
+   phase note. Do not hard-code the phase active during bootstrap, its PLAN heading, or its
+   phase-note filename.
 
 No production rendering CLI is required. The templates, their source links, the rendered
-root-file links, placeholder replacement, and no-overwrite candidate behavior are verified by
-the repository tests.
+root-file links, placeholder replacement, no-overwrite candidate behavior, and valid phase
+transition behavior are verified by the repository tests.
 
 ## Optional Hook Support
 

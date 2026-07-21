@@ -94,6 +94,12 @@ When verification fails:
 5. Update the active phase note with the final result and update TODO's compact status, next
    action, and latest-verification pointer.
 
+When a lifecycle consistency test or assertion pins a previous Phase ID, owner anchor, owner
+path, heading, or revision, treat it as a stale test assertion and keep the phase open. Check
+whether the phase contract already declares that artifact for transition maintenance. If it is
+undeclared, do not edit it as incidental cleanup; use the applicable contract revision and new
+live confirmation before mutation. Verification failure identifies evidence, not authorization.
+
 The new failure remains the active factual status until a later successful verification replaces
 it. Do not use an older passing command or completed phase note to keep an active completion
 claim.

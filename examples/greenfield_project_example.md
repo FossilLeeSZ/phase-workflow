@@ -74,6 +74,8 @@ Declared output paths:
 - DECISIONS.md
 - docs/phases/phase_0_initialize_project.md
 - tests/test_project_docs.py
+Test template source:
+.agents/skills/phase-workflow/templates/test_project_docs_template.py
 Verification evidence: run python -m pytest -q and record the command, date, exit status, and
 result summary in the Phase 0 note at docs/phases/phase_0_initialize_project.md.
 Product boundary: Phase 0 does not promise product runtime. Its real declared capability is a
@@ -89,6 +91,12 @@ After the live confirmation, Phase 0 may create those missing declared outputs b
 authorization follows the disclosed phase contract, not by file type. It may not create a
 product feature, undisclosed script, or later-phase output.
 
+Create `tests/test_project_docs.py` from the installed
+`templates/test_project_docs_template.py`. The copied test reads the current phase and current
+owner pointers from TODO and cross-checks PLAN and the active phase note. Do not hard-code the
+Phase 0 identifier, PLAN heading, or Phase 0 note path; the same copied test must remain valid
+when the canonical owners move to a later phase.
+
 ## Phase 0: Initialize The Project
 
 Goal:
@@ -97,7 +105,7 @@ Goal:
 - Add `README.md`, `AGENTS.md`, `PLAN.md`, `TODO.md`, and `DECISIONS.md`.
 - Add `docs/phases/phase_0_initialize_project.md` as the detailed Phase 0 execution and evidence
   record.
-- Add initial tests that check the expected project structure.
+- Add the transition-stable project-document test that checks the current owner relationships.
 - Record the complete-project target, completion conditions, capability dependencies, and first
   real capability in `PLAN.md` without implementing product behavior.
 
